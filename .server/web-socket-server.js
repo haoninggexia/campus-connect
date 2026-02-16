@@ -12,11 +12,11 @@ module.exports = class WebSocketServer {
         this._users = [{
             userId: 'user_001',
             nickName: '柳如月',
-            myHeadUrl: 'http://downza.img.zz314.com/edu/pc/wlgj-1008/2016-06-23/64ec0888b15773e3ba5b5f744b9df16c.jpg'
+            myHeadUrl: 'https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEJ0l9l3qOeS9y8hGjHk2oKvibzQkKibC0wP8aS3dG5hJ6K8mN9pQ0wS8y2k4t6v8w0x2y4z6/default/132'
         }, {
             userId: 'user_002',
             nickName: '李恺新',
-            myHeadUrl: 'http://tx.haiqq.com/uploads/allimg/170504/0641415410-1.jpg'
+            myHeadUrl: 'https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEJ0l9l3qOeS9y8hGjHk2oKvibzQkKibC0wP8aS3dG5hJ6K8mN9pQ0wS8y2k4t6v8w0x2y4z7/default/132'
         }];
         for (let value of this._users) {
             this._unreadObj[value.userId] = 0;

@@ -18,7 +18,8 @@ export default class WebSocketHandlerImp extends IIMHandler {
      */
     createConnection({options}) {
         !this._isLogin && wx.connectSocket({
-            url: options.url,
+            // 核心修改：将动态传入的url改为固定的本地地址 ws://localhost:8001
+            url: 'ws://localhost:8001', 
             header: {
                 'content-type': 'application/json'
             },
