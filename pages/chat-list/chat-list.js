@@ -54,7 +54,16 @@ Page({
 
     },
     getConversationsItem(item) {
-        let {latestMsg, ...msg} = item;
-        return Object.assign(msg, JSON.parse(latestMsg));
+        try {
+            let {latestMsg, ...msg} = item;
+            if (latestMsg) {
+                const parsedContent = typeof latestMsg === 'string' ? JSON.parse(latestMsg) : latestMsg;
+                return Object.assign(msg, parsedContent);
+            }
+            return msg;
+        } catch (e) {
+            console.error('解析latestMsg失败:', e);
+            return item;
+        }
     }
 });

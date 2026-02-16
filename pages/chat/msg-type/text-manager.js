@@ -18,10 +18,14 @@ export default class TextManager {
      * @param type
      */
    async sendOneMsg({content, type}) {
-        const {itemIndex} = await this._page.UI.showItemForMoment(this._page.imOperator.createNormalChatItem({
+        console.log('开始发送消息', {content, type});
+        const msgItem = this._page.imOperator.createNormalChatItem({
             type,
             content
-        }));
+        });
+        console.log('创建消息对象', msgItem);
+        const {itemIndex} = await this._page.UI.showItemForMoment(msgItem);
+        console.log('消息添加到UI，itemIndex:', itemIndex);
        await this._page.sendMsg({
             content: this._page.imOperator.createChatItemContent({type, content}),
             itemIndex

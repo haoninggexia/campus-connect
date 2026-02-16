@@ -23,9 +23,14 @@ export default class UI {
      * @param sendMsg
      */
     async showItemForMoment(sendMsg) {
-        if (!sendMsg) return;
+        if (!sendMsg) {
+            console.error('sendMsg为空');
+            return {itemIndex: -1};
+        }
         this.updateDataWhenStartSending(sendMsg);
-        return {itemIndex: this._page.data.chatItems.length - 1};
+        const itemIndex = this._page.data.chatItems.length - 1;
+        console.log('showItemForMoment返回itemIndex:', itemIndex, 'chatItems长度:', this._page.data.chatItems.length);
+        return {itemIndex};
     }
 
     /**
@@ -37,7 +42,10 @@ export default class UI {
     updateDataWhenStartSending(sendMsg, addToArr = true, needScroll = true) {
         this._page.chatInput.closeExtraView();
         sendMsg.sendStatus = 'sending';
-        addToArr && this._page.data.chatItems.push(sendMsg);
+        if (addToArr) {
+            this._page.data.chatItems.push(sendMsg);
+            console.log('消息已添加到chatItems，新长度:', this._page.data.chatItems.length, '消息内容:', sendMsg);
+        }
         let obj = {};
         obj['textMessage'] = '';
         obj['chatItems'] = this._page.data.chatItems;
@@ -51,9 +59,17 @@ export default class UI {
      * @param itemIndex
      */
     updateViewWhenSendSuccess(sendMsg, itemIndex) {
-        console.log('发送成功', sendMsg);
+        console.log('发送成功', {sendMsg, itemIndex});
         let that = this._page;
+        if (itemIndex === undefined || itemIndex === null || itemIndex < 0) {
+            console.error('itemIndex无效:', itemIndex);
+            return;
+        }
         let item = that.data.chatItems[itemIndex];
+        if (!item) {
+            console.error('未找到item，itemIndex:', itemIndex, 'chatItems:', that.data.chatItems);
+            return;
+        }
         item.timestamp = sendMsg.timestamp;
         this.updateSendStatusView('success', itemIndex);
     }
