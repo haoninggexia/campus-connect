@@ -1,0 +1,152 @@
+/* pages/chat-tim/chat-tim.wxss */
+.container {
+  background-color: #f5f5f5;
+}
+
+/* 聊天标题栏 */
+.chat-header {
+  height: 44px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 100;
+}
+
+.header-left,
+.header-right {
+  width: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.iconfont {
+  font-size: 24px;
+  color: #333;
+}
+
+.header-title {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 消息列表 */
+.message-list {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.message-item {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+.message-item.self {
+  flex-direction: row-reverse;
+}
+
+.message-item.other {
+  flex-direction: row;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+.message-content {
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.message-item.self .message-content {
+  background-color: #95ec69;
+  margin-right: 10px;
+  margin-left: 0;
+}
+
+.message-item.other .message-content {
+  background-color: #fff;
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.friend-name {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 5px;
+}
+
+.message-text {
+  display: block;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333;
+  word-break: break-all;
+}
+
+.message-image {
+  max-width: 200px;
+  border-radius: 5px;
+  display: block;
+}
+
+.message-time {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  margin-top: 5px;
+  text-align: right;
+}
+
+.message-item.other .message-time {
+  text-align: left;
+}
+
+/* 输入框区域 */
+.input-area {
+  background-color: #f5f5f5;
+  border-top: 1px solid #e5e5e5;
+  padding: 10px;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 8px 10px;
+}
+
+.message-input {
+  flex: 1;
+  font-size: 15px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.send-button {
+  margin-left: 10px;
+  background-color: #07c160;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  padding: 5px 15px;
+}
+
+.send-button:active {
+  background-color: #06ad56;
+}

@@ -1,0 +1,56 @@
+<!--pages/chat-tim/chat-tim.wxml-->
+<view class="container" style="height: 100vh; display: flex; flex-direction: column;">
+  <!-- 聊天标题栏 -->
+  <view class="chat-header">
+    <view class="header-left" bindtap="onBack">
+      <text class="iconfont">❮</text>
+    </view>
+    <view class="header-title">{{friendName}}</view>
+    <view class="header-right"></view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view
+    class="message-list"
+    scroll-y
+    scroll-into-view="{{scrollIntoView}}"
+    scroll-top="{{scrollTop}}">
+    <block wx:for="{{messages}}" wx:key="id">
+      <!-- 自己发送的消息 -->
+      <view class="message-item self" wx:if="{{item.isSelf}}">
+        <image class="avatar" src="{{myAvatar}}" mode="aspectFill"></image>
+        <view class="message-content">
+          <text class="message-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
+          <image class="message-image" src="{{item.content}}" mode="widthFix" wx:if="{{item.type === 'image'}}" bindtap="onPreviewImage" data-url="{{item.content}}"></image>
+          <text class="message-time">{{item.timeStr}}</text>
+        </view>
+      </view>
+
+      <!-- 对方发送的消息 -->
+      <view class="message-item other" wx:else>
+        <image class="avatar" src="{{friendAvatar}}" mode="aspectFill" bindtap="onViewFriendInfo"></image>
+        <view class="message-content">
+          <text class="friend-name">{{item.fromName}}</text>
+          <text class="message-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
+          <image class="message-image" src="{{item.content}}" mode="widthFix" wx:if="{{item.type === 'image'}}" bindtap="onPreviewImage" data-url="{{item.content}}"></image>
+          <text class="message-time">{{item.timeStr}}</text>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <!-- 输入框区域 -->
+  <view class="input-area">
+    <view class="input-box">
+      <input
+        class="message-input"
+        placeholder="输入消息..."
+        value="{{inputText}}"
+        bindinput="onInputChange"
+        bindconfirm="onSend"
+        adjust-position="{{false}}"
+      />
+      <button class="send-button" bindtap="onSend" size="mini">发送</button>
+    </view>
+  </view>
+</view>

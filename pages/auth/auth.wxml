@@ -1,0 +1,39 @@
+<view class="auth-container">
+  <view class="header">
+    <image src="/image/my_head.jpeg" class="logo" mode="aspectFit"></image>
+    <text class="title">同校交友</text>
+    <text class="subtitle">找到你的同校同学</text>
+  </view>
+
+  <view class="form">
+    <picker mode="selector" range="{{universities}}" bindchange="onUniversityChange">
+      <view class="picker {{university ? '' : 'placeholder'}}">
+        {{university || '选择你的大学'}}
+        <text class="arrow">></text>
+      </view>
+    </picker>
+
+    <input
+      class="input"
+      placeholder="填写你的专业"
+      placeholder-class="placeholder-text"
+      value="{{major}}"
+      bindinput="onMajorInput"
+    />
+
+    <button
+      class="btn-login"
+      open-type="getUserInfo"
+      bindgetuserinfo="onLogin"
+    >
+      微信授权登录
+    </button>
+
+    <view class="tips">
+      <text>登录即表示同意</text>
+      <text class="link">用户协议</text>
+      <text>和</text>
+      <text class="link">隐私政策</text>
+    </view>
+  </view>
+</view>

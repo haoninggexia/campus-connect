@@ -1,0 +1,127 @@
+<!--pages/chat-room/chat-room.wxml-->
+<view class="chat-container">
+  <!-- 顶部标题栏 -->
+  <view class="chat-header">
+    <view class="back-btn">
+      <image src="/image/back.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
+    </view>
+    <view class="title">{{otherUser.nickName || '聊天室'}}</view>
+    <view class="more-btn">
+      <image src="/image/more.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
+    </view>
+  </view>
+
+  <!-- 消息区域 -->
+  <view class="chat-messages" wx:if="{{messagesLoaded || messages.length > 0}}">
+    <block wx:for="{{messages}}" wx:key="timestamp" wx:for-item="msg" wx:for-index="index">
+      <view class="message-item {{msg.from.userID === userInfo.userID ? 'self' : 'other'}}">
+        <image class="avatar" wx:if="{{msg.from.userID !== userInfo.userID}}" 
+               src="{{msg.from.customAvatar || msg.from.avatarUrl || otherUser.avatarUrl}}" 
+               mode="aspectFill" 
+               binderror="onAvatarError"></image>
+        <view class="message-bubble">
+          {{msg.content}}
+        </view>
+        <image class="avatar" wx:if="{{msg.from.userID === userInfo.userID}}" 
+               src="{{userInfo.avatarUrl}}" 
+               mode="aspectFill" 
+               binderror="onAvatarError"></image>
+      </view>
+    </block>
+  </view>
+
+  <!-- 空状态提示 -->
+  <view class="chat-info" wx:if="{{!messagesLoaded && messages.length === 0}}">
+    加载消息中...
+  </view>
+
+  <!-- 输入区域 -->
+  <view class="chat-input-area">
+    <view class="input-content" bindfocus="onInputFocus" bindblur="onInputBlur">
+      <input 
+        class="message-input" 
+        placeholder="输入消息..." 
+        value="{{inputContent}}"
+        bindinput="onInputChange"
+        bindconfirm="onSend"
+      />
+    </view>
+    <button class="send-btn" bindtap="onSend">
+      发送
+    </button>
+  </view>
+</view>
+
+<!-- 用户资料弹窗 -->
+<view class="user-profile" wx:if="{{showProfileModal}}">
+  <view class="profile-mask" bindtap="onCloseProfileModal"></view>
+  <view class="profile-content">
+    <view class="profile-header">
+      <image class="profile-avatar" src="{{profileUser.customAvatar || profileUser.avatarUrl}}" mode="aspectFill"></image>
+      <text class="profile-name">{{profileUser.nickName}}</text>
+      <text class="profile-id">{{profileUser.userID}}</text>
+    </view>
+    
+    <view class="profile-body">
+      <view class="info-row" wx:if="{{profileUser.university}}">
+        <text class="info-label">大学：</text>
+        <text class="info-value">{{profileUser.university}}</text>
+      </view>
+      <view class="info-row" wx:if="{{profileUser.major}}">
+        <text class="info-label">专业：</text>
+        <text class="info-value">{{profileUser.major}}</text>
+      </view>
+    </view>
+    
+    <view class="profile-actions">
+      <button class="action-btn" bindtap="onCloseProfileModal">取消</button>
+      <button class="action-btn primary" bindtap="onAddFriend">添加好友</button>
+    </view>
+  </view>
+</view>
+
+<!-- 用户资料弹窗 -->
+<view class="profile-modal" wx:if="{{showProfileModal}}">
+  <view class="profile-mask" bindtap="onCloseProfileModal"></view>
+  <view class="profile-content">
+    <view class="profile-header">
+      <image class="profile-avatar" src="{{profileUser.customAvatar || profileUser.avatarUrl}}" mode="aspectFill"></image>
+      <text class="profile-name">{{profileUser.nickName}}</text>
+    </view>
+
+    <view class="profile-info">
+      <view class="info-item" wx:if="{{profileUser.university}}">
+        <text class="info-label">大学：</text>
+        <text class="info-value">{{profileUser.university}}</text>
+      </view>
+      <view class="info-item" wx:if="{{profileUser.major}}">
+        <text class="info-label">专业：</text>
+        <text class="info-value">{{profileUser.major}}</text>
+      </view>
+      <view class="info-item" wx:if="{{profileUser.bio}}">
+        <text class="info-label">简介：</text>
+        <text class="info-value bio-text">{{profileUser.bio}}</text>
+      </view>
+    </view>
+
+    <!-- 精选照片 -->
+    <view class="photos-section" wx:if="{{profilePhotos.length > 0}}">
+      <view class="photos-title">精选照片（{{profilePhotos.length}}张）</view>
+      <view class="photos-grid">
+        <view class="photo-item" wx:for="{{profilePhotos}}" wx:key="index">
+          <image 
+            class="photo-image" 
+            src="{{item}}" 
+            mode="aspectFill" 
+            bindtap="onPreviewPhoto" 
+            data-url="{{item}}"
+          ></image>
+        </view>
+      </view>
+    </view>
+
+    <view class="profile-footer">
+      <button class="close-btn" bindtap="onCloseProfileModal">关闭</button>
+    </view>
+  </view>
+</view>

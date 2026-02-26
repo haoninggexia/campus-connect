@@ -1,3 +1,3 @@
-import WebSocketHandlerImp from "./sdk/web-socket-handler-imp";
+import TIMHandlerImp from "./sdk/tim-handler-imp";
 
-export const getIMHandlerFactory = new WebSocketHandlerImp();
+export const getIMHandlerFactory = new TIMHandlerImp();

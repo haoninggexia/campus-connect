@@ -1,0 +1,9 @@
+{
+  "name": "cleanupTimeoutRooms",
+  "version": "1.0.0",
+  "description": "定时清理超时聊天室",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

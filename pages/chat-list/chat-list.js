@@ -9,7 +9,19 @@ Page({
      * 页面的初始数据
      */
     data: {
-        conversations: []
+        conversations: [],
+        // 当前用户信息
+        myUserID: '',
+        myNickName: '',
+        myAvatar: '',
+        // 临时测试好友数据
+        testFriend: {
+            friendId: 'test_user_002',
+            friendName: '测试用户',
+            friendHeadUrl: '/image/other_head.jpg',
+            timeStr: '14:30',
+            content: '点击进入聊天测试'
+        }
     },
 
     /**
@@ -24,14 +36,54 @@ Page({
         delete item.latestMsg;
         delete item.unread;
         delete item.content;
+
+        // 跳转到使用TIM SDK的聊天页面
         wx.navigateTo({
-            url: `../chat/chat?friend=${JSON.stringify(item)}`
+            url: `../chat-tim/chat-tim?friend=${encodeURIComponent(JSON.stringify(item))}`
+        });
+    },
+
+    /**
+     * 跳转到在线聊天室
+     */
+    onToOnlineChat() {
+        wx.navigateTo({
+            url: '/pages/rooms-list/rooms-list'
+        });
+    },
+
+    /**
+     * 测试聊天功能（临时）
+     */
+    onTestChat() {
+        const friend = this.data.testFriend;
+        wx.navigateTo({
+            url: `../chat-tim/chat-tim?friend=${encodeURIComponent(JSON.stringify(friend))}`
+        });
+    },
+
+    /**
+     * 跳转到个人中心
+     */
+    onToMyProfile() {
+        wx.navigateTo({
+            url: '/pages/my-profile/my-profile'
         });
     },
     /**
      * 生命周期函数--监听页面显示
      */
     async onShow() {
+        // 加载当前用户信息
+        const userInfo = wx.getStorageSync('user_info') || {};
+        this.setData({
+            myUserID: userInfo.userID || '',
+            myNickName: userInfo.nickName || '用户',
+            myAvatar: userInfo.avatarUrl || '/image/other_head.jpg'
+        });
+
+        // 等待一小段时间，确保TIM已初始化
+        await this.waitForTIMReady();
 
         getApp().getIMHandler().setOnReceiveMessageListener({
             listener: (msg) => {
@@ -39,19 +91,49 @@ Page({
                 msg.type === 'get-conversations' && this.setData({conversations: msg.conversations.map(item => this.getConversationsItem(item))})
             }
         });
+
         try {
-            await getApp().getIMHandler().sendMsg({
-                content: {
-                    type: 'get-conversations',
-                    userId: getApp().globalData.userInfo.userId
-                }
-            });
-            console.log('获取会话列表消息发送成功');
+            const conversations = await getApp().getIMHandler().getConversationList();
+            console.log('获取会话列表成功', conversations);
+
+            const list = conversations.map(conv => this.getConversationsItem(conv));
+            this.setData({conversations: list});
         } catch (e) {
             console.log('获取会话列表失败', e);
+            wx.showToast({ title: '获取会话列表失败', icon: 'none' });
         }
+    },
 
+    // 等待TIM初始化
+    waitForTIMReady() {
+        return new Promise((resolve) => {
+            let count = 0;
+            const maxCount = 20; // 最多等待2秒
 
+            const check = () => {
+                if (count >= maxCount) {
+                    console.log('等待TIM初始化超时');
+                    resolve();
+                    return;
+                }
+
+                try {
+                    const handler = getApp().getIMHandler();
+                    if (handler && handler._isLogin) {
+                        console.log('TIM已就绪');
+                        resolve();
+                        return;
+                    }
+                } catch (e) {
+                    // 忽略错误，继续等待
+                }
+
+                count++;
+                setTimeout(check, 100);
+            };
+
+            check();
+        });
     },
     getConversationsItem(item) {
         try {

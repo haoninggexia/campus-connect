@@ -1,4 +1,46 @@
 <import src="view/chat-item.wxml"/>
-<block wx:for="{{conversations}}" wx:key="conversationId">
-    <template is="chat-item" data="{{item:item}}"/>
-</block>
+
+<!-- 顶部用户信息栏 -->
+<view class="header-user-info" bindtap="onToMyProfile">
+  <image class="my-avatar" src="{{myAvatar}}" mode="aspectFill"></image>
+  <view class="my-info">
+    <text class="my-name">{{myNickName}}</text>
+    <text class="my-id">ID: {{myUserID}}</text>
+  </view>
+  <view class="my-actions">
+    <text class="arrow">›</text>
+  </view>
+</view>
+
+<!-- 在线聊天室入口 -->
+<view style="padding: 20rpx; background-color: #f5f5f5;">
+  <view style="font-size: 14px; color: #999; margin-bottom: 10rpx;">
+    🔥 实时在线聊天
+  </view>
+  <button type="primary" size="mini" bindtap="onToOnlineChat" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+    进入在线聊天室
+  </button>
+</view>
+
+<!-- 临时测试按钮 -->
+<view style="padding: 20rpx; background-color: #f5f5f5;">
+  <view style="font-size: 14px; color: #999; margin-bottom: 10rpx;">
+    💡 测试功能（正式版会移除）
+  </view>
+  <button type="primary" size="mini" bindtap="onTestChat">
+    测试聊天功能
+  </button>
+</view>
+
+<!-- 会话列表 -->
+<view style="padding-top: 10rpx;">
+  <block wx:for="{{conversations}}" wx:key="conversationId">
+      <template is="chat-item" data="{{item:item}}"/>
+  </block>
+</view>
+
+<!-- 空状态提示 -->
+<view wx:if="{{conversations.length === 0}}" style="text-align: center; padding: 100rpx 0; color: #999;">
+  <text>暂无会话</text>
+  <view style="font-size: 12px; margin-top: 10rpx;">点击上方测试按钮体验聊天功能</view>
+</view>

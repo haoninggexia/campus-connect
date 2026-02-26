@@ -1,0 +1,113 @@
+<!--pages/my-profile/my-profile.wxml-->
+<view class="container">
+  <!-- 顶部卡片 -->
+  <view class="profile-card">
+    <view class="avatar-wrapper" bindtap="onChooseAvatar">
+      <image class="avatar" src="{{tempAvatarUrl || userInfo.customAvatar || userInfo.avatarUrl}}" mode="aspectFill"></image>
+      <view class="avatar-edit-icon">✏️</view>
+    </view>
+
+    <view class="info-section">
+      <view class="info-row">
+        <text class="label">昵称</text>
+        <view class="editable-value">
+          <input 
+            class="editable-input" 
+            value="{{userInfo.nickName}}" 
+            bindinput="onNicknameInput"
+            maxlength="20"
+            placeholder="请输入昵称"
+          ></input>
+        </view>
+      </view>
+
+      <view class="info-row">
+        <text class="label">用户ID</text>
+        <view class="value-wrapper">
+          <text class="value highlight">{{userInfo.userID}}</text>
+          <button class="copy-button" size="mini" bindtap="onCopyUserID">复制</button>
+        </view>
+      </view>
+
+      <view class="info-row">
+        <text class="label">大学</text>
+        <text class="value">{{userInfo.university}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">专业</text>
+        <text class="value">{{userInfo.major}}</text>
+      </view>
+
+      <view class="info-row vertical">
+        <text class="label">个人简介</text>
+        <textarea 
+          class="bio-input" 
+          placeholder="介绍一下自己..." 
+          value="{{userInfo.bio || ''}}" 
+          bindinput="onBioInput"
+          maxlength="200"
+        ></textarea>
+        <text class="char-count">{{bioLength || 0}}/200</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 精选照片 -->
+  <view class="photos-section">
+    <view class="section-title">
+      <text>精选照片</text>
+      <text class="count">({{selectedPhotos.length}}/6)</text>
+    </view>
+    <view class="photos-grid">
+      <view
+        class="photo-item {{selectedPhotos[index] ? 'has-photo' : ''}}"
+        wx:for="{{[0,1,2,3,4,5]}}"
+        wx:key="*this"
+        bindtap="{{selectedPhotos[index] ? 'onPreviewPhoto' : 'onChoosePhoto'}}"
+        data-index="{{index}}"
+      >
+        <image
+          wx:if="{{selectedPhotos[index]}}"
+          class="photo"
+          src="{{selectedPhotos[index]}}"
+          mode="aspectFill"
+        ></image>
+        <view wx:if="{{selectedPhotos[index]}}" class="photo-delete" catchtap="onDeletePhoto" data-index="{{index}}">×</view>
+        <view wx:else class="photo-add">+</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="actions">
+    <button class="action-button primary" bindtap="onSaveProfile">
+      💾 保存个人信息
+    </button>
+    <button class="action-button" bindtap="onShare">
+      📤 分享给好友
+    </button>
+    <button class="action-button" bindtap="onClearData">
+      🗑️ 清除数据
+    </button>
+    <button class="action-button danger" bindtap="onLogout">
+      🚪 退出登录
+    </button>
+  </view>
+
+  <!-- 提示信息 -->
+  <view class="tips">
+    <view class="tip-item">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">点击头像可更换个人头像</text>
+    </view>
+    <view class="tip-item">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">上传精选照片展示个性，最多6张</text>
+    </view>
+    <view class="tip-item">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">填写简介让更多人了解你</text>
+    </view>
+  </view>
+</view>

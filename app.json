@@ -1,9 +1,15 @@
 {
   "pages": [
+    "pages/auth/auth",
     "pages/chat-list/chat-list",
+    "pages/chat-tim/chat-tim",
+    "pages/friends-tim/friends-tim",
+    "pages/my-profile/my-profile",
     "pages/chat/chat",
     "pages/chat-input/chat-input",
-    "pages/friends/friends"
+    "pages/friends/friends",
+    "pages/rooms-list/rooms-list",
+    "pages/chat-room/chat-room"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -12,8 +18,8 @@
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
-    "selectedColor": "#35c8fb",
-    "color": "#7f8389",
+    "selectedColor": "#667eea",
+    "color": "#999",
     "list": [
       {
         "pagePath": "pages/chat-list/chat-list",
@@ -22,8 +28,14 @@
         "selectedIconPath": "image/tabbar/chat_list.png"
       },
       {
-        "pagePath": "pages/friends/friends",
+        "pagePath": "pages/friends-tim/friends-tim",
         "text": "好友列表",
+        "iconPath": "image/tabbar/friend_unselected.png",
+        "selectedIconPath": "image/tabbar/friend.png"
+      },
+      {
+        "pagePath": "pages/my-profile/my-profile",
+        "text": "我的",
         "iconPath": "image/tabbar/friend_unselected.png",
         "selectedIconPath": "image/tabbar/friend.png"
       }
