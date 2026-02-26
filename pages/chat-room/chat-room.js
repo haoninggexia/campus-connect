@@ -15,12 +15,16 @@ Page({
     profileUser: null,
     profilePhotos: [],
     cachedTempAvatars: {}, // 缓存用户的临时下载链接，避免闪烁
-    messagesLoaded: false // 标志：消息已加载
+    cachedAvatarTimestamps: {}, // 缓存头像的时间戳，用于定期更新
+    messagesLoaded: false, // 标志：消息已加载
+    fontSize: 36 // 默认字体大小
   },
 
   onLoad(options) {
+    console.log('聊天室页面 onLoad')
     const { roomId, university, isCreator } = options
     const userInfo = wx.getStorageSync('user_info') || {}
+    console.log('当前用户信息:', userInfo)
 
     this.setData({
       roomId,
@@ -31,6 +35,9 @@ Page({
 
     // 加载用户自定义资料
     this.loadUserProfiles()
+
+    // 加载字体大小设置
+    this.loadFontSizeSettings()
 
     // 开始轮询消息
     this.startPolling()
@@ -48,11 +55,22 @@ Page({
 
       if (res.data) {
         const profiles = {}
+        const cachedTempAvatars = { ...this.data.cachedTempAvatars }
+
         res.data.forEach(profile => {
           profiles[profile.userID] = profile
+          // 如果有自定义头像，添加到缓存
+          if (profile.customAvatar && !cachedTempAvatars[profile.userID]) {
+            cachedTempAvatars[profile.userID] = profile.customAvatar
+          }
         })
-        this.setData({ userProfiles: profiles })
+
+        this.setData({
+          userProfiles: profiles,
+          cachedTempAvatars
+        })
         console.log('userProfiles 已设置，数量:', Object.keys(profiles).length)
+        console.log('头像缓存已更新')
       }
     } catch (e) {
       console.error('加载用户资料失败', e)
@@ -67,10 +85,39 @@ Page({
   },
 
   onShow() {
+    console.log('聊天室页面 onShow 被触发')
     // 确保消息区域正确显示
     if (this.data.messages.length > 0) {
       this.setData({ messagesLoaded: true })
     }
+
+    // 重新加载字体大小设置
+    this.loadFontSizeSettings()
+  },
+
+  // 加载字体大小设置
+  loadFontSizeSettings() {
+    const savedFontSize = wx.getStorageSync('chatFontSize')
+    console.log('聊天室加载字体大小，保存的值:', savedFontSize)
+
+    if (savedFontSize) {
+      this.setData({
+        fontSize: savedFontSize
+      })
+      this.updateFontSize(savedFontSize)
+      console.log('聊天室字体大小已设置为:', savedFontSize)
+    } else {
+      console.log('没有保存的字体大小，使用默认值: 36')
+    }
+  },
+
+  // 更新字体大小
+  updateFontSize(size) {
+    console.log('聊天室更新字体大小:', size)
+    // 更新当前页面的字体大小
+    this.setData({
+      fontSize: size
+    })
   },
 
   // 开始轮询
@@ -137,16 +184,35 @@ Page({
 
         // 缓存临时链接，避免每次轮询都更新导致头像闪烁
         const cachedTempAvatars = { ...this.data.cachedTempAvatars }
+        const cachedAvatarTimestamps = { ...this.data.cachedAvatarTimestamps }
         let hasNewTempAvatar = false
+        const now = Date.now()
+        const CACHE_EXPIRE_TIME = 10 * 60 * 1000 // 10分钟更新一次临时链接
 
-        // 更新缓存，只在不存在时添加新链接
-        if (data.user1 && data.user1.customAvatarTemp && !cachedTempAvatars[data.user1.userID]) {
-          cachedTempAvatars[data.user1.userID] = data.user1.customAvatarTemp
-          hasNewTempAvatar = true
+        console.log('当前缓存头像:', Object.keys(cachedTempAvatars))
+        console.log('返回的头像信息:', {
+          user1: data.user1 ? { userID: data.user1.userID, hasTemp: !!data.user1.customAvatarTemp } : null,
+          user2: data.user2 ? { userID: data.user2.userID, hasTemp: !!data.user2.customAvatarTemp } : null
+        })
+
+        // 更新缓存，在不存在或过期时添加新链接
+        if (data.user1 && data.user1.customAvatarTemp) {
+          const lastTimestamp = cachedAvatarTimestamps[data.user1.userID] || 0
+          if (!cachedTempAvatars[data.user1.userID] || (now - lastTimestamp) > CACHE_EXPIRE_TIME) {
+            cachedTempAvatars[data.user1.userID] = data.user1.customAvatarTemp
+            cachedAvatarTimestamps[data.user1.userID] = now
+            hasNewTempAvatar = true
+            console.log('缓存/更新用户1头像:', data.user1.userID, data.user1.customAvatarTemp)
+          }
         }
-        if (data.user2 && data.user2.customAvatarTemp && !cachedTempAvatars[data.user2.userID]) {
-          cachedTempAvatars[data.user2.userID] = data.user2.customAvatarTemp
-          hasNewTempAvatar = true
+        if (data.user2 && data.user2.customAvatarTemp) {
+          const lastTimestamp = cachedAvatarTimestamps[data.user2.userID] || 0
+          if (!cachedTempAvatars[data.user2.userID] || (now - lastTimestamp) > CACHE_EXPIRE_TIME) {
+            cachedTempAvatars[data.user2.userID] = data.user2.customAvatarTemp
+            cachedAvatarTimestamps[data.user2.userID] = now
+            hasNewTempAvatar = true
+            console.log('缓存/更新用户2头像:', data.user2.userID, data.user2.customAvatarTemp)
+          }
         }
 
         // 为消息添加自定义头像
@@ -178,6 +244,7 @@ Page({
         }
         if (hasNewTempAvatar) {
           updateData.cachedTempAvatars = cachedTempAvatars
+          updateData.cachedAvatarTimestamps = cachedAvatarTimestamps
         }
 
         this.setData(updateData)
@@ -354,7 +421,7 @@ Page({
   // 头像加载失败
   onAvatarError(e) {
     const user = e.currentTarget.dataset.user
-    console.log('头像加载失败:', user)
+    console.log('头像加载失败，用户信息:', user)
   },
 
   // 头像加载（已禁用日志）
@@ -364,72 +431,100 @@ Page({
 
   // 查看用户资料
   async onViewProfile(e) {
+    console.log('点击头像查看资料，事件对象:', e)
     const user = e.currentTarget.dataset.user
+    console.log('用户信息:', user)
+
     if (!user || !user.userID) {
+      console.log('用户信息无效，取消操作')
       return
     }
 
+    // 从缓存中获取头像
+    const cachedAvatar = this.data.cachedTempAvatars[user.userID] || user.customAvatar || user.avatarUrl
     const isSelf = user.userID === this.data.userInfo.userID
+    console.log('是否为自己的资料:', isSelf)
+    console.log('缓存头像:', cachedAvatar)
 
-    if (isSelf) {
-      // 查看自己的资料
-      wx.showModal({
-        title: '我的资料',
-        content: `昵称：${user.nickName}\n大学：${user.university}\n专业：${user.major}\n\n点击"确定"进入个人页面编辑`,
-        showCancel: true,
-        confirmText: '去编辑',
-        success: (res) => {
-          if (res.confirm) {
-            wx.switchTab({
-              url: '/pages/my-profile/my-profile'
-            })
-          }
+    wx.showLoading({ title: '加载中...' })
+
+    try {
+      // 调用云函数获取用户资料的临时链接
+      const res = await wx.cloud.callFunction({
+        name: 'getUserProfile',
+        data: {
+          userID: user.userID
         }
       })
-    } else {
-      // 查看对方资料
-      wx.showLoading({ title: '加载中...' })
 
-      try {
-        // 调用云函数获取用户资料的临时链接
-        const res = await wx.cloud.callFunction({
-          name: 'getUserProfile',
-          data: {
-            userID: user.userID
-          }
+      wx.hideLoading()
+
+      if (res.result.code === 0) {
+        const profile = res.result.data
+        const photosTemp = profile.photosTemp || []
+        const bio = profile.bio || ''
+        const nickName = profile.nickName || user.nickName || '微信用户'
+        const university = profile.university || user.university || '未设置'
+        const major = profile.major || user.major || '未设置'
+        const customAvatar = profile.customAvatarTemp || cachedAvatar
+
+        console.log('用户资料:', {
+          nickName,
+          university,
+          major,
+          bio,
+          photosCount: photosTemp.length,
+          customAvatar
         })
 
-        wx.hideLoading()
-
-        if (res.result.code === 0) {
-          const profile = res.result.data
-          const photosTemp = profile.photosTemp || []
-          const customAvatarTemp = profile.customAvatarTemp || user.avatarUrl
-
-          // 设置弹窗数据，合并完整资料
-          this.setData({
-            showProfileModal: true,
-            profileUser: {
-              ...user,
-              ...profile,
-              customAvatar: customAvatarTemp
-            },
-            profilePhotos: photosTemp
-          })
-        } else {
-          wx.showToast({
-            title: '加载失败',
-            icon: 'none'
-          })
-        }
-      } catch (e) {
-        wx.hideLoading()
-        console.error('获取用户资料失败:', e)
-        wx.showToast({
-          title: '加载失败',
-          icon: 'none'
+        // 显示自定义模态框
+        this.setData({
+          showProfileModal: true,
+          profileUser: {
+            userID: user.userID,
+            nickName,
+            university,
+            major,
+            bio,
+            customAvatar,
+            isSelf
+          },
+          profilePhotos: photosTemp
+        })
+      } else {
+        // 云函数失败，使用本地数据
+        console.log('云函数返回失败，使用本地数据')
+        this.setData({
+          showProfileModal: true,
+          profileUser: {
+            userID: user.userID,
+            nickName: user.nickName || '微信用户',
+            university: user.university || '未设置',
+            major: user.major || '未设置',
+            bio: '',
+            customAvatar: cachedAvatar,
+            isSelf
+          },
+          profilePhotos: []
         })
       }
+    } catch (e) {
+      wx.hideLoading()
+      console.error('获取用户资料失败:', e)
+      // 使用本地数据
+      this.setData({
+        showProfileModal: true,
+        profileUser: {
+          userID: user.userID,
+          nickName: user.nickName || '微信用户',
+          university: user.university || '未设置',
+          major: user.major || '未设置',
+          bio: '',
+          customAvatar: cachedAvatar,
+          isSelf
+        },
+        profilePhotos: []
+      })
     }
   },
 
@@ -448,6 +543,13 @@ Page({
     wx.previewImage({
       current: current,
       urls: this.data.profilePhotos
+    })
+  },
+
+  // 字体大小设置
+  onFontSizeSettings() {
+    wx.navigateTo({
+      url: '/pages/font-size/font-size'
     })
   }
 })

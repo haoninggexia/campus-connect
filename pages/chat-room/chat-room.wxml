@@ -9,25 +9,39 @@
     <view class="more-btn">
       <image src="/image/more.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
     </view>
+    <view class="font-size-btn" bindtap="onFontSizeSettings">
+      <text class="settings-text">A</text>
+    </view>
   </view>
 
   <!-- 消息区域 -->
-  <view class="chat-messages" wx:if="{{messagesLoaded || messages.length > 0}}">
+  <view class="chat-messages" wx:if="{{messagesLoaded || messages.length > 0}}" style="--chat-font-size: {{fontSize}}rpx">
     <block wx:for="{{messages}}" wx:key="timestamp" wx:for-item="msg" wx:for-index="index">
       <view class="message-item {{msg.from.userID === userInfo.userID ? 'self' : 'other'}}">
-        <image class="avatar" wx:if="{{msg.from.userID !== userInfo.userID}}" 
-               src="{{msg.from.customAvatar || msg.from.avatarUrl || otherUser.avatarUrl}}" 
-               mode="aspectFill" 
-               binderror="onAvatarError"></image>
-        <view class="message-bubble">
+        <image class="avatar clickable" wx:if="{{msg.from.userID !== userInfo.userID}}"
+               src="{{cachedTempAvatars[msg.from.userID] || msg.from.customAvatar || msg.from.avatarUrl || otherUser.avatarUrl}}"
+               mode="aspectFill"
+               binderror="onAvatarError"
+               bindtap="onViewProfile"
+               data-user="{{msg.from}}"></image>
+        <view class="message-bubble" style="font-size: {{fontSize}}rpx">
           {{msg.content}}
         </view>
-        <image class="avatar" wx:if="{{msg.from.userID === userInfo.userID}}" 
-               src="{{userInfo.avatarUrl}}" 
-               mode="aspectFill" 
-               binderror="onAvatarError"></image>
+        <image class="avatar clickable" wx:if="{{msg.from.userID === userInfo.userID}}"
+               src="{{cachedTempAvatars[userInfo.userID] || userInfo.customAvatar || userInfo.avatarUrl || 'https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132'}}"
+               mode="aspectFill"
+               binderror="onAvatarError"
+               bindtap="onViewProfile"
+               data-user="{{userInfo}}"></image>
       </view>
     </block>
+  </view>
+
+  <!-- 调试信息 -->
+  <view class="debug-info" wx:if="{{false}}">
+    <text>用户ID: {{userInfo.userID}}</text>
+    <text>头像缓存: {{cachedTempAvatars}}</text>
+    <text>自己头像: {{cachedTempAvatars[userInfo.userID] || userInfo.avatarUrl}}</text>
   </view>
 
   <!-- 空状态提示 -->
@@ -53,39 +67,11 @@
 </view>
 
 <!-- 用户资料弹窗 -->
-<view class="user-profile" wx:if="{{showProfileModal}}">
-  <view class="profile-mask" bindtap="onCloseProfileModal"></view>
-  <view class="profile-content">
-    <view class="profile-header">
-      <image class="profile-avatar" src="{{profileUser.customAvatar || profileUser.avatarUrl}}" mode="aspectFill"></image>
-      <text class="profile-name">{{profileUser.nickName}}</text>
-      <text class="profile-id">{{profileUser.userID}}</text>
-    </view>
-    
-    <view class="profile-body">
-      <view class="info-row" wx:if="{{profileUser.university}}">
-        <text class="info-label">大学：</text>
-        <text class="info-value">{{profileUser.university}}</text>
-      </view>
-      <view class="info-row" wx:if="{{profileUser.major}}">
-        <text class="info-label">专业：</text>
-        <text class="info-value">{{profileUser.major}}</text>
-      </view>
-    </view>
-    
-    <view class="profile-actions">
-      <button class="action-btn" bindtap="onCloseProfileModal">取消</button>
-      <button class="action-btn primary" bindtap="onAddFriend">添加好友</button>
-    </view>
-  </view>
-</view>
-
-<!-- 用户资料弹窗 -->
 <view class="profile-modal" wx:if="{{showProfileModal}}">
   <view class="profile-mask" bindtap="onCloseProfileModal"></view>
   <view class="profile-content">
     <view class="profile-header">
-      <image class="profile-avatar" src="{{profileUser.customAvatar || profileUser.avatarUrl}}" mode="aspectFill"></image>
+      <image class="profile-avatar" src="{{profileUser.customAvatar || profileUser.avatarUrl}}" mode="aspectFill" binderror="onAvatarError"></image>
       <text class="profile-name">{{profileUser.nickName}}</text>
     </view>
 
@@ -109,11 +95,11 @@
       <view class="photos-title">精选照片（{{profilePhotos.length}}张）</view>
       <view class="photos-grid">
         <view class="photo-item" wx:for="{{profilePhotos}}" wx:key="index">
-          <image 
-            class="photo-image" 
-            src="{{item}}" 
-            mode="aspectFill" 
-            bindtap="onPreviewPhoto" 
+          <image
+            class="photo-image"
+            src="{{item}}"
+            mode="aspectFill"
+            bindtap="onPreviewPhoto"
             data-url="{{item}}"
           ></image>
         </view>
@@ -121,6 +107,7 @@
     </view>
 
     <view class="profile-footer">
+      <button wx:if="{{!profileUser.isSelf}}" class="add-friend-btn" bindtap="onAddFriend">添加好友</button>
       <button class="close-btn" bindtap="onCloseProfileModal">关闭</button>
     </view>
   </view>

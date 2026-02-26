@@ -21,24 +21,36 @@ exports.main = async (event, context) => {
     
     // 为用户头像生成临时下载链接
     const processUser = async (user) => {
-      if (!user) return user
-      
+      if (!user) {
+        console.log('用户为空，跳过处理')
+        return null
+      }
+
       const processedUser = { ...user }
-      
+
+      console.log('处理用户头像，用户ID:', user.userID, '是否有自定义头像:', !!user.customAvatar, '自定义头像:', user.customAvatar)
+
       // 如果有自定义头像，获取临时链接
       if (user.customAvatar) {
         try {
           const tempUrl = await cloud.getTempFileURL({
             fileList: [user.customAvatar]
           })
+          console.log('头像临时链接结果:', user.userID, tempUrl)
+
           if (tempUrl.fileList && tempUrl.fileList[0] && tempUrl.fileList[0].tempFileURL) {
             processedUser.customAvatarTemp = tempUrl.fileList[0].tempFileURL
+            console.log('头像临时链接设置成功:', user.userID, processedUser.customAvatarTemp)
+          } else {
+            console.log('头像临时链接获取失败，返回数据:', tempUrl)
           }
         } catch (e) {
-          console.error('获取头像临时链接失败:', e)
+          console.error('获取头像临时链接失败:', user.userID, e)
         }
+      } else {
+        console.log('用户没有自定义头像:', user.userID)
       }
-      
+
       return processedUser
     }
     

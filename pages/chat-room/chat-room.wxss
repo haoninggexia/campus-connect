@@ -41,6 +41,21 @@
   justify-content: center;
 }
 
+.chat-header .font-size-btn {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10rpx;
+}
+
+.chat-header .settings-text {
+  font-size: 28rpx;
+  color: #000;
+  font-weight: bold;
+}
+
 /* 消息区域 - 微信风格，完全填充可用空间 */
 .chat-messages {
   flex: 1;
@@ -84,9 +99,9 @@
   height: 40rpx;
 }
 
-/* 消息气泡字体大小优化 */
+/* 消息气泡字体大小优化 - 使用动态字体大小 */
 .message-bubble {
-  font-size: 30rpx;
+  font-size: var(--chat-font-size, 36rpx);
 }
 
 /* 消息项目 - 微信风格 */
@@ -107,6 +122,17 @@
   height: 44rpx;
   border-radius: 50%;
   background-color: #f0f0f0;
+}
+
+/* 可点击的头像 */
+.avatar.clickable {
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.avatar.clickable:active {
+  opacity: 1;
 }
 
 .message-item.other .message-bubble {
@@ -305,3 +331,165 @@
 }
 
 /* 生产环境移除调试边框 */
+
+/* 用户资料模态框 */
+.profile-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.profile-content {
+  position: relative;
+  width: 85%;
+  max-width: 600rpx;
+  max-height: 80vh;
+  background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.profile-header {
+  padding: 40rpx 30rpx;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.profile-header .profile-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.8);
+  margin-bottom: 16rpx;
+}
+
+.profile-header .profile-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  display: block;
+}
+
+.profile-info {
+  padding: 30rpx;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 24rpx;
+  align-items: flex-start;
+}
+
+.info-label {
+  width: 100rpx;
+  color: #666;
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.info-value {
+  flex: 1;
+  color: #333;
+  font-size: 28rpx;
+  word-wrap: break-word;
+}
+
+.info-value.bio-text {
+  line-height: 1.6;
+}
+
+/* 精选照片 */
+.photos-section {
+  padding: 0 30rpx 30rpx;
+  max-height: 30vh;
+  overflow-y: auto;
+}
+
+.photos-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.photo-item {
+  aspect-ratio: 1;
+  border-radius: 8rpx;
+  overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 8rpx;
+  transition: opacity 0.2s;
+}
+
+.photo-image:active {
+  opacity: 0.8;
+}
+
+/* 模态框底部按钮 */
+.profile-footer {
+  padding: 20rpx 30rpx;
+  border-top: 1rpx solid #e5e5e5;
+  display: flex;
+  gap: 16rpx;
+}
+
+.close-btn, .add-friend-btn {
+  flex: 1;
+  padding: 20rpx 0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.close-btn {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.add-friend-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+

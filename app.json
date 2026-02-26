@@ -9,8 +9,9 @@
     "pages/chat-input/chat-input",
     "pages/friends/friends",
     "pages/rooms-list/rooms-list",
-    "pages/chat-room/chat-room"
-  ],
+"pages/chat-room/chat-room",
+    "pages/font-size/font-size"
+    ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",

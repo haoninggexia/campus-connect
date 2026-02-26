@@ -1,0 +1,75 @@
+<!--pages/font-size/font-size.wxml-->
+<view class="font-size-container" style="--preview-font-size: {{currentSize}}rpx">
+  <!-- 标题栏 -->
+  <view class="header">
+    <view class="back-btn" bindtap="onClose">
+      <image src="/image/back.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
+    </view>
+    <view class="title">字体大小</view>
+    <view class="complete-btn" bindtap="onComplete">完成</view>
+  </view>
+
+  <!-- 预览区域 -->
+  <view class="preview-area">
+    <view class="preview-messages">
+      <view class="preview-message other">
+        <image class="preview-avatar" src="https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132" mode="aspectFill"></image>
+        <view class="preview-bubble">
+          拖动下面的滑块，可设置字体大小
+        </view>
+      </view>
+      
+      <view class="preview-message self">
+        <view class="preview-bubble">
+          设置后，会改变聊天和朋友圈的字体大小。如果在使用过程中存在问题或意见，可反馈给微信团队
+        </view>
+        <image class="preview-avatar" src="https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+
+  <!-- 滑块控制区域 -->
+  <view class="slider-area">
+    <view class="slider-labels">
+      <text class="label">小</text>
+      <text class="label">中</text>
+      <text class="label">大</text>
+      <text class="label">特大</text>
+    </view>
+    
+    <view class="slider-container">
+      <slider
+        bindinput="onSliderInput"
+        bindchange="onSliderChange"
+        value="{{currentLevel}}"
+        min="0"
+        max="7"
+        step="1"
+        activeColor="#07c160"
+        backgroundColor="#e5e5e5"
+      />
+
+      <!-- 档位指示器 -->
+      <view class="level-indicators">
+        <view class="indicator" wx:for="{{[0,1,2,3,4,5,6,7]}}" wx:key="index"
+              style="left: {{(index / 7) * 100}}%; background-color: {{index === currentLevel ? '#07c160' : '#ffffff'}}; border-color: {{index === currentLevel ? '#07c160' : '#e5e5e5'}};">
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 当前档位显示 -->
+  <view class="current-level">
+    <text class="level-text">当前档位：</text>
+    <text class="level-name">{{fontSizeLevels[currentLevel].name}}</text>
+    <text class="level-size">({{currentSize}}rpx)</text>
+  </view>
+
+  <!-- 调试信息 -->
+  <view class="debug-info">
+    <text class="debug-title">调试信息：</text>
+    <text class="debug-item">档位: {{currentLevel}}</text>
+    <text class="debug-item">大小: {{currentSize}}rpx</text>
+    <text class="debug-item">名称: {{fontSizeLevels[currentLevel].name}}</text>
+  </view>
+</view>

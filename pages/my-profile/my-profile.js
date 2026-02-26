@@ -51,8 +51,51 @@ Page({
   async loadUserProfile() {
     try {
       console.log('开始加载用户资料，userID:', this.data.userInfo.userID);
-      
-      // 直接从数据库读取，不依赖云函数
+
+      // 调用云函数获取临时下载链接
+      const res = await wx.cloud.callFunction({
+        name: 'getUserProfile',
+        data: {
+          userID: this.data.userInfo.userID
+        }
+      });
+
+      if (res.result.code === 0) {
+        const profile = res.result.data;
+
+        console.log('从云函数获取到用户资料:', profile);
+        console.log('临时头像链接:', profile.customAvatarTemp);
+        console.log('临时照片链接:', profile.photosTemp);
+
+        // 使用临时下载链接
+        this.setData({
+          selectedPhotos: profile.photosTemp || [],
+          'userInfo.customAvatar': profile.customAvatarTemp,
+          'userInfo.bio': profile.bio,
+          'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
+          bioLength: (profile.bio || '').length
+        });
+
+        console.log('用户资料设置完成，照片数量:', profile.photosTemp ? profile.photosTemp.length : 0);
+      } else {
+        console.log('云函数返回错误:', res.result.msg);
+        // 备用方案：直接从数据库读取
+        await this.loadUserProfileFromDB();
+      }
+    } catch (e) {
+      console.error('调用云函数失败:', e);
+      // 备用方案：直接从数据库读取
+      await this.loadUserProfileFromDB();
+    }
+  },
+
+  /**
+   * 备用方案：直接从数据库读取用户资料
+   */
+  async loadUserProfileFromDB() {
+    try {
+      console.log('使用备用方案，从数据库读取用户资料');
+
       const dbRes = await wx.cloud.database().collection('users_profile')
         .where({
           userID: this.data.userInfo.userID
@@ -61,10 +104,10 @@ Page({
 
       if (dbRes.data && dbRes.data.length > 0) {
         const profile = dbRes.data[0];
-        
+
         console.log('从数据库读取到用户资料:', profile);
         console.log('照片数据:', profile.photos);
-        
+
         // 检查照片数据
         if (profile.photos) {
           console.log('照片数组长度:', profile.photos.length);
@@ -72,16 +115,16 @@ Page({
             console.log(`照片${index}:`, photo);
           });
         }
-        
+
         this.setData({
           selectedPhotos: profile.photos || [],
           'userInfo.customAvatar': profile.customAvatar,
           'userInfo.bio': profile.bio,
-          'userInfo.nickName': profile.nickName || this.data.userInfo.nickName, // 加载昵称
+          'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
           bioLength: (profile.bio || '').length
         });
-        
-        console.log('用户资料设置完成');
+
+        console.log('用户资料设置完成（使用数据库数据）');
       } else {
         console.log('数据库中未找到用户资料');
         // 初始化空数组
