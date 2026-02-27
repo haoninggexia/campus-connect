@@ -84,6 +84,10 @@
         <text class="info-label">专业：</text>
         <text class="info-value">{{profileUser.major}}</text>
       </view>
+      <view class="info-item" wx:if="{{profileUser.grade}}">
+        <text class="info-label">年级：</text>
+        <text class="info-value">{{profileUser.grade}}</text>
+      </view>
       <view class="info-item" wx:if="{{profileUser.bio}}">
         <text class="info-label">简介：</text>
         <text class="info-value bio-text">{{profileUser.bio}}</text>

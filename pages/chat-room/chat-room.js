@@ -466,12 +466,14 @@ Page({
         const nickName = profile.nickName || user.nickName || '微信用户'
         const university = profile.university || user.university || '未设置'
         const major = profile.major || user.major || '未设置'
+        const grade = profile.grade || user.grade || ''
         const customAvatar = profile.customAvatarTemp || cachedAvatar
 
         console.log('用户资料:', {
           nickName,
           university,
           major,
+          grade,
           bio,
           photosCount: photosTemp.length,
           customAvatar
@@ -485,6 +487,7 @@ Page({
             nickName,
             university,
             major,
+            grade,
             bio,
             customAvatar,
             isSelf
@@ -501,6 +504,7 @@ Page({
             nickName: user.nickName || '微信用户',
             university: user.university || '未设置',
             major: user.major || '未设置',
+            grade: user.grade || '',
             bio: '',
             customAvatar: cachedAvatar,
             isSelf
@@ -511,20 +515,21 @@ Page({
     } catch (e) {
       wx.hideLoading()
       console.error('获取用户资料失败:', e)
-      // 使用本地数据
-      this.setData({
-        showProfileModal: true,
-        profileUser: {
-          userID: user.userID,
-          nickName: user.nickName || '微信用户',
-          university: user.university || '未设置',
-          major: user.major || '未设置',
-          bio: '',
-          customAvatar: cachedAvatar,
-          isSelf
-        },
-        profilePhotos: []
-      })
+        // 使用本地数据
+        this.setData({
+          showProfileModal: true,
+          profileUser: {
+            userID: user.userID,
+            nickName: user.nickName || '微信用户',
+            university: user.university || '未设置',
+            major: user.major || '未设置',
+            grade: user.grade || '',
+            bio: '',
+            customAvatar: cachedAvatar,
+            isSelf
+          },
+          profilePhotos: []
+        })
     }
   },
 

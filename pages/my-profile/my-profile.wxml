@@ -39,12 +39,19 @@
         <text class="value">{{userInfo.major}}</text>
       </view>
 
+      <view class="info-row">
+        <text class="label">年级</text>
+        <picker mode="selector" range="{{gradeOptions}}" bindchange="onGradeChange">
+          <view class="value highlight">{{userInfo.grade || '请选择年级'}}</view>
+        </picker>
+      </view>
+
       <view class="info-row vertical">
         <text class="label">个人简介</text>
-        <textarea 
-          class="bio-input" 
-          placeholder="介绍一下自己..." 
-          value="{{userInfo.bio || ''}}" 
+        <textarea
+          class="bio-input"
+          placeholder="介绍一下自己..."
+          value="{{userInfo.bio || ''}}"
           bindinput="onBioInput"
           maxlength="200"
         ></textarea>
