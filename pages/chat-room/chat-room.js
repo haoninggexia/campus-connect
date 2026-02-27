@@ -17,7 +17,10 @@ Page({
     cachedTempAvatars: {}, // 缓存用户的临时下载链接，避免闪烁
     cachedAvatarTimestamps: {}, // 缓存头像的时间戳，用于定期更新
     messagesLoaded: false, // 标志：消息已加载
-    fontSize: 36 // 默认字体大小
+    fontSize: 36, // 默认字体大小
+    myLocation: null, // 当前用户的位置（从app获取）
+    otherLocation: null, // 对方的位置
+    distance: '' // 双方之间的距离
   },
 
   onLoad(options) {
@@ -33,6 +36,9 @@ Page({
       userInfo
     })
 
+    // 获取最新位置（每次进入聊天室都更新）
+    this.getCurrentLocation()
+
     // 加载用户自定义资料
     this.loadUserProfiles()
 
@@ -41,6 +47,27 @@ Page({
 
     // 开始轮询消息
     this.startPolling()
+  },
+
+  // 获取当前位置
+  getCurrentLocation() {
+    wx.getLocation({
+      type: 'gcj02',
+      altitude: false,
+      success: (res) => {
+        const location = {
+          latitude: res.latitude,
+          longitude: res.longitude
+        }
+        this.setData({
+          myLocation: location
+        })
+        console.log('获取最新位置成功:', location)
+      },
+      fail: (err) => {
+        console.log('获取位置失败:', err)
+      }
+    })
   },
 
   /**
@@ -120,6 +147,38 @@ Page({
     })
   },
 
+  // 计算两点之间的距离（单位：千米）
+  calculateDistance(lat1, lon1, lat2, lon2) {
+    if (!lat1 || !lon1 || !lat2 || !lon2) {
+      return null
+    }
+
+    const R = 6371 // 地球半径，单位：千米
+    const dLat = this.toRad(lat2 - lat1)
+    const dLon = this.toRad(lon2 - lon1)
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    const distance = R * c
+
+    return distance.toFixed(1) // 保留一位小数
+  },
+
+  // 角度转弧度
+  toRad(deg) {
+    return deg * (Math.PI / 180)
+  },
+
+  // 格式化距离显示
+  formatDistance(distance) {
+    if (!distance) return ''
+    return `距离 ${distance}km`
+  },
+
   // 开始轮询
   startPolling() {
     this.loadMessages()
@@ -163,6 +222,7 @@ Page({
 
   // 加载消息
   async loadMessages() {
+    console.log('loadMessages 被调用，roomId:', this.data.roomId)
     try {
       const res = await wx.cloud.callFunction({
         name: 'getMessages',
@@ -171,8 +231,11 @@ Page({
         }
       })
 
+      console.log('getMessages 云函数返回:', res.result)
+
       if (res.result.code === 0) {
         const data = res.result.data
+        console.log('消息数据，消息数量:', data.messages ? data.messages.length : 0)
 
         // 确定对方用户信息
         let otherUser = null
@@ -228,6 +291,38 @@ Page({
           }
           return newMsg
         })
+
+        // 计算距离
+        if (otherUser && this.data.myLocation && !this.data.distance) {
+          console.log('开始计算距离，对方用户:', otherUser.userID, '我的位置:', this.data.myLocation, '消息数量:', data.messages.length)
+          // 打印所有消息的发送者和位置信息（使用JSON.stringify完整输出）
+          console.log('所有消息详情:', JSON.stringify(data.messages.map(msg => ({
+            fromUserID: msg.from?.userID,
+            hasLocation: !!msg.location,
+            location: msg.location
+          })), null, 2))
+          // 从最近的消息中获取对方位置
+          const lastOtherMessage = [...data.messages].reverse().find(msg =>
+            msg.from?.userID === otherUser.userID && msg.location && msg.location.latitude && msg.location.longitude
+          )
+
+          console.log('对方的最后一条消息:', lastOtherMessage ? '存在' : '不存在')
+
+          if (lastOtherMessage && lastOtherMessage.location) {
+            const calculatedDistance = this.calculateDistance(
+              this.data.myLocation.latitude,
+              this.data.myLocation.longitude,
+              lastOtherMessage.location.latitude,
+              lastOtherMessage.location.longitude
+            )
+            console.log('计算双方距离:', calculatedDistance, 'km')
+            this.setData({
+              distance: this.formatDistance(calculatedDistance)
+            })
+          } else {
+            console.log('对方暂未发送位置信息')
+          }
+        }
 
         // 按照时间戳升序排序消息（最早的在最前，最新的在最后）
         messages.sort((a, b) => {
@@ -289,7 +384,7 @@ Page({
     }
 
     wx.showLoading({ title: '发送中...' })
-    
+
     try {
       const res = await wx.cloud.callFunction({
         name: 'sendMessage',
@@ -298,7 +393,8 @@ Page({
           message: {
             from: this.data.userInfo,
             content: content,
-            type: 'text'
+            type: 'text',
+            location: this.data.myLocation // 添加位置信息
           }
         }
       })

@@ -14,6 +14,7 @@ exports.main = async (event, context) => {
   const { roomId, message } = event
 
   console.log('sendMessage收到参数:', { roomId, message })
+  console.log('位置信息详情:', message.location)
 
   try {
     const msgData = {
@@ -21,6 +22,14 @@ exports.main = async (event, context) => {
       content: message.content,
       sendTime: new Date(),
       type: message.type || 'text'
+    }
+
+    // 如果有位置信息，添加到消息中
+    if (message.location && message.location.latitude && message.location.longitude) {
+      msgData.location = message.location
+      console.log('位置信息已添加到消息:', msgData.location)
+    } else {
+      console.log('位置信息无效或不存在')
     }
 
     console.log('准备添加消息:', msgData)

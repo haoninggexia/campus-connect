@@ -56,6 +56,23 @@
   font-weight: bold;
 }
 
+/* 顶部右侧容器 */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+/* 距离显示 */
+.distance-display {
+  font-size: 24rpx;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 6rpx 12rpx;
+  border-radius: 20rpx;
+  white-space: nowrap;
+}
+
 /* 消息区域 - 微信风格，完全填充可用空间 */
 .chat-messages {
   flex: 1;

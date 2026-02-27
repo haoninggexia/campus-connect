@@ -6,11 +6,19 @@
       <image src="/image/back.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
     </view>
     <view class="title">{{otherUser.nickName || '聊天室'}}</view>
-    <view class="more-btn">
-      <image src="/image/more.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
-    </view>
-    <view class="font-size-btn" bindtap="onFontSizeSettings">
-      <text class="settings-text">A</text>
+    <view class="header-right">
+      <view class="distance-display" wx:if="{{distance}}">
+        📍 {{distance}}
+      </view>
+      <view class="distance-display" wx:elif="{{!distance && messages.length > 0}}">
+        📍 等待对方位置...
+      </view>
+      <view class="more-btn">
+        <image src="/image/more.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
+      </view>
+      <view class="font-size-btn" bindtap="onFontSizeSettings">
+        <text class="settings-text">A</text>
+      </view>
     </view>
   </view>
 

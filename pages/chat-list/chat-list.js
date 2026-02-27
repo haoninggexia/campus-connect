@@ -13,15 +13,7 @@ Page({
         // 当前用户信息
         myUserID: '',
         myNickName: '',
-        myAvatar: '',
-        // 临时测试好友数据
-        testFriend: {
-            friendId: 'test_user_002',
-            friendName: '测试用户',
-            friendHeadUrl: '/image/other_head.jpg',
-            timeStr: '14:30',
-            content: '点击进入聊天测试'
-        }
+        myAvatar: ''
     },
 
     /**
@@ -49,16 +41,6 @@ Page({
     onToOnlineChat() {
         wx.navigateTo({
             url: '/pages/rooms-list/rooms-list'
-        });
-    },
-
-    /**
-     * 测试聊天功能（临时）
-     */
-    onTestChat() {
-        const friend = this.data.testFriend;
-        wx.navigateTo({
-            url: `../chat-tim/chat-tim?friend=${encodeURIComponent(JSON.stringify(friend))}`
         });
     },
 
