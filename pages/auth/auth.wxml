@@ -13,6 +13,13 @@
       </view>
     </picker>
 
+    <picker mode="selector" range="{{grades}}" bindchange="onGradeChange">
+      <view class="picker {{grade ? '' : 'placeholder'}}">
+        {{grade || '选择你的年级'}}
+        <text class="arrow">></text>
+      </view>
+    </picker>
+
     <input
       class="input"
       placeholder="填写你的专业"

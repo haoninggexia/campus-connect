@@ -119,7 +119,6 @@
     </view>
 
     <view class="profile-footer">
-      <button wx:if="{{!profileUser.isSelf}}" class="add-friend-btn" bindtap="onAddFriend">添加好友</button>
       <button class="close-btn" bindtap="onCloseProfileModal">关闭</button>
     </view>
   </view>

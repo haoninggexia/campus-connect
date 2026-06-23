@@ -3,13 +3,11 @@
     "pages/auth/auth",
     "pages/chat-list/chat-list",
     "pages/chat-tim/chat-tim",
-    "pages/friends-tim/friends-tim",
     "pages/my-profile/my-profile",
     "pages/chat/chat",
     "pages/chat-input/chat-input",
-    "pages/friends/friends",
     "pages/rooms-list/rooms-list",
-"pages/chat-room/chat-room",
+    "pages/chat-room/chat-room",
     "pages/font-size/font-size"
     ],
   "window": {
@@ -32,12 +30,6 @@
         "text": "会话列表",
         "iconPath": "image/tabbar/chat_list_unselected.png",
         "selectedIconPath": "image/tabbar/chat_list.png"
-      },
-      {
-        "pagePath": "pages/friends-tim/friends-tim",
-        "text": "好友列表",
-        "iconPath": "image/tabbar/friend_unselected.png",
-        "selectedIconPath": "image/tabbar/friend.png"
       },
       {
         "pagePath": "pages/my-profile/my-profile",

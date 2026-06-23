@@ -7,7 +7,9 @@ Page({
       '中国人民大学', '北京师范大学', '同济大学', '南开大学',
       '厦门大学', '天津大学', '东南大学', '四川大学'
     ],
+    grades: ['2015级', '2016级', '2017级', '2018级', '2019级', '2020级', '2021级', '2022级', '2023级', '2024级', '2025级', '2026级', '2027级'],
     university: '',
+    grade: '',
     major: ''
   },
 
@@ -28,6 +30,12 @@ Page({
     })
   },
 
+  onGradeChange(e) {
+    this.setData({
+      grade: this.data.grades[e.detail.value]
+    })
+  },
+
   onMajorInput(e) {
     this.setData({
       major: e.detail.value
@@ -38,6 +46,11 @@ Page({
     // 1. 表单验证
     if (!this.data.university) {
       wx.showToast({ title: '请选择大学', icon: 'none' })
+      return
+    }
+
+    if (!this.data.grade) {
+      wx.showToast({ title: '请选择年级', icon: 'none' })
       return
     }
 
@@ -85,6 +98,7 @@ Page({
             avatarUrl: userInfo.avatarUrl,
             university: this.data.university,
             major: this.data.major,
+            grade: this.data.grade, // 添加年级
             updateTime: new Date()
           }
         })
@@ -114,7 +128,8 @@ Page({
         nickName: userInfo.nickName,
         avatarUrl: userInfo.avatarUrl,
         university: this.data.university,
-        major: this.data.major
+        major: this.data.major,
+        grade: this.data.grade // 添加年级
       }
       wx.setStorageSync('user_info', userCache)
 
