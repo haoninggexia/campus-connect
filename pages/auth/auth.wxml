@@ -1,26 +1,11 @@
 <view class="auth-container">
   <view class="header">
     <image src="/image/my_head.jpeg" class="logo" mode="aspectFit"></image>
-    <text class="title">同校交友</text>
-    <text class="subtitle">找到你的同校同学</text>
+    <text class="title">校有磁力</text>
+    <text class="subtitle">山东中医药大学（槐荫校区）</text>
   </view>
 
   <view class="form">
-    <picker mode="selector" range="{{universities}}" bindchange="onUniversityChange">
-      <view class="picker {{university ? '' : 'placeholder'}}">
-        {{university || '选择你的大学'}}
-        <text class="arrow">></text>
-      </view>
-    </picker>
-
-    <input
-      class="input"
-      placeholder="填写你的专业"
-      placeholder-class="placeholder-text"
-      value="{{major}}"
-      bindinput="onMajorInput"
-    />
-
     <button
       class="btn-login"
       open-type="getUserInfo"

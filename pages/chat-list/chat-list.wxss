@@ -49,4 +49,195 @@
   font-weight: 300;
 }
 
+/* 在线聊天室区域 */
+.online-chat-section {
+  background: #f5f5f5;
+}
+
+/* 大学选择器 */
+.university-selector {
+  background: #fff;
+  padding: 20rpx 0;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.uni-scroll {
+  white-space: nowrap;
+  padding: 0 20rpx;
+}
+
+.uni-item {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+  margin-right: 20rpx;
+  background: #f0f0f0;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.uni-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.4);
+}
+
+/* 创建房间区域 */
+.create-room-section {
+  background: #fff;
+  margin: 20rpx;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.create-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50rpx;
+  height: 90rpx;
+  line-height: 90rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.4);
+}
+
+.tip-text {
+  text-align: center;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 20rpx;
+}
+
+/* 房间列表 */
+.rooms-section {
+  margin: 0 20rpx 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding: 0 10rpx;
+}
+
+.refresh-tip {
+  font-size: 24rpx;
+  color: #667eea;
+  margin-left: 20rpx;
+}
+
+.rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.room-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+}
+
+.room-item:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.room-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.room-status {
+  font-size: 24rpx;
+  font-weight: bold;
+  padding: 8rpx 20rpx;
+  border-radius: 30rpx;
+  background: rgba(7, 193, 96, 0.1);
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.user-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: #f0f0f0;
+}
+
+.user-name {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.empty-tip {
+  font-size: 26rpx;
+  color: #999;
+  text-align: center;
+  padding: 20rpx 0;
+}
+
+.room-time {
+  font-size: 22rpx;
+  color: #999;
+  border-top: 1rpx solid #f0f0f0;
+  padding-top: 20rpx;
+}
+
+/* 分隔线 */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  background: #f5f5f5;
+}
+
+.divider text {
+  font-size: 24rpx;
+  color: #999;
+  padding: 0 20rpx;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1rpx;
+  background: #ddd;
+}
+
+.divider::before {
+  margin-right: 20rpx;
+}
+
+.divider::after {
+  margin-left: 20rpx;
+}
+
 @import "view/chat-item.wxss";

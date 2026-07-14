@@ -1,14 +1,5 @@
 Page({
   data: {
-    universities: [
-      '北京大学', '清华大学', '复旦大学', '上海交通大学',
-      '浙江大学', '南京大学', '武汉大学', '华中科技大学',
-      '中山大学', '西安交通大学', '哈尔滨工业大学',
-      '中国人民大学', '北京师范大学', '同济大学', '南开大学',
-      '厦门大学', '天津大学', '东南大学', '四川大学'
-    ],
-    university: '',
-    major: ''
   },
 
   onLoad(options) {
@@ -22,31 +13,8 @@ Page({
     }
   },
 
-  onUniversityChange(e) {
-    this.setData({
-      university: this.data.universities[e.detail.value]
-    })
-  },
-
-  onMajorInput(e) {
-    this.setData({
-      major: e.detail.value
-    })
-  },
-
   async onLogin(e) {
-    // 1. 表单验证
-    if (!this.data.university) {
-      wx.showToast({ title: '请选择大学', icon: 'none' })
-      return
-    }
-
-    if (!this.data.major.trim()) {
-      wx.showToast({ title: '请填写专业', icon: 'none' })
-      return
-    }
-
-    // 2. 获取微信用户信息
+    // 1. 获取微信用户信息
     const { userInfo } = e.detail
     if (!userInfo) {
       wx.showToast({ title: '请授权登录', icon: 'none' })
@@ -83,8 +51,6 @@ Page({
           data: {
             nickName: userInfo.nickName,
             avatarUrl: userInfo.avatarUrl,
-            university: this.data.university,
-            major: this.data.major,
             updateTime: new Date()
           }
         })
@@ -99,8 +65,6 @@ Page({
             userID,
             nickName: userInfo.nickName,
             avatarUrl: userInfo.avatarUrl,
-            university: this.data.university,
-            major: this.data.major,
             createTime: new Date()
           }
         })
@@ -112,9 +76,7 @@ Page({
       const userCache = {
         userID,
         nickName: userInfo.nickName,
-        avatarUrl: userInfo.avatarUrl,
-        university: this.data.university,
-        major: this.data.major
+        avatarUrl: userInfo.avatarUrl
       }
       wx.setStorageSync('user_info', userCache)
 

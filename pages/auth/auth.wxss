@@ -22,7 +22,7 @@
 
 .title {
   display: block;
-  font-size: 56rpx;
+  font-size: 80rpx;
   font-weight: bold;
   color: white;
   margin: 40rpx 0 20rpx;
@@ -30,7 +30,7 @@
 }
 
 .subtitle {
-  font-size: 28rpx;
+  font-size: 44rpx;
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -49,7 +49,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 30rpx;
+  font-size: 46rpx;
   color: #333;
   min-height: 90rpx;
 }
@@ -64,7 +64,7 @@
 
 .arrow {
   color: #999;
-  font-size: 32rpx;
+  font-size: 40rpx;
 }
 
 .btn-login {
@@ -72,7 +72,7 @@
   color: white;
   border-radius: 16rpx;
   margin-top: 50rpx;
-  font-size: 32rpx;
+  font-size: 48rpx;
   font-weight: bold;
   border: none;
 }
@@ -84,7 +84,7 @@
 .tips {
   text-align: center;
   margin-top: 40rpx;
-  font-size: 24rpx;
+  font-size: 36rpx;
   color: #999;
 }
 

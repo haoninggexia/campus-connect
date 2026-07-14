@@ -27,7 +27,7 @@
     "list": [
       {
         "pagePath": "pages/chat-list/chat-list",
-        "text": "会话列表",
+        "text": "聊天室",
         "iconPath": "image/tabbar/chat_list_unselected.png",
         "selectedIconPath": "image/tabbar/chat_list.png"
       },
