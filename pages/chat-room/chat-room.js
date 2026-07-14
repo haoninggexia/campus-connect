@@ -423,54 +423,6 @@ Page({
     }
   },
 
-  // 添加好友
-  onAddFriend() {
-    if (!this.data.otherUser) {
-      wx.showToast({
-        title: '对方已离开',
-        icon: 'none'
-      })
-      return
-    }
-
-    wx.showModal({
-      title: '添加好友',
-      content: `确定要添加 ${this.data.otherUser.nickName} 为好友吗？`,
-      success: async (res) => {
-        if (res.confirm) {
-          try {
-            const result = await wx.cloud.callFunction({
-              name: 'friendOperation',
-              data: {
-                action: 'addFriend',
-                friendID: this.data.otherUser.userID,
-                friendRemark: this.data.otherUser.nickName
-              }
-            })
-
-            if (result.result.code === 0) {
-              wx.showToast({
-                title: '好友请求已发送',
-                icon: 'success'
-              })
-            } else {
-              wx.showToast({
-                title: result.result.msg || '发送失败',
-                icon: 'none'
-              })
-            }
-          } catch (e) {
-            console.error('添加好友失败', e)
-            wx.showToast({
-              title: '添加失败',
-              icon: 'none'
-            })
-          }
-        }
-      }
-    })
-  },
-
   // 退出房间
   onLeave() {
     wx.showModal({

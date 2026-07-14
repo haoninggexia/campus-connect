@@ -4,7 +4,7 @@ import AppIMDelegate from "./delegate/app-im-delegate";
 App({
     globalData: {
         userInfo: {},
-        cloudEnv: 'cloud1-9g55gy2x541c7f64', // ⚠️ 请替换为你的云开发环境ID
+        cloudEnv: 'cloud1-5gxeqv258148f9d9', // ⚠️ 请替换为你的云开发环境ID
         db: null,
         cloud: null,
         userLocation: null // 用户位置信息

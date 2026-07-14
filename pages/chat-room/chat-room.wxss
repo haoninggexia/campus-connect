@@ -492,21 +492,13 @@
   gap: 16rpx;
 }
 
-.close-btn, .add-friend-btn {
+.close-btn {
   flex: 1;
   padding: 20rpx 0;
   border-radius: 8rpx;
   font-size: 28rpx;
   border: none;
-}
-
-.close-btn {
   background-color: #f5f5f5;
   color: #333;
-}
-
-.add-friend-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
 }
 

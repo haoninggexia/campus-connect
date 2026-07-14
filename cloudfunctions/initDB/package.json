@@ -1,0 +1,11 @@
+{
+  "name": "initDB",
+  "version": "1.0.0",
+  "description": "初始化数据库集合的云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
