@@ -75,19 +75,3 @@
   </view>
 </view>
 
-<!-- 分隔线 -->
-<view class="divider">
-  <text>消息列表</text>
-</view>
-
-<!-- 会话列表 -->
-<view style="padding-top: 10rpx;">
-  <block wx:for="{{conversations}}" wx:key="conversationId">
-      <template is="chat-item" data="{{item:item}}"/>
-  </block>
-</view>
-
-<!-- 空状态提示 -->
-<view wx:if="{{conversations.length === 0}}" style="text-align: center; padding: 100rpx 0; color: #999;">
-  <text>暂无会话</text>
-</view>
