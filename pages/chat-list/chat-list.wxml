@@ -40,9 +40,9 @@
   <view class="rooms-section">
     <text class="refresh-tip" wx:if="{{loading}}" style="display:block;text-align:center;padding:10rpx 0;">刷新中...</text>
     <view class="rooms-list">
-      <view class="room-item" wx:for="{{rooms}}" wx:key="_id" bindtap="onEnterRoom" data-roomid="{{item._id}}">
+      <view class="room-item {{item.genderClass}}" wx:for="{{rooms}}" wx:key="_id" bindtap="onEnterRoom" data-roomid="{{item._id}}">
         <view class="room-header">
-          <text class="room-name">聊天室 #{{index + 1}}</text>
+          <text class="room-name">{{item.genderSymbol}} 聊天室 #{{index + 1}}</text>
           <text class="room-status" style="color: {{item.status === 0 ? '#999' : (item.status === 1 ? '#07c160' : '#ff5252')}}">
             {{item.status === 0 ? '空闲' : (item.status === 1 ? '等待中 (1/2)' : '聊天中 (2/2)')}}
           </text>
@@ -52,11 +52,13 @@
           <view class="user-info" wx:if="{{item.user1}}">
             <image class="user-avatar" src="{{item.user1.avatarUrl}}" mode="aspectFill"></image>
             <text class="user-name">{{item.user1.nickName}}</text>
+            <text class="gender-tag {{item.user1.gender === '男' ? 'gender-male' : 'gender-female'}}" wx:if="{{item.user1.gender}}">{{item.user1.gender === '男' ? '♂男' : '♀女'}}</text>
           </view>
           
           <view class="user-info" wx:if="{{item.user2}}">
             <image class="user-avatar" src="{{item.user2.avatarUrl}}" mode="aspectFill"></image>
             <text class="user-name">{{item.user2.nickName}}</text>
+            <text class="gender-tag {{item.user2.gender === '男' ? 'gender-male' : 'gender-female'}}" wx:if="{{item.user2.gender}}">{{item.user2.gender === '男' ? '♂男' : '♀女'}}</text>
           </view>
           
           <view class="empty-tip" wx:if="{{!item.user1 && !item.user2}}">

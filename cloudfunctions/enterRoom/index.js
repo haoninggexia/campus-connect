@@ -17,6 +17,12 @@ exports.main = async (event, context) => {
   try {
     console.log('enterRoom收到参数:', { roomId, university, userInfo })
     
+    // 检查用户性别是否已设置
+    if (!userInfo.gender || (userInfo.gender !== '男' && userInfo.gender !== '女')) {
+      console.log('用户未设置性别，拒绝操作')
+      return { code: -1, msg: '请先在个人中心设置性别后再创建或加入房间' }
+    }
+    
     // 如果有roomId，尝试加入已有房间
     if (roomId) {
       const roomRes = await db.collection('chat_rooms').doc(roomId).get()

@@ -57,7 +57,44 @@ Page({
      */
     async onShow() {
         // 加载当前用户信息
-        const userInfo = wx.getStorageSync('user_info') || {};
+        let userInfo = wx.getStorageSync('user_info') || {};
+        
+        // 从 users_profile 获取性别信息
+        try {
+            const db = wx.cloud.database();
+            if (db && userInfo.userID) {
+                const profileRes = await db.collection('users_profile')
+                    .where({ _openid: '{openid}' })
+                    .get();
+                if (profileRes.data && profileRes.data.length > 0) {
+                    const profile = profileRes.data[0];
+                    userInfo.gender = profile.gender || '';
+                    userInfo.university = profile.university || userInfo.university || '';
+                    // 更新本地缓存
+                    wx.setStorageSync('user_info', userInfo);
+                }
+            }
+            // 备用：调用云函数获取用户资料
+            if (!userInfo.gender) {
+                try {
+                    const profileRes = await wx.cloud.callFunction({
+                        name: 'getUserProfile',
+                        data: {}
+                    });
+                    if (profileRes.result && profileRes.result.code === 0) {
+                        const profile = profileRes.result.data;
+                        userInfo.gender = profile.gender || '';
+                        userInfo.university = profile.university || userInfo.university || '';
+                        wx.setStorageSync('user_info', userInfo);
+                    }
+                } catch (e) {
+                    console.warn('通过云函数获取用户资料失败:', e);
+                }
+            }
+        } catch (e) {
+            console.warn('获取用户性别失败:', e);
+        }
+        
         this.setData({
             myUserID: userInfo.userID || '',
             myNickName: userInfo.nickName || '用户',
@@ -152,7 +189,16 @@ Page({
             });
 
             if (res.result && res.result.code === 0) {
-                this.setData({ rooms: res.result.data });
+                // 预处理房间数据，添加性别相关的样式类和符号
+                const processedRooms = (res.result.data || []).map(room => {
+                    const gender = room.user1 && room.user1.gender;
+                    return {
+                        ...room,
+                        genderClass: gender === '男' ? 'room-item-male' : (gender === '女' ? 'room-item-female' : ''),
+                        genderSymbol: gender === '男' ? '♂' : (gender === '女' ? '♀' : '')
+                    };
+                });
+                this.setData({ rooms: processedRooms });
                 this._pollingFailCount = 0; // 成功时重置失败计数
             }
         } catch (e) {
@@ -171,6 +217,16 @@ Page({
     // 创建新房间
     async onCreateRoom() {
         if (!this.checkLogin()) return;
+        
+        // 检查性别是否已设置
+        if (!this.data.userInfo.gender) {
+            wx.showToast({
+                title: '请先在个人中心设置性别',
+                icon: 'none',
+                duration: 2000
+            });
+            return;
+        }
 
         wx.showLoading({ title: '创建中...' });
         
@@ -209,6 +265,16 @@ Page({
     // 进入房间
     async onEnterRoom(e) {
         if (!this.checkLogin()) return;
+        
+        // 检查性别是否已设置
+        if (!this.data.userInfo.gender) {
+            wx.showToast({
+                title: '请先在个人中心设置性别',
+                icon: 'none',
+                duration: 2000
+            });
+            return;
+        }
 
         const roomId = e.currentTarget.dataset.roomid;
         const room = this.data.rooms.find(r => r._id === roomId);
