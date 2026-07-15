@@ -9,7 +9,8 @@ Page({
     bioLength: 0,
     tempAvatarUrl: null, // 缓存头像临时链接
     tempPhotoUrls: [], // 缓存照片临时链接
-    gradeOptions: ['2015级', '2016级', '2017级', '2018级', '2019级', '2020级', '2021级', '2022级', '2023级', '2024级', '2025级', '2026级', '2027级'] // 年级选项
+    gradeOptions: ['2015级', '2016级', '2017级', '2018级', '2019级', '2020级', '2021级', '2022级', '2023级', '2024级', '2025级', '2026级', '2027级'], // 年级选项
+    genderOptions: ['男', '女'] // 性别选项
   },
 
   /**
@@ -92,6 +93,7 @@ Page({
           'userInfo.bio': profile.bio,
           'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
           'userInfo.grade': profile.grade || '',
+          'userInfo.gender': profile.gender || '',
           bioLength: (profile.bio || '').length
         });
 
@@ -141,6 +143,7 @@ Page({
           'userInfo.bio': profile.bio,
           'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
           'userInfo.grade': profile.grade || '',
+          'userInfo.gender': profile.gender || '',
           bioLength: (profile.bio || '').length
         });
 
@@ -271,6 +274,17 @@ Page({
   },
 
   /**
+   * 性别选择
+   */
+  onGenderChange(e) {
+    const index = e.detail.value;
+    const gender = this.data.genderOptions[index];
+    this.setData({
+      'userInfo.gender': gender
+    });
+  },
+
+  /**
    * 年级选择
    */
   onGradeChange(e) {
@@ -350,6 +364,7 @@ Page({
         photos: uploadedPhotos,
         bio: userInfo.bio || '',
         grade: userInfo.grade || '', // 保存年级
+        gender: userInfo.gender || '', // 保存性别
         updateTime: new Date()
       };
 
@@ -374,6 +389,7 @@ Page({
       storedUserInfo.bio = userInfo.bio;
       storedUserInfo.nickName = userInfo.nickName; // 更新本地存储的昵称
       storedUserInfo.grade = userInfo.grade || ''; // 更新本地存储的年级
+      storedUserInfo.gender = userInfo.gender || ''; // 更新本地存储的性别
       wx.setStorageSync('user_info', storedUserInfo);
 
       this.setData({
@@ -445,12 +461,12 @@ Page({
     // 显示用户信息，方便分享
     wx.showModal({
       title: '分享我的信息',
-      content: `昵称：${userInfo.nickName}\n用户ID：${userInfo.userID}\n大学：${userInfo.university}\n专业：${userInfo.major}\n年级：${userInfo.grade || '未设置'}\n\n截图或复制后分享给好友`,
+      content: `昵称：${userInfo.nickName}\n用户ID：${userInfo.userID}\n性别：${userInfo.gender || '未设置'}\n大学：${userInfo.university}\n专业：${userInfo.major}\n年级：${userInfo.grade || '未设置'}\n\n截图或复制后分享给好友`,
       confirmText: '复制全部',
       cancelText: '关闭',
       success: (res) => {
         if (res.confirm) {
-          const shareText = `【我的信息】\n昵称：${userInfo.nickName}\n用户ID：${userInfo.userID}\n大学：${userInfo.university}\n专业：${userInfo.major}\n年级：${userInfo.grade || '未设置'}`;
+          const shareText = `【我的信息】\n昵称：${userInfo.nickName}\n用户ID：${userInfo.userID}\n性别：${userInfo.gender || '未设置'}\n大学：${userInfo.university}\n专业：${userInfo.major}\n年级：${userInfo.grade || '未设置'}`;
 
           wx.setClipboardData({
             data: shareText,

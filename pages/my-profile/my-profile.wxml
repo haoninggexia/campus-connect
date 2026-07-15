@@ -9,6 +9,13 @@
 
     <view class="info-section">
       <view class="info-row">
+        <text class="label">性别</text>
+        <picker mode="selector" range="{{genderOptions}}" bindchange="onGenderChange">
+          <view class="value highlight">{{userInfo.gender || '请选择性别'}}</view>
+        </picker>
+      </view>
+
+      <view class="info-row">
         <text class="label">昵称</text>
         <view class="editable-value">
           <input 
