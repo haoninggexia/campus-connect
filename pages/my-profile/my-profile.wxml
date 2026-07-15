@@ -28,31 +28,6 @@
         </view>
       </view>
 
-      <view class="info-row">
-        <text class="label">用户ID</text>
-        <view class="value-wrapper">
-          <text class="value highlight">{{userInfo.userID}}</text>
-          <button class="copy-button" size="mini" bindtap="onCopyUserID">复制</button>
-        </view>
-      </view>
-
-      <view class="info-row">
-        <text class="label">大学</text>
-        <text class="value">{{userInfo.university}}</text>
-      </view>
-
-      <view class="info-row">
-        <text class="label">专业</text>
-        <text class="value">{{userInfo.major}}</text>
-      </view>
-
-      <view class="info-row">
-        <text class="label">年级</text>
-        <picker mode="selector" range="{{gradeOptions}}" bindchange="onGradeChange">
-          <view class="value highlight">{{userInfo.grade || '请选择年级'}}</view>
-        </picker>
-      </view>
-
       <view class="info-row vertical">
         <text class="label">个人简介</text>
         <textarea
