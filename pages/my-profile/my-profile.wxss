@@ -223,8 +223,42 @@
 
 /* 置顶保存按钮 */
 .actions-top {
+  display: flex;
+  align-items: flex-end;
+  gap: 16rpx;
   margin-bottom: 20rpx;
   width: 100%;
+}
+
+.actions-top .action-button {
+  flex: 0 1 auto;
+  width: auto;
+  padding: 12px 24px;
+}
+
+.save-hint {
+  display: flex;
+  align-items: center;
+  padding-bottom: 12rpx;
+}
+
+.hint-arrow {
+  color: #e74c3c;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-right: 4rpx;
+  animation: bounce-up 1s ease-in-out infinite;
+}
+
+.hint-text {
+  color: #e74c3c;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+@keyframes bounce-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10rpx); }
 }
 
 /* 操作按钮 */
