@@ -33,6 +33,7 @@
       + 创建新聊天室
     </button>
     <view class="tip-text">创建新房间后，等待其他人加入即可开始聊天</view>
+    <view class="tip-text">只显示有且仅有一人的房间</view>
   </view>
 
   <!-- 房间列表 -->
