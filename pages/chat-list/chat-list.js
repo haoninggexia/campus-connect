@@ -388,11 +388,11 @@ Page({
     waitForTIMReady() {
         return new Promise((resolve) => {
             let count = 0;
-            const maxCount = 20; // 最多等待2秒
+            const maxCount = 60; // 最多等待6秒（覆盖网络波动场景）
 
             const check = () => {
                 if (count >= maxCount) {
-                    console.log('等待TIM初始化超时');
+                    console.log('等待TIM初始化超时，SDK可能无法连接（请检查socket合法域名是否配置了 wss://wss.im.qcloud.com）');
                     resolve();
                     return;
                 }

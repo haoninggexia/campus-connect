@@ -16,6 +16,7 @@ Page({
   // 自动保存相关
   _saveTimer: null,
   _saving: false,
+  _pendingSave: false,
 
   /**
    * 获取照片显示URL
@@ -141,8 +142,11 @@ Page({
           });
         }
 
+        // 过滤掉空值，确保照片数组是紧凑的
+        const compactPhotos = (profile.photos || []).filter(p => p && typeof p === 'string' && p.trim() !== '');
+
         this.setData({
-          selectedPhotos: profile.photos || [],
+          selectedPhotos: compactPhotos,
           'userInfo.customAvatar': profile.customAvatar,
           'userInfo.bio': profile.bio,
           'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
@@ -151,7 +155,7 @@ Page({
           bioLength: (profile.bio || '').length
         });
 
-        console.log('用户资料设置完成（使用数据库数据）');
+        console.log('用户资料设置完成（使用数据库数据），照片数:', compactPhotos.length);
       } else {
         console.log('数据库中未找到用户资料');
         // 初始化空数组
@@ -335,7 +339,11 @@ Page({
       clearTimeout(this._saveTimer);
     }
     if (immediate) {
-      this.onSaveProfile(false);
+      if (this._saving) {
+        this._pendingSave = true;
+      } else {
+        this.onSaveProfile(false);
+      }
     } else {
       this._saveTimer = setTimeout(() => {
         this.onSaveProfile(false);
@@ -392,11 +400,14 @@ Page({
         })
         .get();
 
+      // 过滤掉空值，确保存到数据库的photos数组是紧凑的
+      const compactPhotos = uploadedPhotos.filter(p => p && typeof p === 'string' && p.trim() !== '');
+
       const profileData = {
         userID: userInfo.userID,
         nickName: userInfo.nickName, // 保存昵称
         customAvatar: customAvatar,
-        photos: uploadedPhotos,
+        photos: compactPhotos,
         bio: userInfo.bio || '',
         grade: userInfo.grade || '', // 保存年级
         gender: userInfo.gender || '', // 保存性别
@@ -427,9 +438,24 @@ Page({
       storedUserInfo.gender = userInfo.gender || ''; // 更新本地存储的性别
       wx.setStorageSync('user_info', storedUserInfo);
 
-      this.setData({
+      // 更新本地显示：显式保存时保持原样等 loadUserProfile 刷新；自动保存时合并更新
+      const setDataUpdates = {
         'userInfo.customAvatar': customAvatar
-      });
+      };
+      if (!showToast) {
+        // 合并策略：已上传的换用 cloud:// URL，保留保存期间用户新增的临时文件
+        const currentPhotos = this.data.selectedPhotos;
+        const mergedPhotos = [...currentPhotos];
+        for (let i = 0; i < uploadedPhotos.length; i++) {
+          const url = uploadedPhotos[i];
+          if (url && typeof url === 'string' && url.trim() !== '') {
+            mergedPhotos[i] = url;
+          }
+        }
+        // 过滤空值生成紧凑数组
+        setDataUpdates.selectedPhotos = mergedPhotos.filter(p => p && typeof p === 'string' && p.trim() !== '');
+      }
+      this.setData(setDataUpdates);
 
       if (showToast) {
         wx.hideLoading();
@@ -444,10 +470,12 @@ Page({
         tempAvatar: null
       });
 
-      // 重新加载资料，获取新的临时链接
-      setTimeout(() => {
-        this.loadUserProfile();
-      }, 500);
+      // 只有显式保存才重新加载资料（自动保存直接用 cloud:// URL）
+      if (showToast) {
+        setTimeout(() => {
+          this.loadUserProfile();
+        }, 500);
+      }
     } catch (e) {
       if (showToast) wx.hideLoading();
       console.error('保存失败', e);
@@ -459,6 +487,11 @@ Page({
       }
     } finally {
       this._saving = false;
+      // 如果保存期间有新的修改被跳过，现在重试
+      if (this._pendingSave) {
+        this._pendingSave = false;
+        this._autoSave(true);
+      }
     }
   },
 

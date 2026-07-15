@@ -537,19 +537,13 @@ Page({
 
       if (res.result.code === 0) {
         const profile = res.result.data
-        const photosTemp = profile.photosTemp || []
+        const photosTemp = (profile.photosTemp || []).filter(p => p && typeof p === 'string' && p.trim() !== '')
         const bio = profile.bio || ''
         const nickName = profile.nickName || user.nickName || '微信用户'
-        const university = profile.university || user.university || '未设置'
-        const major = profile.major || user.major || '未设置'
-        const grade = profile.grade || user.grade || ''
         const customAvatar = profile.customAvatarTemp || cachedAvatar
 
         console.log('用户资料:', {
           nickName,
-          university,
-          major,
-          grade,
           bio,
           photosCount: photosTemp.length,
           customAvatar
@@ -561,9 +555,6 @@ Page({
           profileUser: {
             userID: user.userID,
             nickName,
-            university,
-            major,
-            grade,
             bio,
             customAvatar,
             isSelf
@@ -578,9 +569,6 @@ Page({
           profileUser: {
             userID: user.userID,
             nickName: user.nickName || '微信用户',
-            university: user.university || '未设置',
-            major: user.major || '未设置',
-            grade: user.grade || '',
             bio: '',
             customAvatar: cachedAvatar,
             isSelf
@@ -597,9 +585,6 @@ Page({
           profileUser: {
             userID: user.userID,
             nickName: user.nickName || '微信用户',
-            university: user.university || '未设置',
-            major: user.major || '未设置',
-            grade: user.grade || '',
             bio: '',
             customAvatar: cachedAvatar,
             isSelf

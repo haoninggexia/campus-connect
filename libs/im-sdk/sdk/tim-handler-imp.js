@@ -123,10 +123,20 @@ export default class TIMHandlerImp extends IIMHandler {
 
     /**
      * 错误回调
+     * 注意：网络连接错误（如WebSocket域名未配置）不应重置登录状态，
+     * 只有真正致命的认证错误才需要标记未登录
      */
     _onError(event) {
         console.error('TIM错误', event);
-        this._isLogin = false;
+        const errorCode = event.data && event.data.code;
+        
+        // 只有致命错误（如UserSig过期、被踢下线等）才重置登录状态
+        // 网络连接错误（code 2800等）不重置_isLogin，等待SDK自动重连
+        if (errorCode === 70001 || errorCode === 70009 || errorCode === 70013 || errorCode === 70014) {
+            console.error('TIM致命错误，重置登录状态');
+            this._isLogin = false;
+        }
+        // code 3000 (SDK not ready) 和网络错误不重置状态
     }
 
     /**
