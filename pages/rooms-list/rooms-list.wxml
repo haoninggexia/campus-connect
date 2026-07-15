@@ -23,11 +23,7 @@
 
   <!-- 房间列表 -->
   <view class="rooms-section">
-    <view class="section-title">
-      {{currentUniversity}} - 在线聊天室
-      <text class="refresh-tip" wx:if="{{loading}}">刷新中...</text>
-    </view>
-    
+    <text class="refresh-tip" wx:if="{{loading}}" style="display:block;text-align:center;padding:10rpx 0;">刷新中...</text>
     <view class="rooms-list">
       <view class="room-item" wx:for="{{rooms}}" wx:key="_id" bindtap="onEnterRoom" data-roomid="{{item._id}}">
         <view class="room-header">
