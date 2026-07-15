@@ -13,6 +13,10 @@ Page({
     genderOptions: ['男', '女'] // 性别选项
   },
 
+  // 自动保存相关
+  _saveTimer: null,
+  _saving: false,
+
   /**
    * 获取照片显示URL
    * 如果是临时文件（wxfile://），直接返回
@@ -185,6 +189,7 @@ Page({
           'userInfo.customAvatar': tempFile,
           tempAvatarUrl: null // 清空临时链接
         });
+        this._autoSave(true);
       }
     });
   },
@@ -213,6 +218,7 @@ Page({
           selectedPhotos: newPhotos,
           tempPhotoUrls: newTempUrls
         });
+        this._autoSave(true);
       }
     });
   },
@@ -230,6 +236,7 @@ Page({
       selectedPhotos: newPhotos,
       tempPhotoUrls: newTempUrls
     });
+    this._autoSave(true);
   },
 
   /**
@@ -261,6 +268,7 @@ Page({
       'userInfo.bio': bio,
       bioLength: bio.length
     });
+    this._autoSave();
   },
 
   /**
@@ -271,6 +279,7 @@ Page({
     this.setData({
       'userInfo.nickName': nickname
     });
+    this._autoSave();
   },
 
   /**
@@ -282,6 +291,7 @@ Page({
     this.setData({
       'userInfo.gender': gender
     });
+    this._autoSave(true);
   },
 
   /**
@@ -293,6 +303,7 @@ Page({
     this.setData({
       'userInfo.grade': grade
     });
+    this._autoSave(true);
   },
 
   /**
@@ -316,10 +327,34 @@ Page({
   },
 
   /**
-   * 保存个人信息
+   * 自动保存（带防抖）
+   * @param {boolean} immediate - 是否立即保存（图片/选择类操作），否则延迟800ms防抖
    */
-  async onSaveProfile() {
-    wx.showLoading({ title: '保存中...' });
+  _autoSave(immediate = false) {
+    if (this._saveTimer) {
+      clearTimeout(this._saveTimer);
+    }
+    if (immediate) {
+      this.onSaveProfile(false);
+    } else {
+      this._saveTimer = setTimeout(() => {
+        this.onSaveProfile(false);
+      }, 800);
+    }
+  },
+
+  /**
+   * 保存个人信息
+   * @param {boolean} showToast - 是否显示保存提示，自动保存时为false
+   */
+  async onSaveProfile(showToast = true) {
+    // 防止并发保存
+    if (this._saving) return;
+    this._saving = true;
+
+    if (showToast) {
+      wx.showLoading({ title: '保存中...' });
+    }
 
     try {
       const userInfo = this.data.userInfo;
@@ -396,11 +431,13 @@ Page({
         'userInfo.customAvatar': customAvatar
       });
 
-      wx.hideLoading();
-      wx.showToast({
-        title: '保存成功',
-        icon: 'success'
-      });
+      if (showToast) {
+        wx.hideLoading();
+        wx.showToast({
+          title: '保存成功',
+          icon: 'success'
+        });
+      }
 
       // 清空临时文件
       this.setData({
@@ -412,12 +449,16 @@ Page({
         this.loadUserProfile();
       }, 500);
     } catch (e) {
-      wx.hideLoading();
+      if (showToast) wx.hideLoading();
       console.error('保存失败', e);
-      wx.showToast({
-        title: '保存失败，请重试',
-        icon: 'none'
-      });
+      if (showToast) {
+        wx.showToast({
+          title: '保存失败，请重试',
+          icon: 'none'
+        });
+      }
+    } finally {
+      this._saving = false;
     }
   },
 

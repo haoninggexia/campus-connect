@@ -1,16 +1,5 @@
 <!--pages/my-profile/my-profile.wxml-->
 <view class="container">
-  <!-- 保存按钮（置顶） -->
-  <view class="actions-top">
-    <button class="action-button primary" bindtap="onSaveProfile">
-      💾 保存个人信息
-    </button>
-    <view class="save-hint">
-      <text class="hint-arrow">↖</text>
-      <text class="hint-text">别忘了点击这里</text>
-    </view>
-  </view>
-
   <!-- 顶部卡片 -->
   <view class="profile-card">
     <view class="avatar-wrapper" bindtap="onChooseAvatar">
