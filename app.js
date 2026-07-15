@@ -7,7 +7,13 @@ App({
         cloudEnv: 'cloud1-5gxeqv258148f9d9', // ⚠️ 请替换为你的云开发环境ID
         db: null,
         cloud: null,
-        userLocation: null // 用户位置信息
+        userLocation: null, // 用户位置信息
+        tabBar: {
+            list: [
+                { pagePath: 'pages/chat-list/chat-list', text: '首页' },
+                { pagePath: 'pages/my-profile/my-profile', text: '我的' }
+            ]
+        }
     },
     getIMHandler() {
         return this.appIMDelegate.getIMHandlerDelegate();

@@ -56,6 +56,11 @@ Page({
      * 生命周期函数--监听页面显示
      */
     async onShow() {
+        // 更新自定义tabBar选中状态
+        if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+            this.getTabBar().setData({ selected: 0 });
+        }
+
         // 加载当前用户信息
         let userInfo = wx.getStorageSync('user_info') || {};
         

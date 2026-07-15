@@ -52,6 +52,13 @@ Page({
     return true;
   },
 
+  onShow() {
+    // 更新自定义tabBar选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 1 });
+    }
+  },
+
   onLoad() {
     // 检查登录状态，未登录则跳转到登录页
     if (!this.checkLogin()) return;

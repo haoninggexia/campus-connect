@@ -22,6 +22,7 @@
     }
   },
   "tabBar": {
+    "custom": true,
     "selectedColor": "#00ffff",
     "color": "#5a6380",
     "backgroundColor": "#0a0a12",
@@ -29,15 +30,11 @@
     "list": [
       {
         "pagePath": "pages/chat-list/chat-list",
-        "text": "矩阵",
-        "iconPath": "image/tabbar/chat_list_unselected.png",
-        "selectedIconPath": "image/tabbar/chat_list.png"
+        "text": "首页"
       },
       {
         "pagePath": "pages/my-profile/my-profile",
-        "text": "档案",
-        "iconPath": "image/tabbar/chat_list_unselected.png",
-        "selectedIconPath": "image/tabbar/chat_list.png"
+        "text": "我的"
       }
     ]
   },
