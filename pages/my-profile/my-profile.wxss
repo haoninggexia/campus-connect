@@ -221,6 +221,12 @@
   line-height: 1;
 }
 
+/* 置顶保存按钮 */
+.actions-top {
+  margin-bottom: 20rpx;
+  width: 100%;
+}
+
 /* 操作按钮 */
 .actions {
   display: flex;
