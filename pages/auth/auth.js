@@ -6,10 +6,15 @@ Page({
     // 检查是否已登录
     const userInfo = wx.getStorageSync('user_info')
     if (userInfo && userInfo.userID) {
-      // 已登录，直接跳转到首页
-      wx.switchTab({
-        url: '/pages/chat-list/chat-list'
-      })
+      // 已登录：如果有上一页则返回，否则跳转到聊天室
+      const pages = getCurrentPages()
+      if (pages.length > 1) {
+        wx.navigateBack()
+      } else {
+        wx.switchTab({
+          url: '/pages/chat-list/chat-list'
+        })
+      }
     }
   },
 
@@ -106,11 +111,16 @@ Page({
           console.log('调用createConnection，handler:', handler);
           handler.createConnection({options: {}});
 
-          // 9. 跳转到首页
+          // 9. 跳转：优先返回上一页，否则切换到聊天室
           setTimeout(() => {
-            wx.switchTab({
-              url: '/pages/chat-list/chat-list'
-            })
+            const pages = getCurrentPages()
+            if (pages.length > 1) {
+              wx.navigateBack()
+            } else {
+              wx.switchTab({
+                url: '/pages/chat-list/chat-list'
+              })
+            }
           }, 1000);
         } catch (e) {
           console.error('创建TIM连接失败', e);

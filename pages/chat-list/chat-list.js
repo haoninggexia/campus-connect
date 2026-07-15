@@ -68,6 +68,11 @@ Page({
         // 开始轮询房间列表
         this.startPolling();
 
+        // 只有已登录用户才加载TIM会话
+        if (!userInfo.userID) {
+            return;
+        }
+
         // 等待一小段时间，确保TIM已初始化
         await this.waitForTIMReady();
 
@@ -86,7 +91,6 @@ Page({
             this.setData({conversations: list});
         } catch (e) {
             console.log('获取会话列表失败', e);
-            wx.showToast({ title: '获取会话列表失败', icon: 'none' });
         }
     },
 
@@ -99,6 +103,18 @@ Page({
     },
 
     // ==================== 在线聊天室功能 ====================
+
+    // 检查登录状态，如果未登录则跳转到登录页
+    checkLogin() {
+        const userInfo = wx.getStorageSync('user_info') || {};
+        if (!userInfo.userID) {
+            wx.navigateTo({
+                url: '/pages/auth/auth'
+            });
+            return false;
+        }
+        return true;
+    },
 
     // 开始轮询
     startPolling() {
@@ -147,6 +163,8 @@ Page({
 
     // 创建新房间
     async onCreateRoom() {
+        if (!this.checkLogin()) return;
+
         wx.showLoading({ title: '创建中...' });
         
         try {
@@ -183,6 +201,8 @@ Page({
 
     // 进入房间
     async onEnterRoom(e) {
+        if (!this.checkLogin()) return;
+
         const roomId = e.currentTarget.dataset.roomid;
         const room = this.data.rooms.find(r => r._id === roomId);
         

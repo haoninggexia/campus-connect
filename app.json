@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/auth/auth",
     "pages/chat-list/chat-list",
+    "pages/auth/auth",
     "pages/chat-tim/chat-tim",
     "pages/my-profile/my-profile",
     "pages/chat/chat",

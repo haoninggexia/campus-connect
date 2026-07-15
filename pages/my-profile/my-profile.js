@@ -32,7 +32,24 @@ Page({
     return tempUrl || originalUrl;
   },
 
+  /**
+   * 检查登录状态，未登录则跳转到登录页
+   */
+  checkLogin() {
+    const userInfo = wx.getStorageSync('user_info') || {};
+    if (!userInfo.userID) {
+      wx.reLaunch({
+        url: '/pages/auth/auth'
+      });
+      return false;
+    }
+    return true;
+  },
+
   onLoad() {
+    // 检查登录状态，未登录则跳转到登录页
+    if (!this.checkLogin()) return;
+
     // 获取当前用户信息
     const userInfo = wx.getStorageSync('user_info') || {};
 
