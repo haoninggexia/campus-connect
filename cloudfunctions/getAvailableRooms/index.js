@@ -8,17 +8,22 @@ const _ = db.command
 
 /**
  * 获取可用的聊天室列表
- * 按照大学分组，显示所有房间状态
+ * 只返回 status === 1 的房间（有且仅有1人等待中，可加入）
  * 自动过滤掉超时的房间（超过3分钟未活动）
  */
 exports.main = async (event, context) => {
   try {
     const { university } = event
 
-    // 构建查询条件
-    const whereCondition = university ? { university } : {}
+    // 构建查询条件：只查询 status === 1 的房间（有且仅有1人等待中）
+    const whereCondition = {
+      status: 1
+    }
+    if (university) {
+      whereCondition.university = university
+    }
 
-    // 获取所有房间
+    // 获取所有等待中的房间
     const result = await db.collection('chat_rooms')
       .where(whereCondition)
       .orderBy('createTime', 'desc')
