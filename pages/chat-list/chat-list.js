@@ -20,7 +20,8 @@ Page({
         rooms: [],
         userInfo: {},
         loading: false,
-        pollingTimer: null
+        pollingTimer: null,
+        isPollingLoading: false // 防止并发加载
     },
 
     /**
@@ -76,22 +77,8 @@ Page({
         // 等待一小段时间，确保TIM已初始化
         await this.waitForTIMReady();
 
-        getApp().getIMHandler().setOnReceiveMessageListener({
-            listener: (msg) => {
-                console.log('会话列表', msg);
-                msg.type === 'get-conversations' && this.setData({conversations: msg.conversations.map(item => this.getConversationsItem(item))})
-            }
-        });
-
-        try {
-            const conversations = await getApp().getIMHandler().getConversationList();
-            console.log('获取会话列表成功', conversations);
-
-            const list = conversations.map(conv => this.getConversationsItem(conv));
-            this.setData({conversations: list});
-        } catch (e) {
-            console.log('获取会话列表失败', e);
-        }
+        // 加载TIM会话
+        this.loadConversations();
     },
 
     /**
@@ -118,17 +105,21 @@ Page({
 
     // 开始轮询
     startPolling() {
+        // 先停止之前的轮询，避免重复创建定时器
+        this.stopPolling();
+        this._pollingFailCount = 0; // 重置失败计数
         this.loadRooms();
-        this.data.pollingTimer = setInterval(() => {
+        const timer = setInterval(() => {
             this.loadRooms();
         }, 3000); // 每3秒刷新一次
+        this.data.pollingTimer = timer;
     },
 
     // 停止轮询
     stopPolling() {
         if (this.data.pollingTimer) {
             clearInterval(this.data.pollingTimer);
-            this.setData({ pollingTimer: null });
+            this.data.pollingTimer = null;
         }
     },
 
@@ -141,8 +132,17 @@ Page({
 
     // 加载房间列表
     async loadRooms() {
-        this.setData({ loading: true });
-        
+        // 防止并发调用
+        if (this.data.isPollingLoading) return;
+
+        // 检查云开发是否就绪
+        if (!wx.cloud) {
+            console.warn('云开发未初始化，跳过房间加载');
+            return;
+        }
+
+        this.setData({ isPollingLoading: true });
+
         try {
             const res = await wx.cloud.callFunction({
                 name: 'getAvailableRooms',
@@ -151,13 +151,20 @@ Page({
                 }
             });
 
-            if (res.result.code === 0) {
+            if (res.result && res.result.code === 0) {
                 this.setData({ rooms: res.result.data });
+                this._pollingFailCount = 0; // 成功时重置失败计数
             }
         } catch (e) {
+            this._pollingFailCount = (this._pollingFailCount || 0) + 1;
             console.error('加载房间列表失败', e);
+            // 连续失败5次后停止轮询
+            if (this._pollingFailCount >= 5) {
+                console.warn('房间列表连续加载失败5次，停止轮询');
+                this.stopPolling();
+            }
         } finally {
-            this.setData({ loading: false });
+            this.setData({ isPollingLoading: false });
         }
     },
 
@@ -280,6 +287,36 @@ Page({
     },
 
     // ==================== TIM 会话功能 ====================
+
+    // 加载TIM会话列表
+    async loadConversations() {
+        try {
+            const imHandler = getApp().getIMHandler();
+            if (!imHandler) {
+                console.warn('IM handler 未初始化，跳过会话加载');
+                return;
+            }
+
+            imHandler.setOnReceiveMessageListener({
+                listener: (msg) => {
+                    console.log('会话列表', msg);
+                    if (msg.type === 'get-conversations' && Array.isArray(msg.conversations)) {
+                        this.setData({ conversations: msg.conversations.map(item => this.getConversationsItem(item)) });
+                    }
+                }
+            });
+
+            const conversations = await imHandler.getConversationList();
+            console.log('获取会话列表成功', conversations);
+
+            if (Array.isArray(conversations)) {
+                const list = conversations.map(conv => this.getConversationsItem(conv));
+                this.setData({ conversations: list });
+            }
+        } catch (e) {
+            console.log('获取会话列表失败', e);
+        }
+    },
 
     // 等待TIM初始化
     waitForTIMReady() {
