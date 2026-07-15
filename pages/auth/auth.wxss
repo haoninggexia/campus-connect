@@ -1,94 +1,180 @@
+/* 赛博朋克风格 认证页 - MAX视觉冲击 */
 .auth-container {
   padding: 60rpx 40rpx;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(180deg, #020010 0%, #0a0025 25%, #100035 50%, #080020 75%, #020010 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 背景网格 + 扫描线 */
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3rpx, rgba(0, 255, 255, 0.06) 3rpx, rgba(0, 255, 255, 0.06) 6rpx),
+    linear-gradient(90deg, rgba(255, 0, 255, 0.03) 1rpx, transparent 1rpx),
+    linear-gradient(0deg, rgba(0, 255, 255, 0.03) 1rpx, transparent 1rpx);
+  background-size: 100% 6rpx, 40rpx 40rpx, 40rpx 40rpx;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 发光光晕背景 */
+.auth-container::after {
+  content: '';
+  position: absolute;
+  width: 600rpx;
+  height: 600rpx;
+  top: -200rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 100rpx;
-  padding-top: 100rpx;
+  margin-bottom: 60rpx;
+  padding-top: 60rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .logo {
   width: 200rpx;
   height: 200rpx;
-  border-radius: 40rpx;
-  background: white;
-  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.3);
+  border-radius: 24rpx;
+  background: #0a0a25;
+  border: 2rpx solid #00ffff;
+  box-shadow:
+    0 0 30rpx rgba(0, 255, 255, 0.6),
+    0 0 60rpx rgba(0, 255, 255, 0.3),
+    0 0 100rpx rgba(255, 0, 255, 0.25),
+    inset 0 0 30rpx rgba(0, 255, 255, 0.15);
 }
 
 .title {
   display: block;
   font-size: 80rpx;
-  font-weight: bold;
-  color: white;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00ffff 0%, #00ffcc 20%, #ff00ff 50%, #ff6bff 70%, #00ffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 40rpx 0 20rpx;
-  letter-spacing: 4rpx;
+  letter-spacing: 16rpx;
+  text-shadow: none;
+  filter: drop-shadow(0 0 30rpx rgba(0, 255, 255, 0.8)) drop-shadow(0 0 60rpx rgba(255, 0, 255, 0.5));
 }
 
 .subtitle {
-  font-size: 44rpx;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 36rpx;
+  color: #00ffcc;
+  letter-spacing: 10rpx;
+  text-shadow: 0 0 20rpx rgba(0, 255, 204, 0.6), 0 0 40rpx rgba(0, 255, 204, 0.3);
 }
 
 .form {
-  background: white;
-  border-radius: 24rpx;
-  padding: 60rpx 40rpx;
-  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.2);
+  background: rgba(10, 10, 30, 0.85);
+  border-radius: 20rpx;
+  padding: 50rpx 40rpx;
+  border: 2rpx solid rgba(0, 255, 255, 0.35);
+  box-shadow:
+    0 0 30rpx rgba(0, 255, 255, 0.3),
+    0 0 60rpx rgba(123, 47, 255, 0.25),
+    0 0 100rpx rgba(255, 0, 255, 0.15),
+    inset 0 0 30rpx rgba(0, 255, 255, 0.05);
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(30rpx);
 }
 
 .picker, .input {
-  background: #f5f7fa;
-  border-radius: 16rpx;
-  padding: 30rpx;
-  margin-bottom: 30rpx;
+  background: rgba(0, 0, 20, 0.9);
+  border: 2rpx solid rgba(0, 255, 255, 0.25);
+  border-radius: 14rpx;
+  padding: 28rpx 30rpx;
+  margin-bottom: 24rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 46rpx;
-  color: #333;
+  font-size: 40rpx;
+  color: #f0f0ff;
   min-height: 90rpx;
+  transition: all 0.3s;
+  box-shadow: inset 0 0 15rpx rgba(0, 255, 255, 0.08);
+}
+
+.picker:focus, .input:focus {
+  border-color: #00ffff;
+  box-shadow:
+    0 0 30rpx rgba(0, 255, 255, 0.5),
+    0 0 60rpx rgba(0, 255, 255, 0.25),
+    inset 0 0 20rpx rgba(0, 255, 255, 0.1);
 }
 
 .placeholder {
-  color: #999;
+  color: #7a80b0;
 }
 
 .placeholder-text {
-  color: #999;
+  color: #7a80b0;
 }
 
 .arrow {
-  color: #999;
+  color: #00ffff;
   font-size: 40rpx;
+  text-shadow: 0 0 15rpx rgba(0, 255, 255, 0.6);
 }
 
 .btn-login {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 16rpx;
-  margin-top: 50rpx;
-  font-size: 48rpx;
-  font-weight: bold;
+  background: linear-gradient(135deg, #00ffcc 0%, #00ffff 25%, #7b2fff 50%, #ff00ff 75%, #ff6bff 100%);
+  color: #020010;
+  border-radius: 14rpx;
+  margin-top: 40rpx;
+  font-size: 44rpx;
+  font-weight: 900;
   border: none;
+  letter-spacing: 10rpx;
+  box-shadow:
+    0 0 40rpx rgba(0, 255, 255, 0.7),
+    0 0 80rpx rgba(123, 47, 255, 0.5),
+    0 0 120rpx rgba(255, 0, 255, 0.4);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-login::after {
   border: none;
 }
 
+.btn-login:active {
+  box-shadow:
+    0 0 60rpx rgba(0, 255, 255, 1),
+    0 0 120rpx rgba(123, 47, 255, 0.8),
+    0 0 180rpx rgba(255, 0, 255, 0.6);
+  transform: scale(0.97);
+}
+
 .tips {
   text-align: center;
   margin-top: 40rpx;
-  font-size: 36rpx;
-  color: #999;
+  font-size: 32rpx;
+  color: #7a80b0;
 }
 
 .tips .link {
-  color: #667eea;
+  color: #ff6bff;
   margin: 0 8rpx;
+  text-shadow: 0 0 15rpx rgba(255, 107, 255, 0.7);
 }

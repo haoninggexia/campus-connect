@@ -1,11 +1,18 @@
 .chat-list-time-style {
     margin-top: 30rpx;
-    background-color: #cccccc;
-    color: white;
+    background: rgba(0, 255, 255, 0.2);
+    color: #00ffff;
     padding: 8rpx 10rpx 6rpx 10rpx;
     border-radius: 6rpx;
     width: auto;
     font-size: 22rpx;
     line-height: 22rpx;
     text-align: center;
+    border: 2rpx solid rgba(0, 255, 255, 0.35);
+    text-shadow:
+      0 0 10rpx rgba(0, 255, 255, 0.6),
+      0 0 20rpx rgba(0, 255, 255, 0.3);
+    box-shadow:
+      0 0 15rpx rgba(0, 255, 255, 0.3),
+      0 0 30rpx rgba(0, 255, 255, 0.15);
 }

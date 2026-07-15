@@ -1,20 +1,31 @@
+/* 赛博朋克 MAX 消息气泡 */
 @import "chat-send-status.wxss";
 @import "voice.wxss";
 @import "time.wxss";
+
 .isMyWordStyle {
-    background-color: #8fcbf7;
-    color: #213d52;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.4) 0%, rgba(0, 255, 255, 0.35) 50%, rgba(123, 47, 255, 0.35) 100%);
+    color: #f0f0ff;
     margin-right: -1rpx;
     margin-left: 14rpx;
     word-wrap: break-word;
+    border: 2rpx solid rgba(0, 255, 136, 0.6);
+    box-shadow:
+      0 2rpx 20rpx rgba(0, 255, 136, 0.4),
+      0 0 40rpx rgba(0, 255, 255, 0.2),
+      0 0 60rpx rgba(123, 47, 255, 0.15);
 }
 
 .isOtherWordStyle {
-    background-color: white;
-    color: #333333;
+    background: rgba(20, 20, 50, 0.85);
+    color: #f0f0ff;
     margin-right: 14rpx;
     margin-left: -1rpx;
     word-wrap: break-word;
+    border: 2rpx solid rgba(255, 0, 255, 0.35);
+    box-shadow:
+      0 2rpx 12rpx rgba(255, 0, 255, 0.2),
+      0 0 25rpx rgba(255, 0, 255, 0.08);
 }
 
 .chat-list-pic-style {
@@ -25,11 +36,12 @@
 }
 
 .voice-duration-style {
-    color: #666666;
+    color: #ffea00;
     font-size: 26rpx;
     align-self: center;
     margin-top: 3rpx;
     margin-left: 5rpx;
+    text-shadow: 0 0 8rpx rgba(255, 234, 0, 0.4);
 }
 
 .chat-list-arrow-style {

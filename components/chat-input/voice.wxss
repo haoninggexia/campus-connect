@@ -1,6 +1,6 @@
 
 .btn-voice-press {
-    background-color: gainsboro;
+    background-color: rgba(0, 255, 255, 0.35);
 }
 
 button{
@@ -9,6 +9,7 @@ button{
     line-height: 74rpx;
     margin-top: 15rpx;
     margin-bottom: 15rpx;
+    color: #f0f0ff;
 }
 .voice-status-style{
     position: absolute;
@@ -17,11 +18,17 @@ button{
     width: 80%;
     text-align: center;
     font-size: 24rpx;
-    color: white;
+    color: #ffea00;
     padding-top: 5rpx;
     padding-bottom: 5rpx;
     margin-left: 10%;
     border-radius: 10rpx;
+    background: rgba(0, 255, 255, 0.2);
+    text-shadow:
+      0 0 10rpx rgba(255, 234, 0, 0.6),
+      0 0 20rpx rgba(255, 234, 0, 0.3);
+    border: 2rpx solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 20rpx rgba(0, 255, 255, 0.15);
 }
 
 .voice-record-git-status-style{

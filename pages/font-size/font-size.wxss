@@ -1,21 +1,22 @@
-/* pages/font-size/font-size.wxss */
+/* pages/font-size/font-size.wxss - Cyberpunk MAX */
 .font-size-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #000;
+  background: linear-gradient(180deg, #020010 0%, #050018 100%);
 }
 
-/* 标题栏 */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20rpx 30rpx;
-  background-color: #000;
-  color: #fff;
+  background: linear-gradient(180deg, rgba(10, 10, 35, 0.98) 0%, rgba(10, 10, 30, 0.95) 100%);
+  border-bottom: 2rpx solid rgba(0, 255, 255, 0.2);
   position: relative;
   z-index: 10;
+  backdrop-filter: blur(30rpx);
+  box-shadow: 0 4rpx 30rpx rgba(0, 255, 255, 0.12);
 }
 
 .back-btn {
@@ -24,13 +25,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #ff6bff;
+  text-shadow: 0 0 15rpx rgba(255, 107, 255, 0.6);
 }
 
 .header .title {
   flex: 1;
   text-align: center;
   font-size: 36rpx;
-  font-weight: 500;
+  font-weight: 700;
+  color: #f0f0ff;
+  letter-spacing: 4rpx;
+  text-shadow: 0 0 15rpx rgba(0, 255, 255, 0.4);
 }
 
 .complete-btn {
@@ -39,14 +45,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #07c160;
-  color: #fff;
+  background: linear-gradient(135deg, #00ffff 0%, #7b2fff 50%, #ff00ff 100%);
+  color: #020010;
   border-radius: 8rpx;
   font-size: 28rpx;
+  font-weight: 800;
   margin-left: 20rpx;
+  box-shadow:
+    0 0 20rpx rgba(0, 255, 255, 0.5),
+    0 0 40rpx rgba(123, 47, 255, 0.35);
 }
 
-/* 预览区域 */
 .preview-area {
   flex: 1;
   padding: 30rpx;
@@ -77,11 +86,15 @@
   border-radius: 50%;
   margin-right: 12rpx;
   margin-left: 12rpx;
+  border: 2rpx solid rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 10rpx rgba(255, 0, 255, 0.15);
 }
 
 .preview-message.self .preview-avatar {
   margin-left: 12rpx;
   margin-right: 0;
+  border: 2rpx solid rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 10rpx rgba(0, 255, 255, 0.15);
 }
 
 .preview-bubble {
@@ -95,9 +108,11 @@
 }
 
 .preview-message.other .preview-bubble {
-  background-color: #333333;
-  color: #ffffff;
+  background: rgba(20, 20, 50, 0.85);
+  color: #f0f0ff;
   position: relative;
+  border: 2rpx solid rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 15rpx rgba(255, 0, 255, 0.1);
 }
 
 .preview-message.other .preview-bubble::after {
@@ -107,13 +122,17 @@
   left: -8rpx;
   border-width: 8rpx 8rpx 8rpx 0;
   border-style: solid;
-  border-color: transparent #333333 transparent transparent;
+  border-color: transparent rgba(20, 20, 50, 0.85) transparent transparent;
 }
 
 .preview-message.self .preview-bubble {
-  background-color: #07c160;
-  color: #ffffff;
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.35) 0%, rgba(0, 255, 255, 0.3) 100%);
+  color: #f0f0ff;
   position: relative;
+  border: 2rpx solid rgba(0, 255, 136, 0.5);
+  box-shadow:
+    0 0 20rpx rgba(0, 255, 136, 0.3),
+    0 0 35rpx rgba(0, 255, 255, 0.15);
 }
 
 .preview-message.self .preview-bubble::after {
@@ -123,7 +142,7 @@
   right: -8rpx;
   border-width: 8rpx 0 8rpx 8rpx;
   border-style: solid;
-  border-color: transparent transparent transparent #07c160;
+  border-color: transparent transparent transparent rgba(0, 255, 136, 0.4);
 }
 
 /* 滑块区域 */
@@ -135,8 +154,9 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 16rpx;
-  color: #888888;
+  color: #00ffcc;
   font-size: 24rpx;
+  text-shadow: 0 0 10rpx rgba(0, 255, 204, 0.4);
 }
 
 .slider-container {
@@ -148,11 +168,10 @@
 slider {
   width: 100%;
   height: 4rpx;
-  z-index: 2; /* 确保滑块在上层 */
+  z-index: 2;
   position: relative;
 }
 
-/* 档位指示器 */
 .level-indicators {
   position: absolute;
   top: 0;
@@ -161,8 +180,8 @@ slider {
   height: 100%;
   display: flex;
   align-items: center;
-  z-index: 1; /* 指示器在下层，不阻挡滑块交互 */
-  pointer-events: none; /* 禁用指示器的鼠标事件 */
+  z-index: 1;
+  pointer-events: none;
 }
 
 .indicator {
@@ -170,16 +189,16 @@ slider {
   width: 16rpx;
   height: 16rpx;
   border-radius: 50%;
-  border: 2rpx solid;
+  border: 3rpx solid rgba(0, 255, 255, 0.6);
   transform: translateX(-50%);
   z-index: 1;
+  box-shadow: 0 0 10rpx rgba(0, 255, 255, 0.3);
 }
 
-/* 当前档位显示 */
 .current-level {
   text-align: center;
   padding: 20rpx 0;
-  color: #888888;
+  color: #aaa0d0;
   font-size: 28rpx;
 }
 
@@ -188,22 +207,22 @@ slider {
 }
 
 .current-level .level-name {
-  color: #07c160;
-  font-weight: 500;
+  color: #ffea00;
+  font-weight: 600;
+  text-shadow: 0 0 15rpx rgba(255, 234, 0, 0.6);
 }
 
 .current-level .level-size {
-  color: #666666;
+  color: #7a80b0;
   margin-left: 5rpx;
 }
 
-/* 调试信息 */
 .debug-info {
   text-align: center;
   padding: 20rpx 0;
-  color: #888888;
+  color: #7a80b0;
   font-size: 24rpx;
-  border-top: 1rpx solid #333;
+  border-top: 2rpx solid rgba(0, 255, 255, 0.15);
   margin-top: 20rpx;
 }
 
@@ -211,6 +230,8 @@ slider {
   display: block;
   font-weight: bold;
   margin-bottom: 10rpx;
+  color: #00ffff;
+  text-shadow: 0 0 10rpx rgba(0, 255, 255, 0.4);
 }
 
 .debug-info .debug-item {

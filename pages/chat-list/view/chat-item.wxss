@@ -5,6 +5,7 @@
     display: flex;
     align-items: center;
     position: relative;
+    border-bottom: 2rpx solid rgba(0, 255, 255, 0.1);
 }
 .chat-item-content-super-style{
     display: flex;
@@ -13,14 +14,16 @@
 }
 
 .chat-item-name-style{
-    color: #666666;
+    color: #f0f0ff;
     font-size: 32rpx;
     margin-bottom: 14rpx;
+    font-weight: 600;
+    text-shadow: 0 0 8rpx rgba(0, 255, 255, 0.2);
 }
 .chat-item-content-style{
     min-height: 20rpx;
     width: 100%;
-    color: #666666;
+    color: #aaa0d0;
     font-size: 26rpx;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -36,7 +39,7 @@
     align-items:flex-end;
 }
 .chat-item-time-style{
-    color: #999999;
+    color: #7a80b0;
     font-size: 20rpx;
     margin-bottom: 20rpx;
     text-align: right;

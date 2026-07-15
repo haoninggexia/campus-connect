@@ -1,4 +1,8 @@
-/**app.wxss**/
+/**app.wxss - Cyberpunk MAX Theme **/
+page{
+  background-color: #020010;
+  color: #f0f0ff;
+}
 .container {
   height: 100%;
   display: flex;
@@ -7,7 +11,8 @@
   justify-content: space-between;
   padding: 200rpx 0;
   box-sizing: border-box;
+  background: radial-gradient(ellipse at 50% 0%, #0a0030 0%, #020010 60%);
 }
 .press-style{
-  background-color: #F8F8F8;
+  background-color: rgba(0, 255, 255, 0.25);
 }

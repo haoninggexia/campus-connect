@@ -5,18 +5,26 @@
     min-height: 32rpx;
     text-align: center;
     border-radius: 50%;
-    background-color: #f64e30;
+    background: #ff0055;
     color: white;
     font-size: 22rpx;
     line-height: 27rpx;
     position: absolute;
     top: -3rpx;
     right: -3rpx;
+    box-shadow:
+      0 0 15rpx rgba(255, 0, 85, 0.8),
+      0 0 30rpx rgba(255, 0, 85, 0.4),
+      0 0 50rpx rgba(255, 0, 136, 0.3);
 }
 .chat-head-style{
     width: 88rpx;
     height: 88rpx;
     border-radius: 50%;
+    border: 2rpx solid rgba(0, 255, 255, 0.5);
+    box-shadow:
+      0 0 15rpx rgba(0, 255, 255, 0.3),
+      0 0 30rpx rgba(0, 255, 255, 0.15);
 }
 .chat-item-head-super-style{
     width: auto;

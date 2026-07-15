@@ -4,6 +4,7 @@ input{
     padding-top: 10rpx;
     padding-bottom:10rpx;
     width: 100%;
+    color: #f0f0ff;
 }
 
 .extra-btn-style{
@@ -16,10 +17,13 @@ input{
 .input-text-voice-super{
     display: flex;
     flex-direction: row;
-    background-color: white;
+    background: linear-gradient(180deg, rgba(10, 10, 35, 0.98) 0%, rgba(10, 10, 30, 0.95) 100%);
     width: 100%;
     align-items: center;
     height:100rpx;
+    border-top: 2rpx solid rgba(0, 255, 255, 0.2);
+    backdrop-filter: blur(30rpx);
+    box-shadow: 0 -4rpx 30rpx rgba(0, 255, 255, 0.1);
 }
 .input-flex-column{
     width:100%;
@@ -32,18 +36,20 @@ input{
 
 .list-divide-line {
     width: 100%;
-    height: 1rpx;
-    background-color: #dddddd;
+    height: 2rpx;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
 }
 
 .chat-input-style{
     border-radius:10rpx;
-    border:1rpx solid gainsboro;
+    border:2rpx solid rgba(0, 255, 255, 0.35);
     margin-top:14rpx;
     margin-bottom: 13rpx;
     padding:10rpx;
     min-height: 51rpx;
-    background-color: #EFEFEF;
+    background: rgba(0, 0, 20, 0.9);
+    color: #f0f0ff;
+    box-shadow: inset 0 0 15rpx rgba(0, 255, 255, 0.08);
 }
 
 .chat-input-send-button-style{
@@ -53,6 +59,11 @@ input{
     text-align: center;
     margin: 0 10rpx;
     border-radius: 10rpx;
-    background-color: mediumseagreen;
-    color: white;
+    background: linear-gradient(135deg, #00ffcc 0%, #00ffff 30%, #7b2fff 70%, #ff00ff 100%);
+    color: #020010;
+    font-weight: 900;
+    box-shadow:
+      0 0 25rpx rgba(0, 255, 255, 0.7),
+      0 0 50rpx rgba(123, 47, 255, 0.4),
+      0 0 75rpx rgba(255, 0, 255, 0.3);
 }

@@ -5,9 +5,16 @@
     justify-content: center;
     align-items: center;
     font-size: 26rpx;
-    color: white;
+    color: #ffea00;
     position: fixed;
     top:0;
     left:0;
     z-index: 20;
+    text-shadow:
+      0 0 10rpx rgba(255, 234, 0, 0.7),
+      0 0 20rpx rgba(255, 234, 0, 0.4);
+    background: rgba(5, 5, 20, 0.95);
+    backdrop-filter: blur(15rpx);
+    border-bottom: 2rpx solid rgba(0, 255, 255, 0.2);
+    box-shadow: 0 2rpx 20rpx rgba(0, 255, 255, 0.1);
 }

@@ -1,6 +1,6 @@
-/* pages/my-profile/my-profile.wxss */
+/* pages/my-profile/my-profile.wxss - Cyberpunk MAX */
 .container {
-  background-color: #f5f5f5;
+  background: linear-gradient(180deg, #020010 0%, #0a0020 50%, #050015 100%);
   min-height: 100vh;
   padding: 20rpx;
   box-sizing: border-box;
@@ -10,17 +10,22 @@
 
 /* 个人信息卡片 */
 .profile-card {
-  background-color: #fff;
-  border-radius: 16rpx;
+  background: rgba(10, 10, 30, 0.85);
+  border-radius: 20rpx;
   padding: 40rpx 30rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 20rpx;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 2rpx solid rgba(0, 255, 255, 0.25);
+  box-shadow:
+    0 0 30rpx rgba(0, 255, 255, 0.15),
+    0 0 60rpx rgba(255, 0, 255, 0.08),
+    inset 0 0 20rpx rgba(0, 255, 255, 0.03);
   width: 100%;
   box-sizing: border-box;
   max-width: 100%;
+  backdrop-filter: blur(30rpx);
 }
 
 .avatar-wrapper {
@@ -31,8 +36,12 @@
 .avatar {
   width: 100px;
   height: 100px;
-  border-radius: 10px;
-  border: 3px solid #07c160;
+  border-radius: 16px;
+  border: 3px solid #00ffff;
+  box-shadow:
+    0 0 30rpx rgba(0, 255, 255, 0.6),
+    0 0 60rpx rgba(0, 255, 255, 0.3),
+    0 0 90rpx rgba(255, 0, 255, 0.2);
 }
 
 .avatar-edit-icon {
@@ -41,14 +50,17 @@
   right: -5px;
   width: 30px;
   height: 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffea00 0%, #ff00ff 50%, #00ffff 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  color: #020010;
+  font-weight: 900;
+  box-shadow:
+    0 0 20rpx rgba(255, 234, 0, 0.6),
+    0 0 40rpx rgba(255, 0, 255, 0.4);
 }
 
 .info-section {
@@ -64,7 +76,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 2rpx solid rgba(0, 255, 255, 0.12);
 }
 
 .info-row.vertical {
@@ -78,20 +90,22 @@
 
 .label {
   font-size: 14px;
-  color: #999;
+  color: #00ffcc;
   width: 80px;
+  text-shadow: 0 0 8rpx rgba(0, 255, 204, 0.3);
 }
 
 .value {
   font-size: 16px;
-  color: #333;
-  font-weight: 500;
+  color: #f0f0ff;
+  font-weight: 600;
   flex: 1;
 }
 
 .value.highlight {
-  color: #07c160;
-  font-weight: 600;
+  color: #ffea00;
+  font-weight: 700;
+  text-shadow: 0 0 15rpx rgba(255, 234, 0, 0.6);
 }
 
 .value-wrapper {
@@ -101,12 +115,16 @@
 }
 
 .copy-button {
-  background-color: #07c160;
-  color: #fff;
+  background: linear-gradient(135deg, #00ffff 0%, #7b2fff 50%, #ff00ff 100%);
+  color: #020010;
   border: none;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 4px;
+  font-weight: 800;
+  box-shadow:
+    0 0 12rpx rgba(0, 255, 255, 0.5),
+    0 0 24rpx rgba(255, 0, 255, 0.3);
 }
 
 .editable-value {
@@ -116,7 +134,7 @@
 .editable-input {
   width: 100%;
   font-size: 16px;
-  color: #333;
+  color: #f0f0ff;
   font-weight: 500;
   text-align: right;
 }
@@ -125,33 +143,42 @@
   width: 100%;
   min-height: 80px;
   padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: 2rpx solid rgba(0, 255, 255, 0.25);
+  background: rgba(0, 0, 20, 0.9);
+  border-radius: 8px;
   font-size: 14px;
   margin-top: 8px;
   resize: none;
+  color: #f0f0ff;
+  box-shadow: inset 0 0 15rpx rgba(0, 255, 255, 0.05);
 }
 
 .char-count {
   align-self: flex-end;
   font-size: 12px;
-  color: #999;
+  color: #7a80b0;
   margin-top: 5px;
 }
 
 /* 精选照片 */
 .photos-section {
-  background-color: #fff;
-  border-radius: 12px;
+  background: rgba(10, 10, 30, 0.85);
+  border-radius: 16px;
   padding: 20rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 2rpx solid rgba(255, 0, 255, 0.2);
+  box-shadow:
+    0 0 25rpx rgba(255, 0, 255, 0.1),
+    inset 0 0 15rpx rgba(255, 0, 255, 0.02);
 }
 
 .section-title {
   font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff6bff 0%, #ffea00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 15px;
   display: flex;
   align-items: center;
@@ -160,7 +187,7 @@
 
 .count {
   font-size: 14px;
-  color: #999;
+  color: #7a80b0;
   font-weight: normal;
 }
 
@@ -175,16 +202,18 @@
   position: relative;
   width: 100%;
   min-height: 160px;
-  background-color: #f5f5f5;
-  border-radius: 12px;
+  background: rgba(20, 20, 50, 0.7);
+  border-radius: 14px;
   overflow: hidden;
-  border: 2px dashed #d0d0d0;
+  border: 2rpx dashed rgba(0, 255, 255, 0.35);
   aspect-ratio: 1;
   height: 160px;
+  box-shadow: 0 0 15rpx rgba(0, 255, 255, 0.08);
 }
 
 .photo-item.has-photo {
-  border: none;
+  border: 2rpx solid rgba(0, 255, 255, 0.35);
+  box-shadow: 0 0 20rpx rgba(0, 255, 255, 0.2);
 }
 
 .photo {
@@ -202,7 +231,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 40px;
-  color: #999;
+  color: #00ffcc;
+  text-shadow: 0 0 15rpx rgba(0, 255, 204, 0.5);
 }
 
 .photo-delete {
@@ -211,7 +241,7 @@
   right: 5px;
   width: 24px;
   height: 24px;
-  background-color: rgba(0,0,0,0.6);
+  background: #ff0055;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -219,6 +249,9 @@
   font-size: 18px;
   color: #fff;
   line-height: 1;
+  box-shadow:
+    0 0 12rpx rgba(255, 0, 85, 0.6),
+    0 0 24rpx rgba(255, 0, 85, 0.3);
 }
 
 /* 操作按钮 */
@@ -233,19 +266,40 @@
   width: 100%;
   font-size: 15px;
   border: none;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 14px;
 }
 
 .action-button.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  font-weight: 500;
+  background: linear-gradient(135deg, #00ffcc 0%, #00ffff 30%, #7b2fff 60%, #ff00ff 100%);
+  color: #020010;
+  font-weight: 900;
+  letter-spacing: 6rpx;
+  box-shadow:
+    0 0 30rpx rgba(0, 255, 255, 0.6),
+    0 0 60rpx rgba(123, 47, 255, 0.4),
+    0 0 90rpx rgba(255, 0, 255, 0.3);
+}
+
+.action-button.primary:active {
+  box-shadow:
+    0 0 50rpx rgba(0, 255, 255, 1),
+    0 0 100rpx rgba(123, 47, 255, 0.7);
 }
 
 .action-button.danger {
-  background-color: #fa5151;
-  color: #fff;
+  background: transparent;
+  color: #ff0055;
+  border: 2rpx solid rgba(255, 0, 85, 0.5);
+  text-shadow: 0 0 15rpx rgba(255, 0, 85, 0.5);
+  box-shadow: 0 0 20rpx rgba(255, 0, 85, 0.15);
+}
+
+.action-button.danger:active {
+  background: rgba(255, 0, 85, 0.15);
+  box-shadow:
+    0 0 30rpx rgba(255, 0, 85, 0.4),
+    0 0 60rpx rgba(255, 0, 85, 0.2);
 }
 
 /* 提示信息 */
@@ -254,14 +308,15 @@
 }
 
 .tip-item {
-  background-color: #fff;
+  background: rgba(10, 10, 30, 0.85);
   padding: 15px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 10px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 2rpx solid rgba(0, 255, 255, 0.12);
+  box-shadow: 0 0 15rpx rgba(0, 255, 255, 0.05);
 }
 
 .tip-icon {
@@ -270,7 +325,7 @@
 
 .tip-text {
   font-size: 13px;
-  color: #666;
+  color: #aaa0d0;
   line-height: 1.6;
   flex: 1;
 }

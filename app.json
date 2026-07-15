@@ -11,10 +11,10 @@
     "pages/font-size/font-size"
   ],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
-    "navigationBarTextStyle": "black"
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#0a0a12",
+    "navigationBarTitleText": "N E O N",
+    "navigationBarTextStyle": "white"
   },
   "permission": {
     "scope.userLocation": {
@@ -22,18 +22,20 @@
     }
   },
   "tabBar": {
-    "selectedColor": "#667eea",
-    "color": "#999",
+    "selectedColor": "#00ffff",
+    "color": "#5a6380",
+    "backgroundColor": "#0a0a12",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/chat-list/chat-list",
-        "text": "首页",
+        "text": "矩阵",
         "iconPath": "image/tabbar/chat_list_unselected.png",
         "selectedIconPath": "image/tabbar/chat_list.png"
       },
       {
         "pagePath": "pages/my-profile/my-profile",
-        "text": "我的",
+        "text": "档案",
         "iconPath": "image/tabbar/chat_list_unselected.png",
         "selectedIconPath": "image/tabbar/chat_list.png"
       }
