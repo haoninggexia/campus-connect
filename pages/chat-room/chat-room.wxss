@@ -256,6 +256,19 @@
   font-size: 28rpx;
 }
 
+/* 等待状态横幅 */
+.waiting-banner {
+  text-align: center;
+  padding: 20rpx 30rpx;
+  background-color: #fff3cd;
+  border-bottom: 1rpx solid #ffeeba;
+}
+
+.waiting-text {
+  font-size: 26rpx;
+  color: #856404;
+}
+
 /* 用户资料弹窗 - 微信风格 */
 .user-profile {
   position: fixed;

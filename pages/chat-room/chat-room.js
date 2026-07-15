@@ -20,7 +20,9 @@ Page({
     fontSize: 36, // 默认字体大小
     myLocation: null, // 当前用户的位置（从app获取）
     otherLocation: null, // 对方的位置
-    distance: '' // 双方之间的距离
+    distance: '', // 双方之间的距离
+    isWaiting: false, // 是否处于等待状态（对方已离开，等待新用户加入）
+    hadPartner: false // 是否曾经有聊天伙伴（用于判断对方离开）
   },
 
   onLoad(options) {
@@ -243,6 +245,32 @@ Page({
           otherUser = data.user1
         } else if (data.user2 && data.user2.userID !== this.data.userInfo.userID) {
           otherUser = data.user2
+        }
+
+        // 检测对方离开或新用户加入
+        const prevOtherUser = this.data.otherUser
+        if (this.data.hadPartner && prevOtherUser && !otherUser) {
+          // 对方已离开，进入等待状态
+          wx.showToast({
+            title: '对方已离开，等待新用户加入...',
+            icon: 'none',
+            duration: 3000
+          })
+          this.setData({
+            isWaiting: true,
+            distance: '' // 清除距离显示
+          })
+        } else if (!prevOtherUser && otherUser && !this.data.hadPartner) {
+          // 首次有聊天伙伴加入
+          this.setData({ hadPartner: true, isWaiting: false })
+        } else if (this.data.isWaiting && otherUser) {
+          // 等待状态下新用户加入
+          wx.showToast({
+            title: (otherUser.nickName || '新用户') + ' 加入了聊天室',
+            icon: 'none',
+            duration: 2000
+          })
+          this.setData({ isWaiting: false, hadPartner: true })
         }
 
         // 缓存临时链接，避免每次轮询都更新导致头像闪烁

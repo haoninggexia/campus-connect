@@ -7,6 +7,8 @@ const db = cloud.database()
 
 /**
  * 离开聊天室
+ * status=1（仅创建者1人）：删除房间
+ * status=2（2人聊天中）：保留剩余用户，房间变为status=1等待新用户加入
  */
 exports.main = async (event, context) => {
   const { roomId, userID } = event
@@ -25,16 +27,33 @@ exports.main = async (event, context) => {
       return { code: 0, msg: '离开成功' }
     }
     
-    // 如果房间有2人，清空用户
+    // 如果房间有2人，保留剩余用户，状态变为等待中
     if (room.status === 2) {
-      await db.collection('chat_rooms').doc(roomId).update({
-        data: {
-          user1: null,
-          user2: null,
-          status: 0,
-          messages: []
-        }
-      })
+      const isUser1 = room.user1 && room.user1.userID === userID
+      const isUser2 = room.user2 && room.user2.userID === userID
+      
+      if (isUser1) {
+        // 创建者(user1)离开，将user2提升为user1
+        await db.collection('chat_rooms').doc(roomId).update({
+          data: {
+            user1: room.user2,
+            user2: null,
+            status: 1,
+            messages: [],
+            lastActiveTime: db.serverDate()
+          }
+        })
+      } else if (isUser2) {
+        // 加入者(user2)离开，保留user1
+        await db.collection('chat_rooms').doc(roomId).update({
+          data: {
+            user2: null,
+            status: 1,
+            messages: [],
+            lastActiveTime: db.serverDate()
+          }
+        })
+      }
     }
     
     return { code: 0, msg: '离开成功' }

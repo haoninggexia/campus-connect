@@ -5,7 +5,7 @@
     <view class="back-btn">
       <image src="/image/back.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
     </view>
-    <view class="title">{{otherUser.nickName || '聊天室'}}</view>
+    <view class="title">{{otherUser.nickName || (isWaiting ? '等待中...' : '聊天室')}}</view>
     <view class="header-right">
       <view class="distance-display" wx:if="{{distance}}">
         📍 {{distance}}
@@ -20,6 +20,11 @@
         <text class="settings-text">A</text>
       </view>
     </view>
+  </view>
+
+  <!-- 等待状态提示 -->
+  <view class="waiting-banner" wx:if="{{isWaiting}}">
+    <text class="waiting-text">对方已离开，等待新用户加入...</text>
   </view>
 
   <!-- 消息区域 -->
