@@ -22,6 +22,10 @@ const COLLECTIONS = [
   {
     name: 'users_profile',
     description: '用户资料表'
+  },
+  {
+    name: 'online_users',
+    description: '在线用户状态表（心跳上报）'
   }
 ]
 

@@ -63,6 +63,57 @@
   background: linear-gradient(180deg, #020010 0%, #080025 100%);
 }
 
+/* 实时在线人数 */
+.online-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20rpx 20rpx 0;
+  padding: 16rpx 30rpx;
+  background: rgba(10, 10, 30, 0.9);
+  border-radius: 40rpx;
+  border: 2rpx solid rgba(0, 255, 255, 0.3);
+  box-shadow:
+    0 0 30rpx rgba(0, 255, 255, 0.15),
+    inset 0 0 20rpx rgba(0, 255, 255, 0.05);
+}
+
+.online-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #00ff88;
+  margin-right: 16rpx;
+  box-shadow:
+    0 0 12rpx rgba(0, 255, 136, 0.8),
+    0 0 24rpx rgba(0, 255, 136, 0.4);
+  animation: onlinePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes onlinePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+.online-label {
+  font-size: 26rpx;
+  color: #aaa0d0;
+  margin-right: 12rpx;
+}
+
+.online-count {
+  font-size: 34rpx;
+  font-weight: 900;
+  color: #00ffff;
+  text-shadow: 0 0 20rpx rgba(0, 255, 255, 0.8);
+  margin-right: 8rpx;
+}
+
+.online-unit {
+  font-size: 24rpx;
+  color: #7a80b0;
+}
+
 /* 大学选择器 */
 .university-selector {
   background: rgba(10, 10, 30, 0.9);
@@ -102,8 +153,8 @@
 /* 创建房间区域 */
 .create-room-section {
   background: rgba(10, 10, 30, 0.85);
-  margin: 20rpx;
-  padding: 30rpx;
+  margin: 0 20rpx 20rpx;
+  padding: 24rpx 30rpx;
   border-radius: 20rpx;
   border: 2rpx solid rgba(0, 255, 255, 0.25);
   box-shadow:
@@ -139,7 +190,7 @@
   text-align: center;
   font-size: 24rpx;
   color: #7a80b0;
-  margin-top: 20rpx;
+  margin-top: 8rpx;
 }
 
 /* 房间列表 */

@@ -44,11 +44,26 @@ exports.main = async (event, context) => {
 
     console.log(`获取到 ${rooms.length} 个房间，过滤后剩余 ${validRooms.length} 个有效房间`)
 
+    // 统计实时在线人数（60秒内有过心跳的用户）
+    const onlineThreshold = 60 * 1000 // 60秒
+    let onlineCount = 0
+    try {
+      const onlineRes = await db.collection('online_users')
+        .where({
+          lastActiveTime: _.gt(new Date(Date.now() - onlineThreshold))
+        })
+        .count()
+      onlineCount = onlineRes.total || 0
+    } catch (e) {
+      console.error('统计在线人数失败:', e)
+    }
+
     // 返回房间列表，状态会在前端处理
     return {
       code: 0,
       msg: '获取成功',
-      data: validRooms
+      data: validRooms,
+      onlineCount
     }
   } catch (e) {
     console.error('获取聊天室列表失败:', e)

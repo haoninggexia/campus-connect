@@ -32,6 +32,9 @@ App({
             console.log('云开发初始化成功，环境ID:', this.globalData.cloudEnv);
         }
 
+        // 启动在线状态心跳上报
+        this.startHeartbeat();
+
         // 获取用户位置（首次登录时获取）
         this.getUserLocation();
 
@@ -86,8 +89,41 @@ App({
     },
     onHide() {
         this.appIMDelegate.onHide();
+        this.stopHeartbeat();
     },
     onShow(options) {
         this.appIMDelegate.onShow(options);
+        // 回到前台时恢复在线心跳
+        this.startHeartbeat();
+    },
+
+    // 在线状态心跳：定期上报用户在线
+    startHeartbeat() {
+        if (this._heartbeatTimer) return;
+
+        const sendHeartbeat = () => {
+            const userInfo = wx.getStorageSync('user_info') || {};
+            wx.cloud.callFunction({
+                name: 'updateOnlineStatus',
+                data: {
+                    userID: userInfo.userID || '',
+                    nickName: userInfo.nickName || '',
+                    avatarUrl: userInfo.avatarUrl || ''
+                }
+            }).catch(err => {
+                console.warn('在线心跳上报失败:', err);
+            });
+        };
+
+        sendHeartbeat();
+        this._heartbeatTimer = setInterval(sendHeartbeat, 20000); // 每20秒上报一次
+    },
+
+    // 停止在线状态心跳
+    stopHeartbeat() {
+        if (this._heartbeatTimer) {
+            clearInterval(this._heartbeatTimer);
+            this._heartbeatTimer = null;
+        }
     }
 });

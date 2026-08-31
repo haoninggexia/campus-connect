@@ -4,6 +4,7 @@ cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 })
 const db = cloud.database()
+const _ = db.command
 
 /**
  * 定时清理超时的聊天室
@@ -46,6 +47,19 @@ exports.main = async (event, context) => {
       }
     }
     
+    // 清理超时的在线状态记录（超过3分钟未心跳视为离线）
+    try {
+      const staleOnlineRes = await db.collection('online_users')
+        .where({
+          lastActiveTime: _.lt(new Date(Date.now() - timeoutThreshold))
+        })
+        .remove()
+      const removedOnline = (staleOnlineRes.stats && staleOnlineRes.stats.removed) || 0
+      console.log(`清理过期在线状态记录 ${removedOnline} 条`)
+    } catch (e) {
+      console.error('清理过期在线状态记录失败:', e)
+    }
+
     return {
       code: 0,
       msg: `清理完成，共清理 ${cleanedCount} 个超时房间`

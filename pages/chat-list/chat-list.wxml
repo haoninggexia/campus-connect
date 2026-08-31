@@ -12,6 +12,23 @@
   </view>
 </view>
 
+<!-- 实时在线人数 -->
+<view class="online-stats">
+  <view class="online-dot"></view>
+  <text class="online-label">实时在线</text>
+  <text class="online-count">{{onlineCount}}</text>
+  <text class="online-unit">人</text>
+</view>
+
+<!-- 创建房间按钮 -->
+<view class="create-room-section">
+  <button class="create-btn" bindtap="onCreateRoom" type="primary">
+    + 创建新聊天室
+  </button>
+  <view class="tip-text">创建新房间后，等待其他人加入即可开始聊天</view>
+  <view class="tip-text">只显示有且仅有一人的房间</view>
+</view>
+
 <!-- 在线聊天室区域 -->
 <view class="online-chat-section">
   <!-- 大学选择 -->
@@ -25,15 +42,6 @@
         {{uni}}
       </view>
     </scroll-view>
-  </view>
-
-  <!-- 创建房间按钮 -->
-  <view class="create-room-section">
-    <button class="create-btn" bindtap="onCreateRoom" type="primary">
-      + 创建新聊天室
-    </button>
-    <view class="tip-text">创建新房间后，等待其他人加入即可开始聊天</view>
-    <view class="tip-text">只显示有且仅有一人的房间</view>
   </view>
 
   <!-- 房间列表 -->

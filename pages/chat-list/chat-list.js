@@ -21,7 +21,8 @@ Page({
         userInfo: {},
         loading: false,
         pollingTimer: null,
-        isPollingLoading: false // 防止并发加载
+        isPollingLoading: false, // 防止并发加载
+        onlineCount: 0 // 实时在线人数
     },
 
     /**
@@ -203,7 +204,10 @@ Page({
                         genderSymbol: gender === '男' ? '♂' : (gender === '女' ? '♀' : '')
                     };
                 });
-                this.setData({ rooms: processedRooms });
+                this.setData({
+                    rooms: processedRooms,
+                    onlineCount: res.result.onlineCount || 0
+                });
                 this._pollingFailCount = 0; // 成功时重置失败计数
             }
         } catch (e) {
