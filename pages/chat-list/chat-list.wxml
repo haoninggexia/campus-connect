@@ -1,17 +1,5 @@
 <import src="view/chat-item.wxml"/>
 
-<!-- 顶部用户信息栏 -->
-<view class="header-user-info" bindtap="onToMyProfile">
-  <image class="my-avatar" src="{{myAvatar}}" mode="aspectFill"></image>
-  <view class="my-info">
-    <text class="my-name">{{myNickName}}</text>
-    <text class="my-id">ID: {{myUserID}}</text>
-  </view>
-  <view class="my-actions">
-    <text class="arrow">›</text>
-  </view>
-</view>
-
 <!-- 实时在线人数 -->
 <view class="online-stats">
   <view class="online-dot"></view>
