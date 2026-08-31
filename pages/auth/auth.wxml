@@ -1,6 +1,6 @@
 <view class="auth-container">
   <view class="header">
-    <image src="/image/my_head.jpeg" class="logo" mode="aspectFit"></image>
+    <image src="/image/login_logo.jpg" class="logo" mode="aspectFit"></image>
     <text class="title">校有磁力</text>
     <text class="subtitle">山东中医药大学（槐荫校区）</text>
   </view>
