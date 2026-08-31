@@ -16,6 +16,9 @@
     "navigationBarTitleText": "N E O N",
     "navigationBarTextStyle": "white"
   },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
   "permission": {
     "scope.userLocation": {
       "desc": "用于计算用户之间的距离"
