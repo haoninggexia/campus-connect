@@ -1,24 +1,30 @@
 <view class="auth-container">
   <view class="header">
     <image src="/image/login_logo.jpg" class="logo" mode="aspectFit"></image>
-    <text class="title">校有磁力</text>
+    <text class="title">你的回声谷</text>
     <text class="subtitle">山东中医药大学（槐荫校区）</text>
   </view>
 
   <view class="form">
     <button
-      class="btn-login"
+      class="btn-login {{agreed ? '' : 'btn-login-disabled'}}"
       open-type="getUserInfo"
       bindgetuserinfo="onLogin"
+      disabled="{{!agreed}}"
     >
       微信授权登录
     </button>
 
-    <view class="tips">
-      <text>登录即表示同意</text>
-      <text class="link">用户协议</text>
-      <text>和</text>
-      <text class="link">隐私政策</text>
+    <view class="agreement-row" bindtap="toggleAgreement">
+      <view class="checkbox {{agreed ? 'checkbox-checked' : ''}}">
+        <view wx:if="{{agreed}}" class="checkbox-check"></view>
+      </view>
+      <view class="agreement-text">
+        <text>我已阅读并同意</text>
+        <text class="link" catchtap="goUserAgreement">《用户协议》</text>
+        <text>和</text>
+        <text class="link" catchtap="goPrivacyPolicy">《隐私政策》</text>
+      </view>
     </view>
   </view>
 </view>

@@ -1,5 +1,6 @@
 Page({
   data: {
+    agreed: false
   },
 
   onLoad(options) {
@@ -18,7 +19,26 @@ Page({
     }
   },
 
+  toggleAgreement() {
+    this.setData({ agreed: !this.data.agreed })
+  },
+
+  goUserAgreement(e) {
+    if (e && e.stopPropagation) e.stopPropagation()
+    wx.navigateTo({ url: '/pages/user-agreement/user-agreement' })
+  },
+
+  goPrivacyPolicy(e) {
+    if (e && e.stopPropagation) e.stopPropagation()
+    wx.navigateTo({ url: '/pages/privacy-policy/privacy-policy' })
+  },
+
   async onLogin(e) {
+    if (!this.data.agreed) {
+      wx.showToast({ title: '请先阅读并同意协议', icon: 'none' })
+      return
+    }
+
     // 1. 获取微信用户信息
     const { userInfo } = e.detail
     if (!userInfo) {

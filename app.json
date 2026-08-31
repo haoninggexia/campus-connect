@@ -8,7 +8,9 @@
     "pages/chat-input/chat-input",
     "pages/rooms-list/rooms-list",
     "pages/chat-room/chat-room",
-    "pages/font-size/font-size"
+    "pages/font-size/font-size",
+    "pages/user-agreement/user-agreement",
+    "pages/privacy-policy/privacy-policy"
   ],
   "window": {
     "backgroundTextStyle": "dark",

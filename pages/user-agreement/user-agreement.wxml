@@ -1,0 +1,33 @@
+<view class="page-container">
+  <view class="card">
+    <view class="title">你的回声谷 用户协议</view>
+    <view class="section">
+      <view class="section-title">一、总则</view>
+      <view class="section-content">欢迎使用你的回声谷小程序。本协议是您（以下简称“用户”）与本小程序运营方之间关于使用本小程序服务所订立的协议。请您仔细阅读本协议，如您不同意本协议任何内容，请停止使用本小程序。</view>
+    </view>
+    <view class="section">
+      <view class="section-title">二、服务内容</view>
+      <view class="section-content">你的回声谷为山东中医药大学（槐荫校区）师生提供校园社交、即时通讯、聊天室互动等服务。具体服务内容以本小程序实际提供为准。</view>
+    </view>
+    <view class="section">
+      <view class="section-title">三、用户行为规范</view>
+      <view class="section-content">用户在使用本服务过程中，应遵守国家法律法规，不得发布违法违规、色情低俗、暴力恐怖、侵权抄袭、骚扰辱骂等内容，不得从事任何影响本小程序正常运营或损害其他用户合法权益的行为。</view>
+    </view>
+    <view class="section">
+      <view class="section-title">四、账号管理</view>
+      <view class="section-content">用户应妥善保管自己的账号信息，不得转让、出借或以任何方式许可他人使用。因用户保管不善导致账号被盗或信息泄露，由用户自行承担责任。</view>
+    </view>
+    <view class="section">
+      <view class="section-title">五、免责声明</view>
+      <view class="section-content">本小程序将尽力为用户提供优质服务，但不对因网络、设备、第三方服务等原因导致的服务中断、数据丢失等承担责任。</view>
+    </view>
+    <view class="section">
+      <view class="section-title">六、协议变更</view>
+      <view class="section-content">本小程序有权根据法律法规及运营需要不时修订本协议，并在本页面进行公示。修订后的协议一经公示即生效，用户继续使用本服务视为同意修订后的协议。</view>
+    </view>
+    <view class="section">
+      <view class="section-title">七、联系我们</view>
+      <view class="section-content">如您对本协议有任何疑问，可通过以下方式与我们联系：客服电话：18953147694；邮箱：3085985620@qq.com。</view>
+    </view>
+  </view>
+</view>
