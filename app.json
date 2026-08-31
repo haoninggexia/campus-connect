@@ -17,13 +17,8 @@
     "navigationBarTextStyle": "white"
   },
   "requiredPrivateInfos": [
-    "getLocation"
+    "getFuzzyLocation"
   ],
-  "permission": {
-    "scope.userLocation": {
-      "desc": "用于计算用户之间的距离"
-    }
-  },
   "tabBar": {
     "custom": true,
     "selectedColor": "#00ffff",

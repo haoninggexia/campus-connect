@@ -51,11 +51,10 @@ Page({
     this.startPolling()
   },
 
-  // 获取当前位置
+  // 获取当前位置（模糊定位，精度为公里级）
   getCurrentLocation() {
-    wx.getLocation({
+    wx.getFuzzyLocation({
       type: 'gcj02',
-      altitude: false,
       success: (res) => {
         const location = {
           latitude: res.latitude,
@@ -64,10 +63,10 @@ Page({
         this.setData({
           myLocation: location
         })
-        console.log('获取最新位置成功:', location)
+        console.log('获取模糊位置成功:', location)
       },
       fail: (err) => {
-        console.log('获取位置失败:', err)
+        console.log('获取模糊位置失败（请确认已申请 getFuzzyLocation 接口权限）:', err)
       }
     })
   },

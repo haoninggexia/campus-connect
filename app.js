@@ -43,49 +43,22 @@ App({
         this.appIMDelegate.onLaunch(options);
     },
 
-    // 获取用户位置
+    // 获取用户位置（模糊定位，精度为公里级，无需授权弹窗）
     getUserLocation() {
-        const locationRequested = wx.getStorageSync('location_permission_requested');
-
-        if (locationRequested) {
-            // 已经请求过位置权限，尝试静默获取
-            wx.getLocation({
-                type: 'gcj02',
-                altitude: false,
-                success: (res) => {
-                    const location = {
-                        latitude: res.latitude,
-                        longitude: res.longitude
-                    };
-                    this.globalData.userLocation = location;
-                    console.log('静默获取位置成功:', location);
-                },
-                fail: (err) => {
-                    console.log('静默获取位置失败（可能用户之前拒绝了权限）:', err);
-                    // 静默失败，不进行任何提示
-                }
-            });
-        } else {
-            // 首次请求位置权限
-            wx.getLocation({
-                type: 'gcj02',
-                altitude: false,
-                success: (res) => {
-                    const location = {
-                        latitude: res.latitude,
-                        longitude: res.longitude
-                    };
-                    this.globalData.userLocation = location;
-                    wx.setStorageSync('location_permission_requested', true);
-                    console.log('首次获取位置成功:', location);
-                },
-                fail: (err) => {
-                    console.log('获取位置失败:', err);
-                    // 无论成功还是失败，都标记为已请求，避免重复提示
-                    wx.setStorageSync('location_permission_requested', true);
-                }
-            });
-        }
+        wx.getFuzzyLocation({
+            type: 'gcj02',
+            success: (res) => {
+                const location = {
+                    latitude: res.latitude,
+                    longitude: res.longitude
+                };
+                this.globalData.userLocation = location;
+                console.log('获取模糊位置成功:', location);
+            },
+            fail: (err) => {
+                console.log('获取模糊位置失败（请确认已申请 getFuzzyLocation 接口权限）:', err);
+            }
+        });
     },
     onHide() {
         this.appIMDelegate.onHide();
