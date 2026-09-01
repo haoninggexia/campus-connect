@@ -99,6 +99,14 @@ Page({
             sourceType: chooseIndex === 0 ? ['album'] : ['camera'],
             success: (res) => {
                 this.msgManager.sendMsg({type: IMOperator.ImageType, content: res.tempFilePaths[0]})
+            },
+            fail: (err) => {
+                console.error('选择图片失败:', err);
+                wx.showToast({
+                    title: '打开相册失败，请检查权限',
+                    icon: 'none',
+                    duration: 2000
+                });
             }
         });
     },

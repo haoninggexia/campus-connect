@@ -66,14 +66,15 @@ Page({
     // 获取当前用户信息
     const userInfo = wx.getStorageSync('user_info') || {};
 
-    // 获取用户扩展信息
-    this.loadUserProfile();
-
+    // 先设置 userInfo，再加载扩展资料（否则 this.data.userInfo.userID 为 undefined）
     this.setData({
       userInfo: userInfo
     });
 
     console.log('当前用户信息', userInfo);
+
+    // 获取用户扩展信息
+    this.loadUserProfile();
   },
 
   /**
@@ -189,20 +190,61 @@ Page({
    * 选择头像
    */
   onChooseAvatar() {
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const tempFile = res.tempFiles[0].tempFilePath;
-        this.setData({
-          tempAvatar: tempFile,
-          'userInfo.customAvatar': tempFile,
-          tempAvatarUrl: null // 清空临时链接
-        });
-        this._autoSave(true);
+    // 添加加载反馈，避免"点了没反应"的感觉
+    wx.showLoading({ title: '正在打开...', mask: true });
+
+    const chooseSuccess = (res) => {
+      wx.hideLoading();
+      const tempFile = res.tempFiles[0].tempFilePath;
+      this.setData({
+        tempAvatar: tempFile,
+        'userInfo.customAvatar': tempFile,
+        tempAvatarUrl: null // 清空临时链接
+      });
+      this._autoSave(true);
+    };
+
+    const chooseFail = (err) => {
+      wx.hideLoading();
+      console.error('选择头像失败:', err);
+      // 用户主动取消选择，静默处理，不弹错误提示
+      if (err && err.errMsg && err.errMsg.indexOf('cancel') !== -1) {
+        return;
       }
-    });
+      // 关键：给用户明确的反馈，而不是无响应
+      wx.showToast({
+        title: '打开相册失败，请检查权限',
+        icon: 'none',
+        duration: 2000
+      });
+    };
+
+    // 优先使用 chooseMedia，如果不可用则回退到 chooseImage
+    if (wx.chooseMedia) {
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sourceType: ['album', 'camera'],
+        success: chooseSuccess,
+        fail: chooseFail
+      });
+    } else {
+      wx.chooseImage({
+        count: 1,
+        sourceType: ['album', 'camera'],
+        success: (res) => {
+          wx.hideLoading();
+          const tempFile = res.tempFilePaths[0];
+          this.setData({
+            tempAvatar: tempFile,
+            'userInfo.customAvatar': tempFile,
+            tempAvatarUrl: null // 清空临时链接
+          });
+          this._autoSave(true);
+        },
+        fail: chooseFail
+      });
+    }
   },
 
   /**
@@ -216,22 +258,64 @@ Page({
       return; // 已经有照片了
     }
 
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const newPhotos = [...currentPhotos];
-        const newTempUrls = [...this.data.tempPhotoUrls];
-        newPhotos[index] = res.tempFiles[0].tempFilePath;
-        newTempUrls[index] = null; // 清空临时链接，使用本地文件
-        this.setData({
-          selectedPhotos: newPhotos,
-          tempPhotoUrls: newTempUrls
-        });
-        this._autoSave(true);
+    // 添加加载反馈，避免"点了没反应"的感觉
+    wx.showLoading({ title: '正在打开...', mask: true });
+
+    const chooseSuccess = (res) => {
+      wx.hideLoading();
+      const newPhotos = [...currentPhotos];
+      const newTempUrls = [...this.data.tempPhotoUrls];
+      newPhotos[index] = res.tempFiles[0].tempFilePath;
+      newTempUrls[index] = null; // 清空临时链接，使用本地文件
+      this.setData({
+        selectedPhotos: newPhotos,
+        tempPhotoUrls: newTempUrls
+      });
+      this._autoSave(true);
+    };
+
+    const chooseFail = (err) => {
+      wx.hideLoading();
+      console.error('选择照片失败:', err);
+      // 用户主动取消选择，静默处理，不弹错误提示
+      if (err && err.errMsg && err.errMsg.indexOf('cancel') !== -1) {
+        return;
       }
-    });
+      wx.showToast({
+        title: '打开相册失败，请检查权限',
+        icon: 'none',
+        duration: 2000
+      });
+    };
+
+    // 优先使用 chooseMedia，如果不可用则回退到 chooseImage
+    if (wx.chooseMedia) {
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sourceType: ['album', 'camera'],
+        success: chooseSuccess,
+        fail: chooseFail
+      });
+    } else {
+      wx.chooseImage({
+        count: 1,
+        sourceType: ['album', 'camera'],
+        success: (res) => {
+          wx.hideLoading();
+          const newPhotos = [...currentPhotos];
+          const newTempUrls = [...this.data.tempPhotoUrls];
+          newPhotos[index] = res.tempFilePaths[0];
+          newTempUrls[index] = null; // 清空临时链接，使用本地文件
+          this.setData({
+            selectedPhotos: newPhotos,
+            tempPhotoUrls: newTempUrls
+          });
+          this._autoSave(true);
+        },
+        fail: chooseFail
+      });
+    }
   },
 
   /**

@@ -118,7 +118,14 @@ Page({
         }
 
         // 等待一小段时间，确保TIM已初始化
-        await this.waitForTIMReady();
+        const isTimReady = await this.waitForTIMReady();
+
+        // TIM未就绪时跳过会话加载，避免 sdk not ready 报错
+        // （SDK_READY 后会通过 CONVERSATION_LIST_UPDATED 事件自动刷新会话）
+        if (!isTimReady) {
+            console.warn('TIM未就绪，本次跳过会话加载');
+            return;
+        }
 
         // 加载TIM会话
         this.loadConversations();
@@ -367,8 +374,8 @@ Page({
     async loadConversations() {
         try {
             const imHandler = getApp().getIMHandler();
-            if (!imHandler) {
-                console.warn('IM handler 未初始化，跳过会话加载');
+            if (!imHandler || !imHandler._isLogin) {
+                console.warn('IM handler 未就绪，跳过会话加载');
                 return;
             }
 
@@ -393,7 +400,7 @@ Page({
         }
     },
 
-    // 等待TIM初始化
+    // 等待TIM初始化，就绪返回 true，超时返回 false
     waitForTIMReady() {
         return new Promise((resolve) => {
             let count = 0;
@@ -402,7 +409,7 @@ Page({
             const check = () => {
                 if (count >= maxCount) {
                     console.log('等待TIM初始化超时，SDK可能无法连接（请检查socket合法域名是否配置了 wss://wss.im.qcloud.com）');
-                    resolve();
+                    resolve(false);
                     return;
                 }
 
@@ -410,7 +417,7 @@ Page({
                     const handler = getApp().getIMHandler();
                     if (handler && handler._isLogin) {
                         console.log('TIM已就绪');
-                        resolve();
+                        resolve(true);
                         return;
                     }
                 } catch (e) {

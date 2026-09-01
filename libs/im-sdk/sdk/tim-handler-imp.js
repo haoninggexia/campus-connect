@@ -260,6 +260,13 @@ export default class TIMHandlerImp extends IIMHandler {
             return [];
         }
 
+        // SDK 未就绪时不要调用，避免 code 3000 (sdk not ready) 报错
+        // SDK_READY 后 CONVERSATION_LIST_UPDATED 事件会自动推送会话列表
+        if (!this._isLogin) {
+            console.warn('TIM SDK未就绪，跳过获取会话列表（等待 SDK_READY 后自动刷新）');
+            return [];
+        }
+
         try {
             const list = await this._tim.getConversationList();
             return this._convertConversations(list.data);
