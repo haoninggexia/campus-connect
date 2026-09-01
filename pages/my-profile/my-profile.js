@@ -9,6 +9,8 @@ Page({
     bioLength: 0,
     tempAvatarUrl: null, // 缓存头像临时链接
     tempPhotoUrls: [], // 缓存照片临时链接
+    savedPhotos: [], // 已保存到云存储的照片 cloud:// 路径
+    savedCustomAvatar: null, // 已保存到云存储的头像 cloud:// 路径
     gradeOptions: ['2015级', '2016级', '2017级', '2018级', '2019级', '2020级', '2021级', '2022级', '2023级', '2024级', '2025级', '2026级', '2027级'], // 年级选项
     genderOptions: ['男', '女'] // 性别选项
   },
@@ -99,10 +101,13 @@ Page({
         console.log('临时头像链接:', profile.customAvatarTemp);
         console.log('临时照片链接:', profile.photosTemp);
 
-        // 使用临时下载链接
+        // 使用临时下载链接显示；同时保留原始 cloud:// 路径，
+        // 供保存时区分"本地新文件（需上传）"和"云端已有文件（直接保留）"
         this.setData({
           selectedPhotos: profile.photosTemp || [],
-          'userInfo.customAvatar': profile.customAvatarTemp,
+          savedPhotos: profile.photos || [],
+          'userInfo.customAvatar': profile.customAvatarTemp || profile.customAvatar,
+          savedCustomAvatar: profile.customAvatar,
           'userInfo.bio': profile.bio,
           'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
           'userInfo.grade': profile.grade || '',
@@ -155,7 +160,9 @@ Page({
 
         this.setData({
           selectedPhotos: compactPhotos,
+          savedPhotos: compactPhotos,
           'userInfo.customAvatar': profile.customAvatar,
+          savedCustomAvatar: profile.customAvatar,
           'userInfo.bio': profile.bio,
           'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
           'userInfo.grade': profile.grade || '',
@@ -325,11 +332,14 @@ Page({
     const index = e.currentTarget.dataset.index;
     const newPhotos = [...this.data.selectedPhotos];
     const newTempUrls = [...this.data.tempPhotoUrls];
+    const newSavedPhotos = [...this.data.savedPhotos];
     newPhotos[index] = '';
     newTempUrls[index] = null;
+    newSavedPhotos[index] = '';
     this.setData({
       selectedPhotos: newPhotos,
-      tempPhotoUrls: newTempUrls
+      tempPhotoUrls: newTempUrls,
+      savedPhotos: newSavedPhotos
     });
     this._autoSave(true);
   },
@@ -402,6 +412,16 @@ Page({
   },
 
   /**
+   * 判断是否为本地临时文件（需要上传到云存储）
+   * 开发者工具中 chooseMedia 返回 http://tmp/...，真机返回 wxfile://tmp_...
+   * https:// 临时下载链接、cloud:// 云文件路径都不是本地文件，不能传给 wx.cloud.uploadFile
+   */
+  _isLocalTempFile(filePath) {
+    if (!filePath || typeof filePath !== 'string') return false;
+    return filePath.startsWith('wxfile://') || filePath.startsWith('http://tmp/');
+  },
+
+  /**
    * 上传文件到云存储
    */
   uploadFile(filePath) {
@@ -464,21 +484,31 @@ Page({
         bioLength: (userInfo.bio || '').length
       });
 
-      // 上传头像
+      // 上传头像：仅本地新选择的文件需要上传
       let customAvatar = userInfo.customAvatar;
-      if (customAvatar && !customAvatar.startsWith('cloud://')) {
+      if (this._isLocalTempFile(customAvatar)) {
         customAvatar = await this.uploadFile(customAvatar);
+      } else if (customAvatar && !customAvatar.startsWith('cloud://')) {
+        // 显示的是临时下载链接（https://）等非本地文件，回退到已保存的 cloud:// 路径
+        customAvatar = this.data.savedCustomAvatar || customAvatar;
       }
 
-      // 上传照片
+      // 上传照片：仅本地新选择的文件需要上传
       const uploadedPhotos = [];
       for (let i = 0; i < this.data.selectedPhotos.length; i++) {
         const photo = this.data.selectedPhotos[i];
-        if (photo && !photo.startsWith('cloud://')) {
-          const uploaded = await this.uploadFile(photo);
-          uploadedPhotos[i] = uploaded;
-        } else {
+        if (this._isLocalTempFile(photo)) {
+          // 本地新选的照片，上传到云存储
+          uploadedPhotos[i] = await this.uploadFile(photo);
+        } else if (photo && photo.startsWith('cloud://')) {
+          // 已是云文件，直接使用
           uploadedPhotos[i] = photo;
+        } else if (this.data.savedPhotos[i]) {
+          // 显示的是临时下载链接，回退到已保存的 cloud:// 路径
+          uploadedPhotos[i] = this.data.savedPhotos[i];
+        } else {
+          // 空值或无效值，置空（保存时会被过滤）
+          uploadedPhotos[i] = '';
         }
       }
 
@@ -530,8 +560,11 @@ Page({
       wx.setStorageSync('user_info', storedUserInfo);
 
       // 更新本地显示：显式保存时保持原样等 loadUserProfile 刷新；自动保存时合并更新
+      const compactUploaded = uploadedPhotos.filter(p => p && typeof p === 'string' && p.trim() !== '');
       const setDataUpdates = {
-        'userInfo.customAvatar': customAvatar
+        'userInfo.customAvatar': customAvatar,
+        savedCustomAvatar: customAvatar,
+        savedPhotos: compactUploaded
       };
       if (!showToast) {
         // 合并策略：已上传的换用 cloud:// URL，保留保存期间用户新增的临时文件

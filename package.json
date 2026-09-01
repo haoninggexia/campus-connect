@@ -6,9 +6,6 @@
     "server": "node server.js"
   },
   "dependencies": {
-    "nodejs-websocket": "^1.7.1",
-    "tim-wx-sdk": "^2.27.6",
-    "wechat-mini-programs-apis": "^1.6.2",
-    "wx-server-sdk": "^3.0.4"
+    "nodejs-websocket": "^1.7.1"
   }
 }

@@ -1,6 +1,6 @@
 import IIMHandler from "../interface/i-im-handler";
-// 使用miniprogram_npm模块加载TIM SDK
-const TIM = require('tim-wx-sdk');
+// 直接加载项目根目录的 TIM SDK 文件（不再依赖 miniprogram_npm / 构建 npm）
+const TIM = require('../../../tim-wx.js');
 console.log('TIM SDK版本:', TIM.VERSION || 'unknown');
 
 /**
