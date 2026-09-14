@@ -3,7 +3,7 @@
   <view class="bg-glow"></view>
 
   <view class="content" wx:if="{{loaded}}">
-    <view class="logo">N E O N</view>
+    <view class="logo" bindlongpress="onSecretLongPress">你的回声谷</view>
 
     <view class="status-badge">
       <view class="dot"></view>
@@ -30,7 +30,7 @@
   </view>
 
   <view class="content" wx:else>
-    <view class="logo">N E O N</view>
+    <view class="logo" bindlongpress="onSecretLongPress">你的回声谷</view>
     <view class="loading-text">正在检查开放状态...</view>
   </view>
 </view>

@@ -103,4 +103,7 @@
       <text class="tip-text">性别一旦选择将无法修改，请谨慎选择</text>
     </view>
   </view>
+
+  <!-- 隐藏入口：连续点击版本号 7 次进入管理页 -->
+  <view class="version-text" bindtap="onVersionTap">你的回声谷 v1.0.0</view>
 </view>

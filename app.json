@@ -10,13 +10,14 @@
     "pages/rooms-list/rooms-list",
     "pages/chat-room/chat-room",
     "pages/font-size/font-size",
+    "pages/admin-config/admin-config",
     "pages/user-agreement/user-agreement",
     "pages/privacy-policy/privacy-policy"
   ],
   "window": {
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#0a0a12",
-    "navigationBarTitleText": "N E O N",
+    "navigationBarTitleText": "你的回声谷",
     "navigationBarTextStyle": "white"
   },
   "requiredPrivateInfos": [

@@ -753,5 +753,36 @@ Page({
         }
       }
     });
+  },
+
+  /**
+   * 隐藏入口：3 秒内连续点击版本号 7 次进入管理页
+   * 页面本身不提供任何可见的“管理”按钮
+   */
+  onVersionTap() {
+    const now = Date.now();
+    if (!this._versionTapAt || now - this._versionTapAt > 3000) {
+      this._versionTapCount = 0;
+    }
+    this._versionTapAt = now;
+    this._versionTapCount = (this._versionTapCount || 0) + 1;
+
+    if (this._versionTapCount >= 7) {
+      this._versionTapCount = 0;
+      wx.navigateTo({
+        url: '/pages/admin-config/admin-config',
+        fail: (e) => console.error('打开管理页失败:', e)
+      });
+      return;
+    }
+
+    // 点到第 4 次时给个微弱提示，避免用户以为没反应
+    if (this._versionTapCount >= 4) {
+      wx.showToast({
+        title: `再点 ${7 - this._versionTapCount} 次进入管理`,
+        icon: 'none',
+        duration: 800
+      });
+    }
   }
 });

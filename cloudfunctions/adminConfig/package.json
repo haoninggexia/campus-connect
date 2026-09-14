@@ -1,0 +1,9 @@
+{
+  "name": "adminConfig",
+  "version": "1.0.0",
+  "description": "隐藏管理页：开放时间配置读写（密码 + openid 白名单鉴权）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

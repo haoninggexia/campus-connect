@@ -144,6 +144,17 @@ Page({
     return n < 10 ? '0' + n : '' + n
   },
 
+  // 隐藏入口：长按 LOGO 打开管理页（页面无任何可见入口）
+  // 返回本页时 onShow 会重新拉取状态，保存的配置即时可见
+  onSecretLongPress() {
+    wx.navigateTo({
+      url: '/pages/admin-config/admin-config',
+      fail: (e) => {
+        console.error('打开管理页失败（请确认已部署并注册页面）:', e)
+      }
+    })
+  },
+
   enterApp() {
     if (this._entering) return
     this._entering = true

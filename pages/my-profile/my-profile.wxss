@@ -339,3 +339,13 @@
   line-height: 1.6;
   flex: 1;
 }
+
+/* 隐藏入口：连续点击版本号 7 次进入管理页 */
+.version-text {
+  margin-top: 40rpx;
+  padding: 20rpx 0 40rpx;
+  text-align: center;
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  color: #3a4266;
+}

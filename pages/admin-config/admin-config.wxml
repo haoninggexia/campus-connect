@@ -1,0 +1,213 @@
+<!--pages/admin-config/admin-config.wxml-->
+<wxs module="u">
+module.exports = {
+  has: function (arr, v) {
+    if (!arr) return false
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] === v) return true
+    }
+    return false
+  },
+  isAll: function (arr) {
+    return !!arr && arr.length === 7
+  }
+}
+</wxs>
+
+<view class="page">
+  <!-- ==================== 登录 ==================== -->
+  <view class="login" wx:if="{{!verified}}">
+    <view class="lock-icon">⚙</view>
+    <view class="login-title">控 制 台</view>
+    <view class="login-sub">请输入管理密码</view>
+
+    <input
+      class="pwd-input"
+      type="text"
+      password="{{true}}"
+      value="{{pwd}}"
+      placeholder="管理密码"
+      placeholder-class="pwd-placeholder"
+      bindinput="onPwdInput"
+      confirm-type="done"
+      bindconfirm="onLogin"
+    />
+
+    <button class="primary-btn" bindtap="onLogin" loading="{{logging}}" hover-class="none">
+      进 入
+    </button>
+
+    <view class="hint" wx:if="{{hint}}">{{hint}}</view>
+    <view class="hint subtle" wx:if="{{lockTip}}">{{lockTip}}</view>
+  </view>
+
+  <!-- ==================== 管理主体 ==================== -->
+  <view class="main" wx:else>
+
+    <!-- 实时状态 -->
+    <view class="card status-card {{status.isOpen ? 'is-open' : 'is-closed'}}">
+      <view class="status-head">
+        <view class="status-badge">
+          <view class="dot"></view>
+          <text>{{!status ? '检测中' : (status.isOpen ? '开放中' : '未开放')}}</text>
+        </view>
+        <text class="refresh-link" bindtap="refreshStatus">{{statusChecking ? '刷新中...' : '刷新'}}</text>
+      </view>
+
+      <view class="status-line" wx:if="{{status}}">
+        <text class="k">判定</text>
+        <text class="v">{{statusReasonText}}</text>
+      </view>
+      <view class="status-line" wx:if="{{serverTimeStr}}">
+        <text class="k">服务端时间</text>
+        <text class="v">{{serverTimeStr}}</text>
+      </view>
+      <view class="status-line" wx:if="{{status.todayWindowsText}}">
+        <text class="k">今日时段</text>
+        <text class="v">{{status.todayWindowsText}}</text>
+      </view>
+      <view class="status-line" wx:if="{{status.nextOpenTimeStr}}">
+        <text class="k">下次开放</text>
+        <text class="v">{{status.nextOpenDateStr}} {{status.nextOpenTimeStr}}</text>
+      </view>
+      <view class="status-msg" wx:if="{{status.message}}">{{status.message}}</view>
+      <view class="status-msg empty" wx:if="{{status && !status.message}}">当前无提示语</view>
+    </view>
+
+    <!-- 基础配置 -->
+    <view class="card">
+      <view class="card-title">基础配置</view>
+
+      <view class="row">
+        <view class="row-left">
+          <text class="row-label">开启时间限制</text>
+          <text class="row-tip">关闭后全天开放，不限制任何时段</text>
+        </view>
+        <switch checked="{{enabled}}" color="#00ffff" bindchange="onToggleEnabled" />
+      </view>
+
+      <view class="row column">
+        <text class="row-label">自定义提示语</text>
+        <text class="row-tip">未开放时展示给用户的文案，留空则显示“今晚 xx:xx 开放”</text>
+        <input
+          class="text-input"
+          value="{{message}}"
+          maxlength="100"
+          placeholder="例如：今晚 21:00 开放，敬请期待"
+          placeholder-class="ph"
+          bindinput="onMessageInput"
+        />
+      </view>
+    </view>
+
+    <!-- 开放时段 -->
+    <view class="card">
+      <view class="card-title">
+        <text>开放时段</text>
+        <text class="card-action" bindtap="onAddWindow">+ 添加</text>
+      </view>
+
+      <view class="window-item" wx:for="{{windows}}" wx:key="id">
+        <view class="window-head">
+          <text class="window-idx">时段 {{index + 1}}</text>
+          <text class="window-del" bindtap="onRemoveWindow" data-index="{{index}}">删除</text>
+        </view>
+
+        <view class="days">
+          <view
+            class="day-chip {{u.has(item.days, dIdx + 1) ? 'active' : ''}}"
+            wx:for="{{weekLabels}}"
+            wx:for-item="label"
+            wx:for-index="dIdx"
+            wx:key="*this"
+            data-index="{{index}}"
+            data-day="{{dIdx + 1}}"
+            bindtap="onDaysTap"
+          >{{label}}</view>
+          <view class="day-all" data-index="{{index}}" bindtap="onPickAllDays">
+            {{u.isAll(item.days) ? '取消全选' : '全选'}}
+          </view>
+        </view>
+
+        <view class="row-tip" wx:if="{{item.days.length === 0}}">未选择任何星期 = 每天生效</view>
+
+        <view class="time-row">
+          <picker mode="time" value="{{item.start}}" data-index="{{index}}" bindchange="onStartChange">
+            <view class="time-pill">{{item.start}}</view>
+          </picker>
+          <text class="tilde">→</text>
+          <picker mode="time" value="{{item.end}}" data-index="{{index}}" bindchange="onEndChange">
+            <view class="time-pill">{{item.end}}</view>
+          </picker>
+          <text class="cross-tip" wx:if="{{item.end <= item.start}}">跨天</text>
+        </view>
+      </view>
+
+      <view class="empty" wx:if="{{windows.length === 0}}">暂无时段，点击右上角添加</view>
+    </view>
+
+    <!-- 特殊日期 -->
+    <view class="card">
+      <view class="card-title">
+        <text>特殊日期</text>
+        <text class="card-action" bindtap="onAddOverride">+ 添加</text>
+      </view>
+      <view class="row-tip block">优先级最高：日期命中后按此规则执行，可整体关闭或单独设时段</view>
+
+      <view class="override-item" wx:for="{{overrides}}" wx:key="id">
+        <view class="override-head">
+          <picker mode="date" value="{{item.date}}" data-index="{{index}}" bindchange="onDateChange">
+            <view class="date-pill">{{item.date}}</view>
+          </picker>
+          <view class="override-switch">
+            <text class="row-tip">暂停开放</text>
+            <switch checked="{{item.closed}}" color="#ff5252" data-index="{{index}}" bindchange="onDateClosedChange" />
+          </view>
+          <text class="window-del" bindtap="onRemoveOverride" data-index="{{index}}">删除</text>
+        </view>
+        <input
+          class="text-input"
+          value="{{item.message}}"
+          maxlength="100"
+          placeholder="该日提示语，如：国庆暂停，10月8日恢复"
+          placeholder-class="ph"
+          data-index="{{index}}"
+          bindinput="onDateMessageInput"
+        />
+      </view>
+
+      <view class="empty" wx:if="{{overrides.length === 0}}">暂无特殊日期</view>
+    </view>
+
+    <!-- 操作 -->
+    <view class="actions">
+      <button class="primary-btn" bindtap="onSave" loading="{{saving}}" hover-class="none">保 存 配 置</button>
+      <button class="ghost-btn" bindtap="onReset" hover-class="none">恢复默认（每晚 21:00-23:00）</button>
+    </view>
+
+    <!-- 安全 -->
+    <view class="card">
+      <view class="card-title">安全与访问</view>
+
+      <view class="kv" bindtap="onCopyOpenid">
+        <text class="k">我的 openid</text>
+        <text class="v mono">{{openid}}</text>
+      </view>
+      <view class="kv">
+        <text class="k">白名单状态</text>
+        <text class="v">{{whitelistCount > 0 ? ('已启用（' + whitelistCount + ' 个）') : '未启用（仅密码校验）'}}</text>
+      </view>
+
+      <view class="sub-actions">
+        <view class="link-btn" bindtap="onChangePassword">修改密码</view>
+        <view class="link-btn" bindtap="onBindOpenid">启用 openid 白名单</view>
+        <view class="link-btn" bindtap="onLogout">退出管理</view>
+      </view>
+    </view>
+
+    <view class="footer">
+      <text>保存后 getAppStatus 最长 10 秒缓存生效</text>
+      <text class="footer-time" wx:if="{{updateTimeStr}}">上次更新：{{updateTimeStr}}</text>
+    </view>
+  </view>
+</view>

@@ -102,6 +102,43 @@ exports.main = async (event, context) => {
     }
   }
 
+  // 初始化管理端配置（隐藏管理页使用，已存在则跳过）
+  try {
+    await db.collection('app_config').doc('admin').get()
+    results.push({
+      name: 'app_config/admin',
+      status: 'exists',
+      message: '管理端配置已存在'
+    })
+  } catch (e) {
+    try {
+      await db.collection('app_config').add({
+        data: {
+          _id: 'admin',
+          enabled: true,
+          salt: '',
+          password: 'echo@2026',
+          passwordHash: '',
+          openids: [],
+          remark: '管理端配置。password/passwordHash 任一匹配即可登录；openids 非空时仅白名单内 openid 可进入；enabled=false 关闭管理入口',
+          createTime: db.serverDate(),
+          updateTime: db.serverDate()
+        }
+      })
+      results.push({
+        name: 'app_config/admin',
+        status: 'created',
+        message: '默认管理配置已写入（默认密码 echo@2026，请尽快修改）'
+      })
+    } catch (err) {
+      results.push({
+        name: 'app_config/admin',
+        status: 'error',
+        message: err.errMsg || err.message || '写入管理配置失败'
+      })
+    }
+  }
+
   const successCount = results.filter(r => r.status === 'created' || r.status === 'exists').length
   const errorCount = results.filter(r => r.status === 'error').length
 
