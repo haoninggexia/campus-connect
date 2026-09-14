@@ -29,7 +29,20 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-
+        // ==================== 临时诊断代码（排查完可整段删除） ====================
+        // 拦截 setData，记录所有对 onlineCount 的写入及其调用来源
+        const originalSetData = this.setData.bind(this);
+        this.setData = (data, callback) => {
+            if (data && Object.prototype.hasOwnProperty.call(data, 'onlineCount')) {
+                const stack = (new Error().stack || '').split('\n').slice(1, 4).join(' <- ');
+                console.log('[online诊断] 写入 onlineCount =', data.onlineCount,
+                    '| 虚拟基数 =', this._fakeOnline,
+                    '| 真实人数 =', this._realOnline,
+                    '| 来源 =', stack);
+            }
+            return originalSetData(data, callback);
+        };
+        // ==================== 临时诊断代码结束 ====================
     },
 
     toChat(e) {
@@ -57,10 +70,16 @@ Page({
      * 生命周期函数--监听页面显示
      */
     async onShow() {
+        // 重置门禁标记（上次因超时被踢出后，重新进入需可再次判定）
+        this._gateClosed = false;
+
         // 更新自定义tabBar选中状态
         if (typeof this.getTabBar === 'function' && this.getTabBar()) {
             this.getTabBar().setData({ selected: 0 });
         }
+
+        // 启动虚拟在线人数（稳定显示二十几人，每分钟变化 3-4 人）
+        this.startFakeOnline();
 
         // 加载当前用户信息
         let userInfo = wx.getStorageSync('user_info') || {};
@@ -137,9 +156,58 @@ Page({
     onHide() {
         // 停止轮询
         this.stopPolling();
+        // 停止虚拟在线人数定时器
+        this.stopFakeOnline();
     },
 
     // ==================== 在线聊天室功能 ====================
+
+    // 生成 [min, max] 之间的随机整数
+    randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+
+    // 启动虚拟在线人数：虚拟基数稳定在“二十几人”，每分钟变化 3-4 人，并叠加真实人数
+    startFakeOnline() {
+        // 初始化一个二十几人的基数，只在首次进入时生成
+        if (typeof this._fakeOnline !== 'number') {
+            this._fakeOnline = this.randomInt(22, 27);
+        }
+        // 立即展示（虚拟基数 + 真实人数），避免首帧出现 0 或 1
+        console.log('[online诊断] startFakeOnline 虚拟基数 =', this._fakeOnline, '| 真实人数 =', this._realOnline);
+        this.setData({ onlineCount: this._fakeOnline + (this._realOnline || 0) });
+        // 避免重复创建定时器
+        if (this._fakeOnlineTimer) return;
+        this._fakeOnlineTimer = setInterval(() => {
+            this.updateFakeOnline();
+        }, 60 * 1000); // 每分钟变化一次
+    },
+
+    // 每分钟变化 3-4 人，虚拟基数始终保持在 20-29
+    updateFakeOnline() {
+        const current = this._fakeOnline || 24;
+        const step = this.randomInt(3, 4); // 每次变化 3-4 人
+        let direction = Math.random() < 0.5 ? -1 : 1; // 随机上升或下降
+        let next = current + direction * step;
+        // 触边时反向，保证每分钟都有 3-4 人的变化，而不是卡在边界不动
+        if (next < 20 || next > 29) {
+            next = current - direction * step;
+        }
+        // 双重兜底，确保虚拟基数始终是二十几人
+        next = Math.max(20, Math.min(29, next));
+        this._fakeOnline = next;
+        // 展示 = 虚拟基数 + 真实人数
+        console.log('[online诊断] 每分钟变化：新虚拟基数 =', next, '| 真实人数 =', this._realOnline);
+        this.setData({ onlineCount: next + (this._realOnline || 0) });
+    },
+
+    // 停止虚拟在线人数的定时器
+    stopFakeOnline() {
+        if (this._fakeOnlineTimer) {
+            clearInterval(this._fakeOnlineTimer);
+            this._fakeOnlineTimer = null;
+        }
+    },
 
     // 检查登录状态，如果未登录则跳转到登录页
     checkLogin() {
@@ -173,6 +241,28 @@ Page({
         }
     },
 
+    // 开放时间结束：停止一切轮询并回到状态页
+    handleClosed(message) {
+        if (this._gateClosed) return;
+        this._gateClosed = true;
+
+        this.stopPolling();
+        this.stopFakeOnline();
+
+        wx.showModal({
+            title: '休息时间',
+            content: message || '当前不在开放时间，请留意开放时段',
+            showCancel: false,
+            confirmText: '知道了',
+            success: () => {
+                wx.reLaunch({ url: '/pages/closed/closed' });
+            },
+            fail: () => {
+                wx.reLaunch({ url: '/pages/closed/closed' });
+            }
+        });
+    },
+
     // 切换大学
     onSwitchUniversity(e) {
         const university = e.currentTarget.dataset.university;
@@ -201,7 +291,15 @@ Page({
                 }
             });
 
+            console.log('[online诊断] 云函数 getAvailableRooms 返回原始 onlineCount =', res && res.result && res.result.onlineCount);
+
             if (res.result && res.result.code === 0) {
+                // 开放时间门禁：服务端判定已关闭 → 立即提示并回到状态页
+                if (res.result.isOpen === false) {
+                    console.log('[gate] 服务端返回未开放，停止轮询并返回状态页');
+                    this.handleClosed(res.result.closedMessage);
+                    return;
+                }
                 // 预处理房间数据，添加性别相关的样式类和符号
                 const processedRooms = (res.result.data || []).map(room => {
                     const gender = room.user1 && room.user1.gender;
@@ -211,9 +309,16 @@ Page({
                         genderSymbol: gender === '男' ? '♂' : (gender === '女' ? '♀' : '')
                     };
                 });
+                // 记录真实在线人数（虚拟基数会叠加在其之上）
+                this._realOnline = res.result.onlineCount || 0;
+                // 兜底：确保虚拟基数已初始化，避免展示 0 或 1
+                if (typeof this._fakeOnline !== 'number') {
+                    this._fakeOnline = this.randomInt(22, 27);
+                }
+                // 展示 = 虚拟基数 + 真实人数（基数每分钟才变化一次，避免 3 秒轮询造成跳动）
                 this.setData({
                     rooms: processedRooms,
-                    onlineCount: res.result.onlineCount || 0
+                    onlineCount: this._fakeOnline + this._realOnline
                 });
                 this._pollingFailCount = 0; // 成功时重置失败计数
             }
@@ -262,6 +367,8 @@ Page({
                 wx.navigateTo({
                     url: `/pages/chat-room/chat-room?roomId=${roomData.roomId}&university=${this.data.currentUniversity}&isCreator=true`
                 });
+            } else if (res.result.code === 403) {
+                this.handleClosed(res.result.msg);
             } else {
                 wx.showToast({
                     title: res.result.msg || '创建失败',
@@ -329,6 +436,8 @@ Page({
                 wx.navigateTo({
                     url: `/pages/chat-room/chat-room?roomId=${roomId}&university=${this.data.currentUniversity}&isCreator=false`
                 });
+            } else if (res.result.code === 403) {
+                this.handleClosed(res.result.msg);
             } else {
                 console.error('进入房间失败:', res.result.msg);
                 wx.showToast({

@@ -1,0 +1,11 @@
+{
+  "name": "getAppStatus",
+  "version": "1.0.0",
+  "description": "按服务端时间判定小程序是否处于开放时段",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  },
+  "author": "",
+  "license": "ISC"
+}

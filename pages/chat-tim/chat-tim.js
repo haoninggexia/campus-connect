@@ -61,6 +61,58 @@ Page({
   onShow() {
     // 滚动到底部
     this.scrollToBottom();
+
+    // 开放时间兜底：1v1 聊天走 TIM 直连，服务端无法拦截，这里做客户端拦截
+    this.getClosedStatus().then((closed) => {
+      if (closed) {
+        this.handleClosed(closed.message);
+      }
+    });
+  },
+
+  /**
+   * 获取“未开放”状态（15 秒缓存，避免频繁调用云函数）
+   * 返回 status 对象表示当前已关闭，返回 null 表示可正常使用
+   */
+  getClosedStatus() {
+    const now = Date.now();
+    if (this._statusCache && now - this._statusCache.at < 15000) {
+      return Promise.resolve(this._statusCache.status);
+    }
+
+    return wx.cloud.callFunction({
+      name: 'getAppStatus',
+      data: {}
+    }).then((res) => {
+      const status = (res && res.result) || null;
+      const closed = (status && status.code === 0 && status.enabled && !status.isOpen) ? status : null;
+      this._statusCache = { at: now, status: closed };
+      return closed;
+    }).catch((e) => {
+      console.warn('获取开放状态失败，默认放行:', e);
+      return null;
+    });
+  },
+
+  /**
+   * 已过开放时间：提示并返回状态页
+   */
+  handleClosed(message) {
+    if (this._gateClosed) return;
+    this._gateClosed = true;
+
+    wx.showModal({
+      title: '休息时间',
+      content: message || '当前不在开放时间',
+      showCancel: false,
+      confirmText: '知道了',
+      success: () => {
+        wx.reLaunch({ url: '/pages/closed/closed' });
+      },
+      fail: () => {
+        wx.reLaunch({ url: '/pages/closed/closed' });
+      }
+    });
   },
 
   /**
@@ -125,6 +177,13 @@ Page({
     const content = this.data.inputText.trim();
 
     if (!content) {
+      return;
+    }
+
+    // 开放时间兜底：未开放时不允许发送（走 TIM 直连，需前端拦截）
+    const closed = await this.getClosedStatus();
+    if (closed) {
+      this.handleClosed(closed.message);
       return;
     }
 

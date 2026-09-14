@@ -1,0 +1,36 @@
+<!--pages/closed/closed.wxml-->
+<view class="page">
+  <view class="bg-glow"></view>
+
+  <view class="content" wx:if="{{loaded}}">
+    <view class="logo">N E O N</view>
+
+    <view class="status-badge">
+      <view class="dot"></view>
+      <text>未开放</text>
+    </view>
+
+    <view class="message">{{message}}</view>
+
+    <view class="countdown-card" wx:if="{{countdown}}">
+      <text class="countdown-label">距离开放还有</text>
+      <text class="countdown-value">{{countdown}}</text>
+    </view>
+
+    <view class="schedule" wx:if="{{scheduleText}}">
+      <text class="schedule-key">开放时段</text>
+      <text class="schedule-val">{{scheduleText}}</text>
+    </view>
+
+    <button class="refresh-btn" bindtap="onManualRefresh" loading="{{checking}}" hover-class="none">
+      刷新状态
+    </button>
+
+    <view class="footer-tip">开放后回到首页即可开始匹配</view>
+  </view>
+
+  <view class="content" wx:else>
+    <view class="logo">N E O N</view>
+    <view class="loading-text">正在检查开放状态...</view>
+  </view>
+</view>

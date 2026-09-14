@@ -13,10 +13,10 @@ export default {
   // 已配置：1600125415
   SDKAppID: 1600125415,
 
-  // 密钥信息（存储在云函数getUserSig中使用，这里仅作记录）
-  // Key: ea53910297332a32bd3a31a364588fce29b1d58c4ce340fe73befb4e62ee5485
-  // Secret: 同上（腾讯云IM使用相同的密钥字符串）
-  secret: 'ea53910297332a32bd3a31a364588fce29b1d58c4ce340fe73befb4e62ee5485',
+  // ⚠️ 密钥仅存放在云函数 cloudfunctions/getUserSig/index.js 中，
+  // 前端不保留密钥明文（防止随小程序包下发泄露）。
+  // 如需本地生成测试 UserSig，请用云函数获取，勿在此写入真实密钥。
+  secret: '',
 
   // 检查是否使用腾讯云IM
   useTIM() {

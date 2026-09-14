@@ -12,7 +12,8 @@ Page({
     savedPhotos: [], // 已保存到云存储的照片 cloud:// 路径
     savedCustomAvatar: null, // 已保存到云存储的头像 cloud:// 路径
     gradeOptions: ['2015级', '2016级', '2017级', '2018级', '2019级', '2020级', '2021级', '2022级', '2023级', '2024级', '2025级', '2026级', '2027级'], // 年级选项
-    genderOptions: ['男', '女'] // 性别选项
+    genderOptions: ['男', '女'], // 性别选项
+    genderLocked: false // 性别是否已锁定（选定后不可修改）
   },
 
   // 自动保存相关
@@ -112,6 +113,7 @@ Page({
           'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
           'userInfo.grade': profile.grade || '',
           'userInfo.gender': profile.gender || '',
+          genderLocked: !!profile.gender,
           bioLength: (profile.bio || '').length
         });
 
@@ -167,6 +169,7 @@ Page({
           'userInfo.nickName': profile.nickName || this.data.userInfo.nickName,
           'userInfo.grade': profile.grade || '',
           'userInfo.gender': profile.gender || '',
+          genderLocked: !!profile.gender,
           bioLength: (profile.bio || '').length
         });
 
@@ -391,10 +394,20 @@ Page({
    * 性别选择
    */
   onGenderChange(e) {
+    // 已锁定则禁止修改
+    if (this.data.genderLocked) {
+      wx.showToast({
+        title: '性别选定后不可修改',
+        icon: 'none'
+      });
+      return;
+    }
+
     const index = e.detail.value;
     const gender = this.data.genderOptions[index];
     this.setData({
-      'userInfo.gender': gender
+      'userInfo.gender': gender,
+      genderLocked: true // 选定后立即锁定，避免保存期间被再次修改
     });
     this._autoSave(true);
   },

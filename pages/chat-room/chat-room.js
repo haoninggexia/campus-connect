@@ -434,6 +434,18 @@ Page({
         
         // 立即刷新消息
         this.loadMessages()
+      } else if (res.result.code === 403) {
+        // 服务端判定已过开放时间，提示并返回状态页
+        this.stopPolling()
+        wx.showModal({
+          title: '休息时间',
+          content: res.result.msg || '当前不在开放时间',
+          showCancel: false,
+          confirmText: '知道了',
+          success: () => {
+            wx.reLaunch({ url: '/pages/closed/closed' })
+          }
+        })
       } else {
         wx.showToast({
           title: res.result.msg || '发送失败',

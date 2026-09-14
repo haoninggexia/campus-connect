@@ -6,6 +6,20 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 
+// ---- 开放时间门禁（服务端兜底）----
+async function getClosedStatus() {
+  try {
+    const res = await cloud.callFunction({ name: 'getAppStatus', data: {} })
+    const status = (res && res.result) || null
+    if (status && status.code === 0 && status.enabled && !status.isOpen) {
+      return status
+    }
+  } catch (e) {
+    console.warn('[gate] 开放状态检查失败，默认放行:', e)
+  }
+  return null
+}
+
 /**
  * 发送消息到聊天室
  */
@@ -17,6 +31,16 @@ exports.main = async (event, context) => {
   console.log('位置信息详情:', message.location)
 
   try {
+    // 开放时间强校验：未开放时拒绝发送消息
+    const closed = await getClosedStatus()
+    if (closed) {
+      return {
+        code: 403,
+        msg: closed.message || '当前不在开放时间',
+        openStatus: closed
+      }
+    }
+
     const msgData = {
       from: message.from,
       content: message.content,

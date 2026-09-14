@@ -114,6 +114,16 @@
   gap: 10px;
 }
 
+.lock-tag {
+  font-size: 11px;
+  color: #7a80b0;
+  border: 2rpx solid rgba(122, 128, 176, 0.4);
+  border-radius: 6rpx;
+  padding: 2rpx 10rpx;
+  margin-left: 10rpx;
+  white-space: nowrap;
+}
+
 .copy-button {
   background: linear-gradient(135deg, #00ffff 0%, #7b2fff 50%, #ff00ff 100%);
   color: #020010;

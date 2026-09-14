@@ -91,6 +91,22 @@ exports.main = async (event, context) => {
 
   console.log('[DEBUG] 生成UserSig，userID:', userID)
 
+  // 开放时间门禁：未开放时段不下发 UserSig，用户将无法连接 IM
+  try {
+    const statusRes = await cloud.callFunction({ name: 'getAppStatus', data: {} })
+    const status = (statusRes && statusRes.result) || null
+    if (status && status.code === 0 && status.enabled && !status.isOpen) {
+      console.log('[gate] 当前未开放，拒绝下发 UserSig')
+      return {
+        code: 403,
+        message: status.message || '当前不在开放时间',
+        openStatus: status
+      }
+    }
+  } catch (gateErr) {
+    console.warn('[gate] 开放状态检查失败，默认放行:', gateErr)
+  }
+
   try {
     // 使用腾讯云官方UserSig生成库
     const api = new Api(SDKAppID, privateKey)

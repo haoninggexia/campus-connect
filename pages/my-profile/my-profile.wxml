@@ -10,9 +10,18 @@
     <view class="info-section">
       <view class="info-row">
         <text class="label">性别</text>
-        <picker mode="selector" range="{{genderOptions}}" bindchange="onGenderChange">
+        <picker
+          wx:if="{{!genderLocked}}"
+          mode="selector"
+          range="{{genderOptions}}"
+          bindchange="onGenderChange"
+        >
           <view class="value highlight">{{userInfo.gender || '请选择性别'}}</view>
         </picker>
+        <view wx:else class="value-wrapper">
+          <text class="value highlight">{{userInfo.gender}}</text>
+          <text class="lock-tag">🔒 已锁定</text>
+        </view>
       </view>
 
       <view class="info-row">
@@ -88,6 +97,10 @@
     <view class="tip-item">
       <text class="tip-icon">💡</text>
       <text class="tip-text">填写简介让更多人了解你</text>
+    </view>
+    <view class="tip-item">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">性别一旦选择将无法修改，请谨慎选择</text>
     </view>
   </view>
 </view>

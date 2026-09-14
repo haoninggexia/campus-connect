@@ -269,7 +269,14 @@ export default class TIMHandlerImp extends IIMHandler {
 
         try {
             const list = await this._tim.getConversationList();
-            return this._convertConversations(list.data);
+            // 兼容新旧 SDK 返回结构：
+            // 新版：list.data = { conversationList: [...], isSyncCompleted: bool }
+            // 旧版：list.data = [...]
+            const data = list && list.data;
+            const conversations = Array.isArray(data)
+                ? data
+                : (data && data.conversationList) || [];
+            return this._convertConversations(conversations);
         } catch (error) {
             console.error('获取会话列表失败', error);
             return [];
@@ -400,7 +407,7 @@ export default class TIMHandlerImp extends IIMHandler {
 
         return conversations.map(conv => {
             const lastMessage = conv.lastMessage;
-            const userProfile = conv.userProfile;
+            const userProfile = conv.userProfile || {};
 
             let lastMsgContent = '';
             if (lastMessage) {

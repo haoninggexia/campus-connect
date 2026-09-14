@@ -6,6 +6,29 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 
+// ---- 开放时间门禁（服务端兜底）----
+// 复用 getAppStatus 的判定逻辑，本函数内部做 10 秒缓存，避免 3 秒轮询放大调用量
+let _statusCache = { at: 0, status: null }
+const STATUS_CACHE_TTL = 10 * 1000
+
+async function getOpenStatus() {
+  const now = Date.now()
+  if (_statusCache.status && now - _statusCache.at < STATUS_CACHE_TTL) {
+    return _statusCache.status
+  }
+  try {
+    const res = await cloud.callFunction({ name: 'getAppStatus', data: {} })
+    const status = (res && res.result) || null
+    if (status && status.code === 0) {
+      _statusCache = { at: now, status }
+      return status
+    }
+  } catch (e) {
+    console.warn('[gate] 获取开放状态失败，沿用上次结果或默认放行:', e)
+  }
+  return _statusCache.status
+}
+
 /**
  * 获取可用的聊天室列表
  * 只返回 status === 1 的房间（有且仅有1人等待中，可加入）
@@ -14,6 +37,20 @@ const _ = db.command
 exports.main = async (event, context) => {
   try {
     const { university } = event
+
+    // 开放时间兜底：未开放时直接返回空列表 + 状态，前端据此弹窗并返回状态页
+    const openStatus = await getOpenStatus()
+    if (openStatus && openStatus.enabled && !openStatus.isOpen) {
+      return {
+        code: 0,
+        msg: '当前未开放',
+        isOpen: false,
+        closedMessage: openStatus.message,
+        openStatus,
+        data: [],
+        onlineCount: 0
+      }
+    }
 
     // 构建查询条件：只查询 status === 1 的房间（有且仅有1人等待中）
     const whereCondition = {
@@ -62,6 +99,8 @@ exports.main = async (event, context) => {
     return {
       code: 0,
       msg: '获取成功',
+      isOpen: true,
+      openStatus: openStatus || null,
       data: validRooms,
       onlineCount
     }

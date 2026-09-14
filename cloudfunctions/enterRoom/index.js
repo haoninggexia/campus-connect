@@ -6,6 +6,20 @@ cloud.init({
 const db = cloud.database()
 const _ = db.command
 
+// ---- 开放时间门禁（服务端兜底）----
+async function getClosedStatus() {
+  try {
+    const res = await cloud.callFunction({ name: 'getAppStatus', data: {} })
+    const status = (res && res.result) || null
+    if (status && status.code === 0 && status.enabled && !status.isOpen) {
+      return status
+    }
+  } catch (e) {
+    console.warn('[gate] 开放状态检查失败，默认放行:', e)
+  }
+  return null
+}
+
 /**
  * 进入聊天室
  * 支持创建新房间或加入已有房间
@@ -16,7 +30,17 @@ exports.main = async (event, context) => {
   
   try {
     console.log('enterRoom收到参数:', { roomId, university, userInfo })
-    
+
+    // 开放时间强校验：未开放时拒绝创建 / 加入房间
+    const closed = await getClosedStatus()
+    if (closed) {
+      return {
+        code: 403,
+        msg: closed.message || '当前不在开放时间',
+        openStatus: closed
+      }
+    }
+
     // 检查用户性别是否已设置
     if (!userInfo.gender || (userInfo.gender !== '男' && userInfo.gender !== '女')) {
       console.log('用户未设置性别，拒绝操作')

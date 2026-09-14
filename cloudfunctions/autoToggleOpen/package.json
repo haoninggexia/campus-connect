@@ -1,0 +1,11 @@
+{
+  "name": "autoToggleOpen",
+  "version": "1.0.0",
+  "description": "定时触发器：每天 21:00 开放、23:00 关闭，写入开放状态快照",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
