@@ -19,7 +19,48 @@
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "node_modules"
+      },
+      {
+        "type": "folder",
+        "value": ".server"
+      },
+      {
+        "type": "folder",
+        "value": "log"
+      },
+      {
+        "type": "suffix",
+        "value": ".md"
+      },
+      {
+        "type": "file",
+        "value": "server.js"
+      },
+      {
+        "type": "file",
+        "value": "generate-usersig.js"
+      },
+      {
+        "type": "file",
+        "value": "test-usersig.js"
+      },
+      {
+        "type": "file",
+        "value": "test-usersig-official.js"
+      },
+      {
+        "type": "file",
+        "value": "package.json"
+      },
+      {
+        "type": "file",
+        "value": "package-lock.json"
+      }
+    ],
     "include": []
   },
   "appid": "wx6d014bea7a285b1f",

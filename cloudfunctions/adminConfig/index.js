@@ -105,6 +105,19 @@ function toStr(value) {
   return ''
 }
 
+// 集合不存在时自动创建（云函数首次部署或新环境常见）
+async function ensureCollection() {
+  try {
+    await db.createCollection(CONFIG_COLLECTION)
+    console.log(`[adminConfig] 集合 ${CONFIG_COLLECTION} 创建成功`)
+  } catch (e) {
+    if (e.errCode === -501001 || (e.errMsg && e.errMsg.includes('already exists'))) {
+      return // 已存在
+    }
+    throw e
+  }
+}
+
 // 读取 admin 文档，不存在则按默认密码初始化（并返回 bootstrapped=true）
 async function loadAdminDoc() {
   try {
@@ -130,6 +143,7 @@ async function loadAdminDoc() {
   }
 
   try {
+    await ensureCollection()
     await db.collection(CONFIG_COLLECTION).add({ data: doc })
     console.log('[adminConfig] 已初始化默认管理配置')
     return { doc, bootstrapped: true }
@@ -307,6 +321,7 @@ exports.main = async (event = {}) => {
   }
 
   if (action === 'save') {
+    await ensureCollection()
     const input = event.config || {}
     const next = normalizeConfig(input)
 
@@ -339,6 +354,7 @@ exports.main = async (event = {}) => {
   }
 
   if (action === 'reset') {
+    await ensureCollection()
     const payload = Object.assign({}, DEFAULT_CONFIG, {
       updateTime: db.serverDate(),
       updateBy: openid

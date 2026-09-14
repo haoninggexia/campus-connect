@@ -9,6 +9,19 @@ cloud.init({
 
 const db = cloud.database()
 
+// 集合不存在时自动创建（新环境或漏跑 initDB 时兜底）
+async function ensureCollection() {
+  try {
+    await db.createCollection(CONFIG_COLLECTION)
+    console.log(`[getAppStatus] 集合 ${CONFIG_COLLECTION} 创建成功`)
+  } catch (e) {
+    if (e.errCode === -501001 || (e.errMsg && e.errMsg.includes('already exists'))) {
+      return // 已存在
+    }
+    throw e
+  }
+}
+
 const CONFIG_COLLECTION = 'app_config'
 const CONFIG_DOC_ID = 'open_time'
 
@@ -211,6 +224,7 @@ async function loadConfig() {
   } catch (e) {
     // 集合或文档不存在：写入一份默认配置，方便后续直接在云开发控制台修改
     try {
+      await ensureCollection()
       await db.collection(CONFIG_COLLECTION).add({
         data: Object.assign({}, DEFAULT_CONFIG, {
           _id: CONFIG_DOC_ID,
