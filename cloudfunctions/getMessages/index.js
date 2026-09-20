@@ -137,6 +137,16 @@ exports.main = async (event, context) => {
     }
 
     const messages = rawMessages.map((msg) => {
+      // 违规消息：屏蔽原始内容，替换为占位提示
+      if (msg && msg.secStatus === 'risky') {
+        return {
+          from: msg.from,
+          sendTime: msg.sendTime,
+          type: 'text',
+          content: '⚠️ 该消息因涉嫌违规已被屏蔽',
+          secStatus: 'risky'
+        }
+      }
       if (msg && typeof msg.content === 'string' && msg.content.indexOf('cloud://') === 0 && urlMap[msg.content]) {
         // 保留原始 fileID，content 换成临时链接（接收方也能访问，且支持预览/播放）
         return { ...msg, content: urlMap[msg.content], fileID: msg.content }

@@ -1,0 +1,9 @@
+{
+  "name": "secCheckCallback",
+  "version": "1.0.0",
+  "description": "接收微信内容安全异步检测结果推送，屏蔽违规消息",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
