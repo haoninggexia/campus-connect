@@ -9,7 +9,8 @@ Page({
     messages: [],
     inputText: '',
     scrollIntoView: '',
-    scrollTop: 0
+    scrollTop: 0,
+    showExtra: false  // 是否显示扩展面板（+号点击后展开）
   },
 
   onLoad(options) {
@@ -236,6 +237,154 @@ Page({
       urls: [url],
       current: url
     });
+  },
+
+  /**
+   * 切换扩展面板（+号按钮）
+   */
+  onToggleExtra() {
+    this.setData({
+      showExtra: !this.data.showExtra
+    });
+  },
+
+  /**
+   * 选择图片（相册 / 拍摄）
+   */
+  async onChooseImage(e) {
+    const source = e.currentTarget.dataset.source; // 'album' 或 'camera'
+    const sourceType = source === 'camera' ? ['camera'] : ['album'];
+
+    // 先收起面板，避免遮挡
+    this.setData({ showExtra: false });
+
+    // 开放时间兜底（与文字消息保持一致的拦截策略）
+    try {
+      const closed = await this.getClosedStatus();
+      if (closed) {
+        this.handleClosed(closed.message);
+        return;
+      }
+    } catch (err) {
+      // 状态查询失败不影响发送，避免误拦截
+      console.warn('获取开放状态失败，继续尝试发送图片:', err);
+    }
+
+    // 调用微信原生选图
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'], // 压缩图，减小体积避免超时
+      sourceType: sourceType,
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths && res.tempFilePaths[0];
+        if (!tempFilePath) {
+          wx.showToast({ title: '未选择图片', icon: 'none' });
+          return;
+        }
+        this.sendImageMessage(tempFilePath);
+      },
+      fail: (err) => {
+        console.error('选择图片失败:', err);
+        wx.showToast({
+          title: '打开' + (source === 'camera' ? '相机' : '相册') + '失败',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    });
+  },
+
+  /**
+   * 发送图片消息
+   * @param {string} tempFilePath - 微信临时文件路径
+   */
+  async sendImageMessage(tempFilePath) {
+    // 1. 先做大小检查（微信限制单文件 10MB）
+    try {
+      const info = await this.getFileInfoSafe(tempFilePath);
+      if (info && info.size && info.size > 10 * 1024 * 1024) {
+        wx.showToast({
+          title: '图片不能超过10MB',
+          icon: 'none',
+          duration: 2000
+        });
+        return;
+      }
+    } catch (err) {
+      // getFileInfo 失败不阻断发送
+      console.warn('获取图片信息失败，继续发送:', err);
+    }
+
+    // 2. 立即在消息流里显示（本地临时路径，秒出）
+    const tempId = 'img-' + Date.now();
+    this.addMessage({
+      id: tempId,
+      isSelf: true,
+      type: 'image',
+      content: tempFilePath,
+      from: '',
+      fromName: '',
+      time: Date.now(),
+      status: 'sending' // 发送中
+    });
+
+    // 3. 调用底层 TIM SDK 发送
+    try {
+      const app = getApp();
+      if (!app.appIMDelegate || !app.appIMDelegate.imHandler) {
+        throw new Error('IM 处理器未就绪');
+      }
+
+      await app.appIMDelegate.imHandler.sendMsg({
+        content: {
+          type: 'image',
+          to: this.data.friendID,
+          content: tempFilePath  // TIM SDK 会读取这个临时文件并上传
+        }
+      });
+
+      // 4. 发送成功，更新状态
+      this.updateMessageStatus(tempId, 'sent');
+      console.log('图片发送成功');
+    } catch (err) {
+      console.error('图片发送失败', err);
+      this.updateMessageStatus(tempId, 'failed');
+      wx.showToast({
+        title: '图片发送失败',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  /**
+   * 安全获取文件信息（wx.getFileInfo 在不同基础库可用性不同）
+   */
+  getFileInfoSafe(filePath) {
+    return new Promise((resolve) => {
+      if (typeof wx.getFileInfo !== 'function') {
+        resolve(null);
+        return;
+      }
+      wx.getFileInfo({
+        filePath: filePath,
+        success: (res) => resolve(res),
+        fail: () => resolve(null)
+      });
+    });
+  },
+
+  /**
+   * 更新消息状态（发送中 / 已发送 / 失败）
+   */
+  updateMessageStatus(messageId, status) {
+    const messages = this.data.messages.map((m) => {
+      if (m.id === messageId) {
+        return Object.assign({}, m, { status: status });
+      }
+      return m;
+    });
+    this.setData({ messages: messages });
   },
 
   /**

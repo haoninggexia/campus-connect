@@ -37,8 +37,30 @@
                binderror="onAvatarError"
                bindtap="onViewProfile"
                data-user="{{msg.from}}"></image>
-        <view class="message-bubble" style="font-size: {{fontSize}}rpx">
-          {{msg.content}}
+        <view class="message-bubble {{msg.type === 'image' ? 'image-bubble' : ''}} {{msg.type === 'voice' ? 'voice-bubble' : ''}}" style="font-size: {{fontSize}}rpx">
+          <image wx:if="{{msg.type === 'image'}}"
+                 class="message-image"
+                 src="{{msg.content}}"
+                 mode="widthFix"
+                 bindtap="onPreviewImage"
+                 data-url="{{msg.content}}"></image>
+          <view wx:elif="{{msg.type === 'voice'}}"
+                class="voice-content"
+                bindtap="onPlayVoice"
+                data-url="{{msg.content}}"
+                data-duration="{{msg.duration || 1}}"
+                data-msg-id="{{msg.sendTime || index}}">
+            <text class="voice-icon {{playingVoiceId === (msg.sendTime || index) ? 'playing' : ''}}">{{playingVoiceId === (msg.sendTime || index) ? '🔊' : '▶'}}</text>
+            <view class="voice-waveform">
+              <view class="voice-bar"></view>
+              <view class="voice-bar"></view>
+              <view class="voice-bar"></view>
+              <view class="voice-bar"></view>
+              <view class="voice-bar"></view>
+            </view>
+            <text class="voice-duration">{{msg.duration || 1}}″</text>
+          </view>
+          <text wx:else>{{msg.content}}</text>
         </view>
         <image class="avatar clickable" wx:if="{{msg.from.userID === userInfo.userID}}"
                src="{{cachedTempAvatars[userInfo.userID] || userInfo.customAvatar || userInfo.avatarUrl || 'https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132'}}"
@@ -64,18 +86,47 @@
 
   <!-- 输入区域 -->
   <view class="chat-input-area">
-    <view class="input-content" bindfocus="onInputFocus" bindblur="onInputBlur">
-      <input 
-        class="message-input" 
-        placeholder="输入消息..." 
-        value="{{inputContent}}"
-        bindinput="onInputChange"
-        bindconfirm="onSend"
-      />
+    <view class="plus-btn" bindtap="onToggleExtra">
+      <text class="plus-icon">+</text>
     </view>
-    <button class="send-btn" bindtap="onSend">
-      发送
-    </button>
+    <view class="mode-switch-btn" bindtap="onToggleInputMode">
+      <text class="mode-switch-icon">{{inputMode === 'voice' ? '⌨' : '🎤'}}</text>
+    </view>
+    <block wx:if="{{inputMode === 'text'}}">
+      <view class="input-content" bindfocus="onInputFocus" bindblur="onInputBlur">
+        <input
+          class="message-input"
+          placeholder="输入消息..."
+          value="{{inputContent}}"
+          bindinput="onInputChange"
+          bindconfirm="onSend"
+        />
+      </view>
+      <button class="send-btn" bindtap="onSend">发送</button>
+    </block>
+    <view wx:else class="voice-input-area">
+      <view
+        class="press-to-talk {{recording ? 'recording' : ''}} {{willCancel ? 'will-cancel' : ''}}"
+        bindtouchstart="onVoiceTouchStart"
+        bindtouchmove="onVoiceTouchMove"
+        bindtouchend="onVoiceTouchEnd"
+        bindtouchcancel="onVoiceTouchEnd"
+      >
+        {{recording ? (willCancel ? '松开 取消' : '松开发送') : '按住 说话'}}
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 录音提示遮罩 -->
+<view class="recording-mask" wx:if="{{recording}}" catchtouchmove="true">
+  <view class="recording-panel">
+    <view class="recording-icon">
+      <view class="mic-body"></view>
+      <view class="mic-stand"></view>
+    </view>
+    <view class="recording-time">{{recordingDuration || 1}}″</view>
+    <view class="recording-hint">{{willCancel ? '松开 取消发送' : '上滑 取消发送'}}</view>
   </view>
 </view>
 

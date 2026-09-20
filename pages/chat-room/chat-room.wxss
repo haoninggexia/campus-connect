@@ -623,3 +623,272 @@
   background-color: transparent;
   color: #ff6bff;
 }
+
+/* ============ 图片发送功能 ============ */
+
+/* +号按钮（图片入口） */
+.plus-btn {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 12rpx;
+  background: rgba(0, 255, 255, 0.1);
+  border: 2rpx solid rgba(0, 255, 255, 0.4);
+  box-shadow: 0 0 15rpx rgba(0, 255, 255, 0.25);
+}
+
+.plus-btn:active {
+  background: rgba(0, 255, 255, 0.28);
+  box-shadow: 0 0 25rpx rgba(0, 255, 255, 0.5);
+}
+
+.plus-icon {
+  font-size: 46rpx;
+  line-height: 1;
+  font-weight: 300;
+  color: #00ffff;
+  text-shadow: 0 0 10rpx rgba(0, 255, 255, 0.6);
+}
+
+/* 图片消息气泡：去掉文字气泡的内边距与背景，让图片完整展示 */
+.message-item .message-bubble.image-bubble {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  max-width: 70%;
+}
+
+.message-item .message-bubble.image-bubble:after {
+  display: none;
+}
+
+.message-image {
+  max-width: 420rpx;
+  border-radius: 8rpx;
+  display: block;
+}
+
+/* ============ 语音消息功能 ============ */
+
+/* 语音/键盘模式切换按钮（输入框左侧，+号右边） */
+.mode-switch-btn {
+  width: 60rpx;
+  height: 60rpx;
+  flex-shrink: 0;
+  margin-right: 12rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(123, 47, 255, 0.1);
+  border: 2rpx solid rgba(123, 47, 255, 0.45);
+  box-shadow: 0 0 15rpx rgba(123, 47, 255, 0.2);
+  transition: all 0.2s;
+}
+
+.mode-switch-btn:active {
+  background: rgba(123, 47, 255, 0.28);
+  box-shadow: 0 0 25rpx rgba(123, 47, 255, 0.5);
+}
+
+.mode-switch-icon {
+  font-size: 32rpx;
+  line-height: 1;
+  color: #c89bff;
+  text-shadow: 0 0 10rpx rgba(123, 47, 255, 0.5);
+}
+
+/* 语音模式容器：充满输入框剩余空间 */
+.voice-input-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* 按住说话 按钮 */
+.press-to-talk {
+  flex: 1;
+  width: 100%;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 20, 0.9);
+  border: 2rpx solid rgba(0, 255, 255, 0.3);
+  border-radius: 8px;
+  color: #f0f0ff;
+  font-size: 28rpx;
+  letter-spacing: 4rpx;
+  user-select: none;
+  box-shadow: inset 0 0 15rpx rgba(0, 255, 255, 0.06);
+}
+
+.press-to-talk.recording {
+  background: rgba(255, 107, 107, 0.22);
+  border-color: rgba(255, 107, 107, 0.65);
+  color: #ff8e8e;
+  box-shadow:
+    inset 0 0 15rpx rgba(255, 107, 107, 0.2),
+    0 0 18rpx rgba(255, 107, 107, 0.35);
+}
+
+.press-to-talk.will-cancel {
+  background: rgba(255, 234, 0, 0.22);
+  border-color: rgba(255, 234, 0, 0.65);
+  color: #ffea00;
+}
+
+/* 录音提示遮罩 */
+.recording-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 10, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(8rpx);
+}
+
+.recording-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50rpx 70rpx;
+  background: rgba(10, 10, 30, 0.95);
+  border: 2rpx solid rgba(0, 255, 255, 0.4);
+  border-radius: 20rpx;
+  box-shadow:
+    0 0 60rpx rgba(0, 255, 255, 0.35),
+    0 0 120rpx rgba(255, 0, 255, 0.18);
+}
+
+.recording-icon {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background: rgba(255, 107, 107, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 30rpx;
+  animation: recordingPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes recordingPulse {
+  0%   { box-shadow: 0 0 0 0   rgba(255, 107, 107, 0.55); }
+  70%  { box-shadow: 0 0 0 40rpx rgba(255, 107, 107, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(255, 107, 107, 0); }
+}
+
+.mic-body {
+  width: 22px;
+  height: 38px;
+  background: #ff6b6b;
+  border-radius: 11px;
+}
+
+.mic-stand {
+  position: absolute;
+  bottom: 30rpx;
+  width: 46px;
+  height: 16px;
+  border: 4rpx solid #ff6b6b;
+  border-top: none;
+  border-radius: 0 0 23px 23px;
+}
+
+.recording-time {
+  font-size: 64rpx;
+  font-weight: 600;
+  color: #ffea00;
+  text-shadow: 0 0 20rpx rgba(255, 234, 0, 0.55);
+  margin-bottom: 18rpx;
+  letter-spacing: 2rpx;
+}
+
+.recording-hint {
+  font-size: 26rpx;
+  color: #f0f0ff;
+  letter-spacing: 2rpx;
+}
+
+/* 语音消息气泡容器 */
+.message-item .message-bubble.voice-bubble {
+  min-width: 200rpx;
+  padding: 18rpx 24rpx;
+}
+
+.voice-content {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  min-height: 44rpx;
+}
+
+.voice-icon {
+  font-size: 32rpx;
+  color: #00ffff;
+  text-shadow: 0 0 10rpx rgba(0, 255, 255, 0.45);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.voice-icon.playing {
+  color: #ffea00;
+  text-shadow: 0 0 12rpx rgba(255, 234, 0, 0.7);
+  animation: voicePlayingAnim 0.6s infinite ease-in-out;
+}
+
+@keyframes voicePlayingAnim {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.18); }
+}
+
+.voice-waveform {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  height: 28rpx;
+  flex: 1;
+  min-width: 60rpx;
+  max-width: 240rpx;
+}
+
+.voice-bar {
+  width: 4rpx;
+  background: linear-gradient(180deg, #00ffff, #7b2fff);
+  border-radius: 2rpx;
+}
+
+.voice-bar:nth-child(1) { height: 12rpx; }
+.voice-bar:nth-child(2) { height: 22rpx; }
+.voice-bar:nth-child(3) { height: 16rpx; }
+.voice-bar:nth-child(4) { height: 26rpx; }
+.voice-bar:nth-child(5) { height: 14rpx; }
+
+/* 语音气泡：自己一侧颜色微调（更亮） */
+.message-item.self .message-bubble.voice-bubble .voice-icon {
+  color: #00ffff;
+}
+.message-item.other .message-bubble .voice-content {
+  /* 对方气泡内文字颜色 */
+  color: #f0f0ff;
+}
+
+.voice-duration {
+  font-size: 26rpx;
+  color: #f0f0ff;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}

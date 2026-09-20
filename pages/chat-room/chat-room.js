@@ -22,7 +22,13 @@ Page({
     otherLocation: null, // 对方的位置
     distance: '', // 双方之间的距离
     isWaiting: false, // 是否处于等待状态（对方已离开，等待新用户加入）
-    hadPartner: false // 是否曾经有聊天伙伴（用于判断对方离开）
+    hadPartner: false, // 是否曾经有聊天伙伴（用于判断对方离开）
+    uploading: false, // 是否正在上传图片
+    inputMode: 'text', // 输入模式：'text' | 'voice'
+    recording: false, // 是否正在录音
+    recordingDuration: 0, // 当前录音累计秒数
+    willCancel: false, // 是否处于"滑动取消"状态
+    playingVoiceId: null // 正在播放的语音消息标识（sendTime 或 index）
   },
 
   onLoad(options) {
@@ -49,6 +55,9 @@ Page({
 
     // 开始轮询消息
     this.startPolling()
+
+    // 初始化录音管理器
+    this.setupRecorderManager()
   },
 
   // 获取当前位置（模糊定位，精度为公里级）
@@ -110,6 +119,8 @@ Page({
     this.leaveRoom()
     this.stopPolling()
     this.clearInactivityTimer()
+    this.cleanupRecorder()
+    this.stopVoicePlayback()
   },
 
   onShow() {
@@ -459,6 +470,491 @@ Page({
         title: '发送失败',
         icon: 'none'
       })
+    }
+  },
+
+  // ============ 图片发送功能 ============
+
+  // 点击 "+" 按钮：弹出选择菜单
+  onToggleExtra() {
+    wx.showActionSheet({
+      itemList: ['从相册选择', '拍照'],
+      success: (res) => {
+        const source = res.tapIndex === 1 ? 'camera' : 'album'
+        this.chooseAndSendImage(source)
+      },
+      fail: () => {
+        // 用户取消，无需处理
+      }
+    })
+  },
+
+  // 选择图片并发送
+  chooseAndSendImage(source) {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'], // 压缩图，降低上传耗时
+      sourceType: [source === 'camera' ? 'camera' : 'album'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths && res.tempFilePaths[0]
+        if (!tempFilePath) {
+          wx.showToast({ title: '未选择图片', icon: 'none' })
+          return
+        }
+        this.uploadAndSendImage(tempFilePath)
+      },
+      fail: (err) => {
+        console.error('选择图片失败:', err)
+        wx.showToast({ title: '选择图片失败', icon: 'none' })
+      }
+    })
+  },
+
+  // 上传图片到云存储并发送图片消息
+  async uploadAndSendImage(tempFilePath) {
+    if (this.data.uploading) return
+
+    // 大小检查（微信单文件上限 10MB）
+    try {
+      const info = await new Promise((resolve) => {
+        if (typeof wx.getFileInfo !== 'function') {
+          resolve(null)
+          return
+        }
+        wx.getFileInfo({
+          filePath: tempFilePath,
+          success: (r) => resolve(r),
+          fail: () => resolve(null)
+        })
+      })
+      if (info && info.size && info.size > 10 * 1024 * 1024) {
+        wx.showToast({ title: '图片不能超过10MB', icon: 'none', duration: 2000 })
+        return
+      }
+    } catch (e) {
+      // 获取文件信息失败不阻断发送
+    }
+
+    this.setData({ uploading: true })
+    wx.showLoading({ title: '发送中...', mask: true })
+
+    try {
+      // 1. 上传到云存储
+      const ext = (tempFilePath.split('.').pop() || 'png').toLowerCase()
+      const cloudPath = `chat_images/${this.data.roomId}/${Date.now()}_${Math.floor(Math.random() * 100000)}.${ext}`
+      const uploadRes = await wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: tempFilePath
+      })
+      const fileID = uploadRes.fileID
+      console.log('图片上传成功，fileID:', fileID)
+
+      // 2. 调用云函数发送图片消息（content 存 fileID，type 标记为 image）
+      const res = await wx.cloud.callFunction({
+        name: 'sendMessage',
+        data: {
+          roomId: this.data.roomId,
+          message: {
+            from: this.data.userInfo,
+            content: fileID,
+            type: 'image',
+            location: this.data.myLocation
+          }
+        }
+      })
+
+      wx.hideLoading()
+
+      if (res.result.code === 0) {
+        this.resetInactivityTimer()
+        // 立即刷新消息
+        this.loadMessages()
+      } else if (res.result.code === 403) {
+        this.stopPolling()
+        wx.showModal({
+          title: '休息时间',
+          content: res.result.msg || '当前不在开放时间',
+          showCancel: false,
+          confirmText: '知道了',
+          success: () => {
+            wx.reLaunch({ url: '/pages/closed/closed' })
+          }
+        })
+      } else {
+        wx.showToast({
+          title: res.result.msg || '发送失败',
+          icon: 'none'
+        })
+      }
+    } catch (e) {
+      wx.hideLoading()
+      console.error('图片发送失败:', e)
+      wx.showToast({
+        title: '图片发送失败',
+        icon: 'none',
+        duration: 2000
+      })
+    } finally {
+      this.setData({ uploading: false })
+    }
+  },
+
+  // 预览图片
+  onPreviewImage(e) {
+    const url = e.currentTarget.dataset.url
+    if (!url) return
+    wx.previewImage({
+      current: url,
+      urls: [url]
+    })
+  },
+
+  // ============ 语音发送功能 ============
+
+  /**
+   * 初始化全局录音管理器（只在 onLoad 调用一次）
+   */
+  setupRecorderManager() {
+    if (this.recorderManager) return
+    this.recorderManager = wx.getRecorderManager()
+    this._recorderActuallyStarted = false // onStart 之后才置 true
+
+    this.recorderManager.onStart(() => {
+      console.log('录音开始')
+      this._recorderActuallyStarted = true
+      this.setData({
+        recording: true,
+        recordingDuration: 0,
+        willCancel: false
+      })
+      // 每秒更新时长
+      if (this.recordingTimer) clearInterval(this.recordingTimer)
+      this.recordingTimer = setInterval(() => {
+        this.setData({ recordingDuration: this.data.recordingDuration + 1 })
+      }, 1000)
+    })
+
+    this.recorderManager.onStop((res) => {
+      console.log('录音停止', res)
+      this._recorderActuallyStarted = false
+      if (this.recordingTimer) {
+        clearInterval(this.recordingTimer)
+        this.recordingTimer = null
+      }
+
+      const wasCancelled = this.data.willCancel
+      const tempFilePath = res && res.tempFilePath
+      // res.duration 单位：毫秒；fallback 用秒表累计*1000
+      const durationMs = (res && res.duration) || (this.data.recordingDuration * 1000)
+
+      this.setData({
+        recording: false,
+        willCancel: false,
+        recordingDuration: 0
+      })
+
+      if (wasCancelled) {
+        console.log('用户取消发送')
+        return
+      }
+      if (!tempFilePath) {
+        console.warn('录音文件为空')
+        return
+      }
+      if (durationMs < 800) {
+        wx.showToast({ title: '录音时间太短', icon: 'none' })
+        return
+      }
+
+      const durationSec = Math.max(1, Math.ceil(durationMs / 1000))
+      this.uploadAndSendVoice(tempFilePath, durationSec)
+    })
+
+    this.recorderManager.onError((err) => {
+      console.error('录音错误:', err)
+      this._recorderActuallyStarted = false
+      if (this.recordingTimer) {
+        clearInterval(this.recordingTimer)
+        this.recordingTimer = null
+      }
+      this.setData({
+        recording: false,
+        willCancel: false,
+        recordingDuration: 0
+      })
+      wx.showToast({ title: '录音失败', icon: 'none' })
+    })
+  },
+
+  /**
+   * 清理录音资源（onUnload 调用）
+   */
+  cleanupRecorder() {
+    if (this.recordingTimer) {
+      clearInterval(this.recordingTimer)
+      this.recordingTimer = null
+    }
+    if (this.recorderManager && this._recorderActuallyStarted) {
+      try { this.recorderManager.stop() } catch (e) {}
+    }
+  },
+
+  /**
+   * 切换文本/语音输入模式
+   */
+  onToggleInputMode() {
+    if (this.data.recording) {
+      wx.showToast({ title: '请先结束录音', icon: 'none' })
+      return
+    }
+    wx.hideKeyboard()
+    this.setData({ inputMode: this.data.inputMode === 'text' ? 'voice' : 'text' })
+  },
+
+  /**
+   * 按住：开始录音
+   */
+  onVoiceTouchStart(e) {
+    if (this.data.recording) return
+    // 记录起始 Y 坐标（用于滑动取消判断）
+    const t = e.touches && e.touches[0]
+    this._voiceStartY = t ? t.clientY : 0
+    this._voiceWantsToRecord = true
+    this.setData({ willCancel: false })
+
+    // 请求麦克风权限
+    wx.authorize({
+      scope: 'scope.record',
+      success: () => {
+        // 权限通过后再次检查：用户可能已经松手
+        if (!this._voiceWantsToRecord) {
+          console.log('权限通过但用户已松手，放弃本次录音')
+          return
+        }
+        try {
+          this.recorderManager.start({
+            format: 'mp3',
+            duration: 60000, // 最长 60 秒
+            sampleRate: 16000,
+            numberOfChannels: 1,
+            encodeBitRate: 48000
+          })
+        } catch (e) {
+          console.error('启动录音失败:', e)
+          this._voiceWantsToRecord = false
+          wx.showToast({ title: '启动录音失败', icon: 'none' })
+        }
+      },
+      fail: () => {
+        this._voiceWantsToRecord = false
+        wx.showModal({
+          title: '需要麦克风权限',
+          content: '请在设置中开启麦克风权限后重试',
+          confirmText: '去设置',
+          success: (res) => {
+            if (res.confirm) wx.openSetting()
+          }
+        })
+      }
+    })
+  },
+
+  /**
+   * 滑动：检测是否进入"取消"状态
+   */
+  onVoiceTouchMove(e) {
+    if (!this.data.recording || !this._voiceStartY) return
+    const t = e.touches && e.touches[0]
+    if (!t) return
+    const diff = this._voiceStartY - t.clientY // 向上滑为正
+    const shouldCancel = diff > 80 || diff < -80
+    if (shouldCancel !== this.data.willCancel) {
+      // 进入/退出取消态时震动一下，给用户反馈
+      if (shouldCancel) {
+        try { wx.vibrateShort({ type: 'light' }) } catch (e) {}
+      }
+      this.setData({ willCancel: shouldCancel })
+    }
+  },
+
+  /**
+   * 松开：结束录音（onStop 回调会根据 willCancel 决定是否发送）
+   */
+  onVoiceTouchEnd() {
+    this._voiceStartY = null
+    this._voiceWantsToRecord = false
+    if (this._recorderActuallyStarted) {
+      try {
+        this.recorderManager.stop()
+      } catch (e) {
+        console.warn('停止录音失败:', e)
+      }
+    }
+  },
+
+  /**
+   * 上传语音到云存储并发送
+   */
+  async uploadAndSendVoice(tempFilePath, duration) {
+    if (this.data.uploading) return
+
+    // 大小检查（微信单文件上限 10MB）
+    try {
+      const info = await new Promise((resolve) => {
+        if (typeof wx.getFileInfo !== 'function') {
+          resolve(null)
+          return
+        }
+        wx.getFileInfo({
+          filePath: tempFilePath,
+          success: (r) => resolve(r),
+          fail: () => resolve(null)
+        })
+      })
+      if (info && info.size && info.size > 10 * 1024 * 1024) {
+        wx.showToast({ title: '语音不能超过10MB', icon: 'none', duration: 2000 })
+        return
+      }
+    } catch (e) {
+      // 不阻断发送
+    }
+
+    this.setData({ uploading: true })
+    wx.showLoading({ title: '发送中...', mask: true })
+
+    try {
+      // 1. 上传到云存储
+      const cloudPath = `chat_voices/${this.data.roomId}/${Date.now()}_${Math.floor(Math.random() * 100000)}.mp3`
+      const uploadRes = await wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: tempFilePath
+      })
+      const fileID = uploadRes.fileID
+      console.log('语音上传成功，fileID:', fileID, 'duration:', duration)
+
+      // 2. 调用云函数发送语音消息
+      const res = await wx.cloud.callFunction({
+        name: 'sendMessage',
+        data: {
+          roomId: this.data.roomId,
+          message: {
+            from: this.data.userInfo,
+            content: fileID,
+            type: 'voice',
+            duration: duration,
+            location: this.data.myLocation
+          }
+        }
+      })
+
+      wx.hideLoading()
+
+      if (res.result.code === 0) {
+        this.resetInactivityTimer()
+        this.loadMessages()
+      } else if (res.result.code === 403) {
+        this.stopPolling()
+        wx.showModal({
+          title: '休息时间',
+          content: res.result.msg || '当前不在开放时间',
+          showCancel: false,
+          confirmText: '知道了',
+          success: () => {
+            wx.reLaunch({ url: '/pages/closed/closed' })
+          }
+        })
+      } else {
+        wx.showToast({
+          title: res.result.msg || '发送失败',
+          icon: 'none'
+        })
+      }
+    } catch (e) {
+      wx.hideLoading()
+      console.error('语音发送失败:', e)
+      wx.showToast({
+        title: '语音发送失败',
+        icon: 'none',
+        duration: 2000
+      })
+    } finally {
+      this.setData({ uploading: false })
+    }
+  },
+
+  /**
+   * 点击语音气泡：播放 / 暂停
+   */
+  onPlayVoice(e) {
+    const url = e.currentTarget.dataset.url
+    const msgId = e.currentTarget.dataset.msgId
+    const duration = parseInt(e.currentTarget.dataset.duration, 10) || 1
+
+    if (!url) {
+      wx.showToast({ title: '语音加载失败', icon: 'none' })
+      return
+    }
+
+    // 已在播放这条 → 停止
+    if (this.data.playingVoiceId === msgId) {
+      this.stopVoicePlayback()
+      return
+    }
+
+    // 切到另一条播放 → 先停掉上一条
+    this.stopVoicePlayback()
+
+    if (!this.audioContext) {
+      this.audioContext = wx.createInnerAudioContext()
+      this.audioContext.onEnded(() => {
+        if (this._voicePlayingTimer) {
+          clearTimeout(this._voicePlayingTimer)
+          this._voicePlayingTimer = null
+        }
+        this.setData({ playingVoiceId: null })
+      })
+      this.audioContext.onStop(() => {
+        if (this._voicePlayingTimer) {
+          clearTimeout(this._voicePlayingTimer)
+          this._voicePlayingTimer = null
+        }
+        this.setData({ playingVoiceId: null })
+      })
+      this.audioContext.onError((err) => {
+        console.error('语音播放失败:', err)
+        if (this._voicePlayingTimer) {
+          clearTimeout(this._voicePlayingTimer)
+          this._voicePlayingTimer = null
+        }
+        this.setData({ playingVoiceId: null })
+        wx.showToast({ title: '播放失败', icon: 'none' })
+      })
+    }
+
+    this.audioContext.src = url
+    this.audioContext.play()
+    this.setData({ playingVoiceId: msgId })
+
+    // 兜底：若 onEnded 未触发，时长+1.5s 后强制清除状态
+    this._voicePlayingTimer = setTimeout(() => {
+      this.setData({ playingVoiceId: null })
+      this._voicePlayingTimer = null
+    }, duration * 1000 + 1500)
+  },
+
+  /**
+   * 停止播放（内部使用）
+   */
+  stopVoicePlayback() {
+    if (this.audioContext) {
+      try { this.audioContext.stop() } catch (e) {}
+    }
+    if (this._voicePlayingTimer) {
+      clearTimeout(this._voicePlayingTimer)
+      this._voicePlayingTimer = null
+    }
+    if (this.data.playingVoiceId !== null) {
+      this.setData({ playingVoiceId: null })
     }
   },
 

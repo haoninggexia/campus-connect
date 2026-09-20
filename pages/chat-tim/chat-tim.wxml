@@ -1,5 +1,5 @@
 <!--pages/chat-tim/chat-tim.wxml-->
-<view class="container" style="height: 100vh; display: flex; flex-direction: column;">
+<view class="container" style="height: 100vh; width: 100%; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 0; box-sizing: border-box;">
   <!-- 聊天标题栏 -->
   <view class="chat-header">
     <view class="header-left" bindtap="onBack">
@@ -19,17 +19,21 @@
       <!-- 自己发送的消息 -->
       <view class="message-item self" wx:if="{{item.isSelf}}">
         <image class="avatar" src="{{myAvatar}}" mode="aspectFill"></image>
-        <view class="message-content">
+        <view class="message-content {{item.type === 'image' ? 'image-content' : ''}}">
           <text class="message-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
           <image class="message-image" src="{{item.content}}" mode="widthFix" wx:if="{{item.type === 'image'}}" bindtap="onPreviewImage" data-url="{{item.content}}"></image>
-          <text class="message-time">{{item.timeStr}}</text>
+          <text class="message-time">
+            <text wx:if="{{item.status === 'sending'}}">发送中...</text>
+            <text wx:elif="{{item.status === 'failed'}}" style="color:#ff6b6b;">发送失败</text>
+            <text wx:else>{{item.timeStr}}</text>
+          </text>
         </view>
       </view>
 
       <!-- 对方发送的消息 -->
       <view class="message-item other" wx:else>
         <image class="avatar" src="{{friendAvatar}}" mode="aspectFill" bindtap="onViewFriendInfo"></image>
-        <view class="message-content">
+        <view class="message-content {{item.type === 'image' ? 'image-content' : ''}}">
           <text class="friend-name">{{item.fromName}}</text>
           <text class="message-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
           <image class="message-image" src="{{item.content}}" mode="widthFix" wx:if="{{item.type === 'image'}}" bindtap="onPreviewImage" data-url="{{item.content}}"></image>
@@ -42,6 +46,9 @@
   <!-- 输入框区域 -->
   <view class="input-area">
     <view class="input-box">
+      <view class="plus-button {{showExtra ? 'active' : ''}}" bindtap="onToggleExtra">
+        <text class="plus-icon">{{showExtra ? '×' : '+'}}</text>
+      </view>
       <input
         class="message-input"
         placeholder="输入消息..."
@@ -51,6 +58,18 @@
         adjust-position="{{false}}"
       />
       <button class="send-button" bindtap="onSend" size="mini">发送</button>
+    </view>
+
+    <!-- 扩展面板：相册 / 拍摄（图片功能） -->
+    <view class="extra-panel" wx:if="{{showExtra}}">
+      <view class="extra-item" bindtap="onChooseImage" data-source="album">
+        <view class="extra-icon">🖼️</view>
+        <text class="extra-label">相册</text>
+      </view>
+      <view class="extra-item" bindtap="onChooseImage" data-source="camera">
+        <view class="extra-icon">📷</view>
+        <text class="extra-label">拍摄</text>
+      </view>
     </view>
   </view>
 </view>
