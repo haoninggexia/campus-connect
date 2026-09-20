@@ -48,6 +48,11 @@ exports.main = async (event, context) => {
       type: message.type || 'text'
     }
 
+    // 语音消息：保存时长（秒）
+    if (message.type === 'voice' && message.duration) {
+      msgData.duration = Math.max(1, Math.round(message.duration))
+    }
+
     // 如果有位置信息，添加到消息中
     if (message.location && message.location.latitude && message.location.longitude) {
       msgData.location = message.location

@@ -904,51 +904,62 @@ Page({
     // 切到另一条播放 → 先停掉上一条
     this.stopVoicePlayback()
 
-    if (!this.audioContext) {
-      this.audioContext = wx.createInnerAudioContext()
-      this.audioContext.onEnded(() => {
-        if (this._voicePlayingTimer) {
-          clearTimeout(this._voicePlayingTimer)
-          this._voicePlayingTimer = null
-        }
-        this.setData({ playingVoiceId: null })
-      })
-      this.audioContext.onStop(() => {
-        if (this._voicePlayingTimer) {
-          clearTimeout(this._voicePlayingTimer)
-          this._voicePlayingTimer = null
-        }
-        this.setData({ playingVoiceId: null })
-      })
-      this.audioContext.onError((err) => {
-        console.error('语音播放失败:', err)
-        if (this._voicePlayingTimer) {
-          clearTimeout(this._voicePlayingTimer)
-          this._voicePlayingTimer = null
-        }
-        this.setData({ playingVoiceId: null })
-        wx.showToast({ title: '播放失败', icon: 'none' })
-      })
-    }
+    // 每次播放使用独立 token，旧实例迟到的 onStop/onError 回调不生效
+    const token = (this._voicePlayToken = (this._voicePlayToken || 0) + 1)
+    const ctx = wx.createInnerAudioContext()
+    this.audioContext = ctx
+    this._voiceActive = true
 
-    this.audioContext.src = url
-    this.audioContext.play()
+    ctx.onPlay(() => {
+      if (this._voicePlayToken === token) this._voiceActive = true
+    })
+    ctx.onCanplay(() => {
+      // 用真实音频时长校准兜底定时器，避免消息里 duration 不准导致提前清除状态
+      if (this._voicePlayToken !== token) return
+      const real = ctx.duration
+      if (real && real > 0) {
+        if (this._voicePlayingTimer) {
+          clearTimeout(this._voicePlayingTimer)
+        }
+        this._voicePlayingTimer = setTimeout(() => {
+          if (this._voicePlayToken === token) this.clearVoicePlayingState()
+        }, real * 1000 + 3000)
+      }
+    })
+    ctx.onEnded(() => {
+      if (this._voicePlayToken === token) this.clearVoicePlayingState()
+    })
+    ctx.onStop(() => {
+      if (this._voicePlayToken === token) this.clearVoicePlayingState()
+    })
+    ctx.onError((err) => {
+      if (this._voicePlayToken !== token) return
+      const errMsg = (err && err.errMsg) || ''
+      // 空闲状态下 stop() 失败属正常现象，不视为播放失败
+      if (errMsg.indexOf('stop audio fail') !== -1) {
+        this.clearVoicePlayingState()
+        return
+      }
+      console.error('语音播放失败:', err)
+      this.clearVoicePlayingState()
+      wx.showToast({ title: '播放失败', icon: 'none' })
+    })
+
     this.setData({ playingVoiceId: msgId })
+    ctx.src = url
+    ctx.play()
 
     // 兜底：若 onEnded 未触发，时长+1.5s 后强制清除状态
     this._voicePlayingTimer = setTimeout(() => {
-      this.setData({ playingVoiceId: null })
-      this._voicePlayingTimer = null
+      if (this._voicePlayToken === token) this.clearVoicePlayingState()
     }, duration * 1000 + 1500)
   },
 
   /**
-   * 停止播放（内部使用）
+   * 清除播放中状态（内部使用）
    */
-  stopVoicePlayback() {
-    if (this.audioContext) {
-      try { this.audioContext.stop() } catch (e) {}
-    }
+  clearVoicePlayingState() {
+    this._voiceActive = false
     if (this._voicePlayingTimer) {
       clearTimeout(this._voicePlayingTimer)
       this._voicePlayingTimer = null
@@ -956,6 +967,21 @@ Page({
     if (this.data.playingVoiceId !== null) {
       this.setData({ playingVoiceId: null })
     }
+  },
+
+  /**
+   * 停止播放（内部使用）
+   */
+  stopVoicePlayback() {
+    // 递增 token 使旧实例的所有回调失效
+    this._voicePlayToken = (this._voicePlayToken || 0) + 1
+    this._voiceActive = false
+    if (this.audioContext) {
+      try { this.audioContext.stop() } catch (e) {}
+      try { this.audioContext.destroy() } catch (e) {}
+      this.audioContext = null
+    }
+    this.clearVoicePlayingState()
   },
 
   // 退出房间
