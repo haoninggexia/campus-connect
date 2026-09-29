@@ -120,7 +120,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 70rpx;
+  margin-bottom: 40rpx;
 }
 
 .schedule-key {
@@ -156,4 +156,100 @@ page {
   font-size: 24rpx;
   color: #47507a;
   letter-spacing: 2rpx;
+}
+
+/* 邮箱收集卡片 */
+.email-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 40rpx 40rpx 36rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(180deg, rgba(0, 255, 255, 0.06) 0%, rgba(0, 120, 255, 0.03) 100%);
+  border: 2rpx solid rgba(0, 255, 255, 0.2);
+  box-sizing: border-box;
+  margin-bottom: 60rpx;
+}
+
+.email-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #9fe8ff;
+  letter-spacing: 4rpx;
+  margin-bottom: 12rpx;
+}
+
+.email-desc {
+  font-size: 24rpx;
+  color: #5a6380;
+  letter-spacing: 1rpx;
+  margin-bottom: 28rpx;
+  text-align: center;
+}
+
+.email-input {
+  width: 100%;
+  height: 84rpx;
+  padding: 0 28rpx;
+  border-radius: 18rpx;
+  background-color: rgba(2, 0, 16, 0.6);
+  border: 2rpx solid rgba(0, 255, 255, 0.3);
+  color: #e6ecff;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  margin-bottom: 24rpx;
+}
+
+.email-placeholder {
+  color: #47507a;
+  font-size: 26rpx;
+}
+
+.email-btn {
+  width: 100%;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 18rpx;
+  font-size: 28rpx;
+  color: #020010;
+  font-weight: 600;
+  background-color: #00ffff;
+  letter-spacing: 4rpx;
+}
+
+.email-btn::after {
+  border: none;
+}
+
+.email-tip {
+  margin-top: 18rpx;
+  font-size: 24rpx;
+  color: #ff8a8a;
+  letter-spacing: 1rpx;
+}
+
+.email-done {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.email-done-icon {
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  border-radius: 50%;
+  background-color: rgba(0, 255, 255, 0.15);
+  border: 2rpx solid rgba(0, 255, 255, 0.5);
+  color: #00ffff;
+  font-size: 24rpx;
+  margin-right: 14rpx;
+}
+
+.email-done text:last-child {
+  font-size: 26rpx;
+  color: #9fb0d8;
+  letter-spacing: 1rpx;
 }

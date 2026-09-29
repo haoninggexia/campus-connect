@@ -191,12 +191,8 @@ function computeStatus(nowTs, config) {
       message = overrideMessage
     } else if (config.message) {
       message = config.message
-    } else if (nextOpen) {
-      const nextDate = formatBJ(nextOpen.startTs).slice(0, 10)
-      const nextHM = formatBJ(nextOpen.startTs).slice(11, 16)
-      message = nextDate === nowDate ? `今晚 ${nextHM} 开放，敬请期待` : `${nextDate} ${nextHM} 开放`
     } else {
-      message = '当前不在开放时间，敬请期待'
+      message = '由于同时在线的人数太少，小程序只好暂时关闭，如果师哥师姐感兴趣，请输入你的邮箱，我们决定在邮箱数达到200+时再开放小程序'
     }
   }
 

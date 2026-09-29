@@ -408,5 +408,31 @@ exports.main = async (event = {}) => {
     return { code: 0, msg: '白名单已更新', openid, openids: list }
   }
 
+  // 导出邮箱订阅列表（未开放页收集，用于开放时邮件通知）
+  if (action === 'emailSubscribers') {
+    let list = []
+    try {
+      const limit = Math.min(Math.max(Number(event.limit) || 100, 1), 1000)
+      const res = await db.collection('email_subscribers')
+        .orderBy('subscribeTime', 'desc')
+        .limit(limit)
+        .get()
+      list = (res.data || []).map(item => ({
+        email: item.email,
+        openid: item.openid || '',
+        subscribeTime: toStr(item.subscribeTime)
+      }))
+    } catch (e) {
+      // 集合不存在等场景返回空列表
+    }
+    return {
+      code: 0,
+      openid,
+      serverTime: Date.now(),
+      total: list.length,
+      data: list
+    }
+  }
+
   return { code: 400, msg: `未知操作：${action}` }
 }

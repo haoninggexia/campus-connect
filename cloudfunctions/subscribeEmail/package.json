@@ -1,0 +1,11 @@
+{
+  "name": "subscribeEmail",
+  "version": "1.0.0",
+  "description": "未开放时段收集用户邮箱，开放时用于邮件通知",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
