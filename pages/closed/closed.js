@@ -97,7 +97,7 @@ Page({
   applyClosedStatus(status) {
     this.setData({
       loaded: true,
-      message: status.message || '由于同时在线的人数太少，小程序只好暂时关闭，如果师哥师姐感兴趣，请输入你的邮箱，我们决定在邮箱数达到200+时再开放小程序',
+      message: status.message || '我们想打造一个纯绿色同校交友平台，一对一在线聊天室，起步阶段请师哥师姐输入你的邮箱，我们将在邮箱数达到200+时开放。我们有信心拿下第一所大学--山东中医药大学！',
       scheduleText: status.todayWindowsText || '',
       nextOpenTime: status.nextOpenTime || 0
     })

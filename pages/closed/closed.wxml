@@ -12,11 +12,6 @@
 
     <view class="message">{{message}}</view>
 
-    <view class="countdown-card" wx:if="{{countdown}}">
-      <text class="countdown-label">距离开放还有</text>
-      <text class="countdown-value">{{countdown}}</text>
-    </view>
-
     <view class="schedule" wx:if="{{scheduleText}}">
       <text class="schedule-key">开放时段</text>
       <text class="schedule-val">{{scheduleText}}</text>
@@ -43,7 +38,6 @@
       刷新状态
     </button>
 
-    <view class="footer-tip">开放后回到首页即可开始匹配</view>
   </view>
 
   <view class="content" wx:else>
