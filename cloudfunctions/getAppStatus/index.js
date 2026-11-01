@@ -192,7 +192,7 @@ function computeStatus(nowTs, config) {
     } else if (config.message) {
       message = config.message
     } else {
-      message = '我们想打造一个纯绿色同校交友平台，一对一在线聊天室，起步阶段请师哥师姐输入你的邮箱，我们将在邮箱数达到200+时开放。我们有信心拿下第一座城池--长清大学城！'
+      message = '我们想打造一个纯绿色同校交友平台，一对一在线聊天室，我们有信心拿下第一座城池--长清大学城！'
     }
   }
 
