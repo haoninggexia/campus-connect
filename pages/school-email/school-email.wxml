@@ -5,9 +5,10 @@
   <view class="content">
     <view class="school-name">{{school}}</view>
 
+    <view class="email-intro">请师哥师姐输入你的邮箱，我们将在邮箱数达到200+时开放</view>
+
     <view class="email-card">
-      <view class="email-title">开放提醒</view>
-      <view class="email-desc">留下邮箱，开放时第一时间邮件通知你</view>
+      <view class="email-title">开放时邮件通知大家</view>
       <block wx:if="{{!emailSubscribed}}">
         <input class="email-input" type="text" value="{{email}}" placeholder="请输入邮箱地址"
           placeholder-class="email-placeholder" bindinput="onEmailInput" />

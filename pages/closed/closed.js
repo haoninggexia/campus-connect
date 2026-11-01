@@ -17,7 +17,8 @@ Page({
       '山东圣翰财贸职业学院',
       '齐鲁工业大学',
       '山东女子学院',
-      '山东师范大学'
+      '山东师范大学',
+      '山东工艺美术学院'
     ]
   },
 
@@ -99,7 +100,7 @@ Page({
   applyClosedStatus(status) {
     this.setData({
       loaded: true,
-      message: status.message || '我们想打造一个纯绿色同校交友平台，一对一在线聊天室，我们有信心拿下第一座城池--长清大学城！',
+      message: status.message || '我们打造了一个纯绿色同校交友平台，1对1在线聊天室，正在攻克第一座城池--长清大学城！',
       scheduleText: status.todayWindowsText || '',
       nextOpenTime: status.nextOpenTime || 0
     })

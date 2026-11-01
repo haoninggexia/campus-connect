@@ -5,11 +5,6 @@
   <view class="content" wx:if="{{loaded}}">
     <view class="logo" bindlongpress="onSecretLongPress">你的回声谷</view>
 
-    <view class="status-badge">
-      <view class="dot"></view>
-      <text>未开放</text>
-    </view>
-
     <view class="message">{{message}}</view>
 
     <view class="schedule" wx:if="{{scheduleText}}">
@@ -18,7 +13,6 @@
     </view>
 
     <view class="school-section">
-      <view class="school-title">选择你的学校，加入我们</view>
       <view class="school-list">
         <view class="school-item" wx:for="{{schools}}" wx:key="*this"
           bindtap="onSchoolTap" data-school="{{item}}" hover-class="school-item-hover">

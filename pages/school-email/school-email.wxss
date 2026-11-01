@@ -43,8 +43,18 @@ page {
   letter-spacing: 6rpx;
   color: #00ffff;
   text-shadow: 0 0 24rpx rgba(0, 255, 255, 0.6), 0 0 60rpx rgba(0, 255, 255, 0.3);
-  margin-bottom: 60rpx;
+  margin-bottom: 24rpx;
   text-align: center;
+}
+
+.email-intro {
+  font-size: 28rpx;
+  color: #9fb0d8;
+  text-align: center;
+  line-height: 1.6;
+  letter-spacing: 1rpx;
+  margin-bottom: 48rpx;
+  padding: 0 20rpx;
 }
 
 /* 邮箱收集卡片 */
