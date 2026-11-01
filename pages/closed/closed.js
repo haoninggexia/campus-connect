@@ -2,7 +2,6 @@
 // 启动状态页：未到开放时段时展示倒计时与提示语；到点自动放行进入首页。
 // 放行判定一律以服务端 getAppStatus 返回的 isOpen 为准，本地时间仅用于倒计时展示。
 const POLL_INTERVAL = 20 * 1000
-const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
 
 Page({
   data: {
@@ -12,10 +11,14 @@ Page({
     countdown: '',
     scheduleText: '',
     nextOpenTime: 0,
-    email: '',
-    emailSubscribing: false,
-    emailSubscribed: false,
-    emailTip: ''
+    schools: [
+      '山东中医药大学',
+      '山东劳动职业技术学院',
+      '山东圣翰财贸职业学院',
+      '齐鲁工业大学',
+      '山东女子学院',
+      '山东师范大学'
+    ]
   },
 
   onLoad() {
@@ -29,7 +32,6 @@ Page({
 
   onShow() {
     this.checkStatus()
-    this.checkEmailSubscribed()
   },
 
   onHide() {
@@ -150,58 +152,16 @@ Page({
     return n < 10 ? '0' + n : '' + n
   },
 
-  // ---- 邮箱收集：开放后邮件通知 ----
-  onEmailInput(e) {
-    this.setData({ email: e.detail.value, emailTip: '' })
-  },
-
-  async checkEmailSubscribed() {
-    if (this.data.emailSubscribed) return
-    if (wx.getStorageSync('emailSubscribed')) {
-      this.setData({ emailSubscribed: true })
-      return
-    }
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'subscribeEmail',
-        data: { action: 'check' }
-      })
-      if (res && res.result && res.result.code === 0 && res.result.subscribed) {
-        wx.setStorageSync('emailSubscribed', true)
-        this.setData({ emailSubscribed: true })
+  // 点击学校栏 -> 跳转到该校的邮箱收集页
+  onSchoolTap(e) {
+    const school = e.currentTarget.dataset.school
+    if (!school) return
+    wx.navigateTo({
+      url: `/pages/school-email/school-email?school=${encodeURIComponent(school)}`,
+      fail: (err) => {
+        console.error('打开学校邮箱页失败:', err)
       }
-    } catch (e) {
-      // 静默失败，不影响倒计时主流程
-    }
-  },
-
-  async onSubscribeEmail() {
-    if (this.data.emailSubscribing || this.data.emailSubscribed) return
-    const email = (this.data.email || '').trim()
-    if (!EMAIL_RE.test(email)) {
-      this.setData({ emailTip: '请输入有效的邮箱地址' })
-      return
-    }
-
-    this.setData({ emailSubscribing: true, emailTip: '' })
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'subscribeEmail',
-        data: { action: 'subscribe', email }
-      })
-      const result = res && res.result
-      if (result && result.code === 0) {
-        wx.setStorageSync('emailSubscribed', true)
-        this.setData({ emailSubscribed: true })
-      } else {
-        this.setData({ emailTip: (result && result.msg) || '提交失败，请稍后再试' })
-      }
-    } catch (e) {
-      console.warn('邮箱登记失败:', e)
-      this.setData({ emailTip: '网络异常，请稍后再试' })
-    } finally {
-      this.setData({ emailSubscribing: false })
-    }
+    })
   },
 
   // 隐藏入口：长按 LOGO 打开管理页（页面无任何可见入口）

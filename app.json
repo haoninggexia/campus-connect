@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/closed/closed",
+    "pages/school-email/school-email",
     "pages/chat-list/chat-list",
     "pages/auth/auth",
     "pages/chat-tim/chat-tim",

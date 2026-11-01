@@ -12,6 +12,7 @@ cloud.init({
 })
 
 const db = cloud.database()
+const _ = db.command
 
 const CONFIG_COLLECTION = 'app_config'
 const CONFIG_DOC_ID = 'open_time'
@@ -34,6 +35,9 @@ const MAX_MESSAGE_LEN = 100
 const MAX_DATE_OVERRIDES = 30
 const MAX_FAIL = 5
 const LOCK_MS = 5 * 60 * 1000
+
+// 邮箱订阅默认归类学校：历史未带学校的邮箱统一归到山东中医药大学
+const EMAIL_DEFAULT_SCHOOL = '山东中医药大学'
 
 // 失败计数（云函数实例内存级，够用且不增加数据库写入）
 const failMap = new Map()
@@ -263,6 +267,28 @@ function packConfig(raw) {
   }
 }
 
+// 历史邮箱（未带 school 或为空）统一归到山东中医药大学，写回数据库（幂等，跑完即停）
+async function backfillEmailSchool() {
+  const MAX_ROUNDS = 50
+  for (let i = 0; i < MAX_ROUNDS; i++) {
+    const res = await db.collection('email_subscribers')
+      .where(_.or([{ school: _.exists(false) }, { school: '' }]))
+      .limit(20)
+      .get()
+    const docs = (res && res.data) || []
+    if (!docs.length) break
+    for (const d of docs) {
+      try {
+        await db.collection('email_subscribers').doc(d._id).update({
+          data: { school: EMAIL_DEFAULT_SCHOOL }
+        })
+      } catch (e) {
+        // 单条失败忽略，下一轮重试
+      }
+    }
+  }
+}
+
 exports.main = async (event = {}) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID || ''
@@ -409,7 +435,14 @@ exports.main = async (event = {}) => {
   }
 
   // 导出邮箱订阅列表（未开放页收集，用于开放时邮件通知）
+  // 按学校分类；历史未带学校的邮箱先回填归到山东中医药大学
   if (action === 'emailSubscribers') {
+    try {
+      await backfillEmailSchool()
+    } catch (e) {
+      console.warn('[adminConfig] 邮箱学校回填失败（不影响导出）:', e)
+    }
+
     let list = []
     try {
       const limit = Math.min(Math.max(Number(event.limit) || 100, 1), 1000)
@@ -420,17 +453,32 @@ exports.main = async (event = {}) => {
       list = (res.data || []).map(item => ({
         email: item.email,
         openid: item.openid || '',
+        school: item.school || EMAIL_DEFAULT_SCHOOL,
         subscribeTime: toStr(item.subscribeTime)
       }))
     } catch (e) {
       // 集合不存在等场景返回空列表
     }
+
+    // 按学校分组
+    const groups = {}
+    for (const item of list) {
+      const key = item.school || EMAIL_DEFAULT_SCHOOL
+      if (!groups[key]) groups[key] = []
+      groups[key].push(item)
+    }
+    const schoolCounts = Object.keys(groups)
+      .map(name => ({ name, count: groups[name].length }))
+      .sort((a, b) => b.count - a.count)
+
     return {
       code: 0,
       openid,
       serverTime: Date.now(),
       total: list.length,
-      data: list
+      data: list,
+      groups,
+      schoolCounts
     }
   }
 

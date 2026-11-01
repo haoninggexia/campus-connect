@@ -49,6 +49,11 @@ exports.main = async (event, context) => {
 
     if (action === 'subscribe') {
       const email = typeof event.email === 'string' ? event.email.trim().toLowerCase() : ''
+      // 未带学校时（如历史入口）统一归入山东中医药大学
+      const DEFAULT_SCHOOL = '山东中医药大学'
+      const school = (typeof event.school === 'string' && event.school.trim())
+        ? event.school.trim()
+        : DEFAULT_SCHOOL
       if (!email || email.length > MAX_EMAIL_LEN || !EMAIL_RE.test(email)) {
         return { code: 400, msg: '邮箱格式不正确' }
       }
@@ -59,22 +64,22 @@ exports.main = async (event, context) => {
       const existedDoc = existed.data && existed.data.length ? existed.data[0] : null
 
       if (existedDoc) {
-        // 已存在：刷新 openid 与时间即可
-        await db.collection(COLLECTION).doc(existedDoc._id).update({
-          data: {
-            openid,
-            subscribeTime: db.serverDate()
-          }
-        })
+        // 已存在：刷新 openid、时间，并记录最新学校
+        const updateData = {
+          openid,
+          subscribeTime: db.serverDate()
+        }
+        if (school) updateData.school = school
+        await db.collection(COLLECTION).doc(existedDoc._id).update({ data: updateData })
       } else {
-        await db.collection(COLLECTION).add({
-          data: {
-            _id: emailId,
-            email,
-            openid,
-            subscribeTime: db.serverDate()
-          }
-        })
+        const addData = {
+          _id: emailId,
+          email,
+          openid,
+          subscribeTime: db.serverDate()
+        }
+        if (school) addData.school = school
+        await db.collection(COLLECTION).add({ data: addData })
       }
 
       return { code: 0, msg: '登记成功', email }

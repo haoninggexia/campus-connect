@@ -40,7 +40,13 @@ Page({
     weekLabels: WEEK_LABELS,
     allDays: ALL_DAYS,
 
-    saving: false
+    saving: false,
+
+    // 邮箱订阅（按大学分类）
+    emailLoading: false,
+    emailLoaded: false,
+    emailTotal: 0,
+    emailGroups: []
   },
 
   onLoad() {
@@ -507,6 +513,37 @@ Page({
     wx.setClipboardData({
       data: this.data.openid,
       success: () => wx.showToast({ title: '已复制 openid', icon: 'none' })
+    })
+  },
+
+  // ==================== 邮箱订阅（按大学分类） ====================
+
+  onLoadEmails() {
+    if (!this.data.verified) return
+    this.setData({ emailLoading: true })
+    wx.cloud.callFunction({
+      name: 'adminConfig',
+      data: { action: 'emailSubscribers', password: this._pwd }
+    }).then((res) => {
+      const r = (res && res.result) || {}
+      if (r.code !== 0) {
+        wx.showToast({ title: '读取失败', icon: 'none' })
+        return
+      }
+      const groups = (r.schoolCounts || []).map(g => ({
+        name: g.name,
+        count: g.count,
+        items: (r.groups && r.groups[g.name]) || []
+      }))
+      this.setData({
+        emailGroups: groups,
+        emailTotal: r.total || 0,
+        emailLoaded: true
+      })
+    }).catch((e) => {
+      wx.showToast({ title: '读取异常', icon: 'none' })
+    }).then(() => {
+      this.setData({ emailLoading: false })
     })
   }
 })

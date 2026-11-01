@@ -484,3 +484,63 @@ page {
 .footer-time {
   margin-top: 10rpx;
 }
+
+/* ==================== 邮箱订阅（按大学分类） ==================== */
+.email-total {
+  margin-bottom: 18rpx;
+  font-size: 24rpx;
+  color: #7ffcff;
+  letter-spacing: 1rpx;
+}
+
+.email-group {
+  padding: 18rpx 0;
+  border-top: 2rpx solid rgba(255, 255, 255, 0.05);
+}
+
+.email-group:first-of-type {
+  border-top: none;
+}
+
+.email-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14rpx;
+}
+
+.email-group-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #d8e2ff;
+  letter-spacing: 2rpx;
+}
+
+.email-group-count {
+  font-size: 24rpx;
+  color: #020010;
+  font-weight: 600;
+  background: linear-gradient(90deg, #00ffff 0%, #4dd0ff 100%);
+  border-radius: 999rpx;
+  padding: 4rpx 18rpx;
+}
+
+.email-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10rpx 0;
+}
+
+.email-text {
+  font-size: 25rpx;
+  color: #b9c6e6;
+  word-break: break-all;
+}
+
+.email-time {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  color: #47507a;
+}

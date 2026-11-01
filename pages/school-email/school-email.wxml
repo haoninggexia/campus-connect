@@ -1,0 +1,27 @@
+<!--pages/school-email/school-email.wxml-->
+<view class="page">
+  <view class="bg-glow"></view>
+
+  <view class="content">
+    <view class="school-name">{{school}}</view>
+
+    <view class="email-card">
+      <view class="email-title">开放提醒</view>
+      <view class="email-desc">留下邮箱，开放时第一时间邮件通知你</view>
+      <block wx:if="{{!emailSubscribed}}">
+        <input class="email-input" type="text" value="{{email}}" placeholder="请输入邮箱地址"
+          placeholder-class="email-placeholder" bindinput="onEmailInput" />
+        <button class="email-btn" bindtap="onSubscribeEmail" loading="{{emailSubscribing}}" hover-class="none">
+          通知我
+        </button>
+        <view class="email-tip" wx:if="{{emailTip}}">{{emailTip}}</view>
+      </block>
+      <view class="email-done" wx:else>
+        <text class="email-done-icon">✓</text>
+        <text>已登记，开放时会邮件通知你</text>
+      </view>
+    </view>
+
+    <button class="back-btn" bindtap="onBack" hover-class="none">返回</button>
+  </view>
+</view>

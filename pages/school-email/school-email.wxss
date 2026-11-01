@@ -1,0 +1,160 @@
+/* pages/school-email/school-email.wxss */
+page {
+  background-color: #020010;
+  height: 100%;
+}
+
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #020010;
+  overflow: hidden;
+}
+
+.bg-glow {
+  position: absolute;
+  top: -180rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900rpx;
+  height: 700rpx;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.22) 0%, rgba(0, 120, 255, 0.08) 45%, rgba(2, 0, 16, 0) 70%);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 70rpx;
+  box-sizing: border-box;
+}
+
+.school-name {
+  font-size: 44rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+  color: #00ffff;
+  text-shadow: 0 0 24rpx rgba(0, 255, 255, 0.6), 0 0 60rpx rgba(0, 255, 255, 0.3);
+  margin-bottom: 60rpx;
+  text-align: center;
+}
+
+/* 邮箱收集卡片 */
+.email-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 40rpx 40rpx 36rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(180deg, rgba(0, 255, 255, 0.06) 0%, rgba(0, 120, 255, 0.03) 100%);
+  border: 2rpx solid rgba(0, 255, 255, 0.2);
+  box-sizing: border-box;
+  margin-bottom: 40rpx;
+}
+
+.email-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #9fe8ff;
+  letter-spacing: 4rpx;
+  margin-bottom: 12rpx;
+}
+
+.email-desc {
+  font-size: 24rpx;
+  color: #5a6380;
+  letter-spacing: 1rpx;
+  margin-bottom: 28rpx;
+  text-align: center;
+}
+
+.email-input {
+  width: 100%;
+  height: 84rpx;
+  padding: 0 28rpx;
+  border-radius: 18rpx;
+  background-color: rgba(2, 0, 16, 0.6);
+  border: 2rpx solid rgba(0, 255, 255, 0.3);
+  color: #e6ecff;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  margin-bottom: 24rpx;
+}
+
+.email-placeholder {
+  color: #47507a;
+  font-size: 26rpx;
+}
+
+.email-btn {
+  width: 100%;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 18rpx;
+  font-size: 28rpx;
+  color: #020010;
+  font-weight: 600;
+  background-color: #00ffff;
+  letter-spacing: 4rpx;
+}
+
+.email-btn::after {
+  border: none;
+}
+
+.email-tip {
+  margin-top: 18rpx;
+  font-size: 24rpx;
+  color: #ff8a8a;
+  letter-spacing: 1rpx;
+}
+
+.email-done {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.email-done-icon {
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  border-radius: 50%;
+  background-color: rgba(0, 255, 255, 0.15);
+  border: 2rpx solid rgba(0, 255, 255, 0.5);
+  color: #00ffff;
+  font-size: 24rpx;
+  margin-right: 14rpx;
+}
+
+.email-done text:last-child {
+  font-size: 26rpx;
+  color: #9fb0d8;
+  letter-spacing: 1rpx;
+}
+
+.back-btn {
+  width: 100%;
+  height: 92rpx;
+  line-height: 92rpx;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  color: #00ffff;
+  background-color: rgba(0, 255, 255, 0.08);
+  border: 2rpx solid rgba(0, 255, 255, 0.5);
+  letter-spacing: 4rpx;
+}
+
+.back-btn::after {
+  border: none;
+}

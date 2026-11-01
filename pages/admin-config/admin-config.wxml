@@ -205,6 +205,29 @@ module.exports = {
       </view>
     </view>
 
+    <!-- 邮箱订阅（按大学分类） -->
+    <view class="card">
+      <view class="card-title">
+        <text>邮箱订阅（按大学分类）</text>
+        <text class="card-action" bindtap="onLoadEmails">{{emailLoading ? '加载中...' : (emailLoaded ? '刷新' : '查看')}}</text>
+      </view>
+
+      <view class="email-total" wx:if="{{emailLoaded}}">共 {{emailTotal}} 个邮箱</view>
+
+      <view class="email-group" wx:for="{{emailGroups}}" wx:key="name">
+        <view class="email-group-head">
+          <text class="email-group-name">{{item.name}}</text>
+          <text class="email-group-count">{{item.count}}</text>
+        </view>
+        <view class="email-line" wx:for="{{item.items}}" wx:for-item="em" wx:key="email">
+          <text class="email-text">{{em.email}}</text>
+          <text class="email-time">{{em.subscribeTime}}</text>
+        </view>
+      </view>
+
+      <view class="empty" wx:if="{{emailLoaded && emailGroups.length === 0}}">暂无邮箱</view>
+    </view>
+
     <view class="footer">
       <text>保存后 getAppStatus 最长 10 秒缓存生效</text>
       <text class="footer-time" wx:if="{{updateTimeStr}}">上次更新：{{updateTimeStr}}</text>
