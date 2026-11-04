@@ -88,8 +88,9 @@ Page({
         try {
             const db = wx.cloud.database();
             if (db && userInfo.userID) {
+                // 按 userID 查询，兼容手机号注册用户（不再依赖微信 _openid）
                 const profileRes = await db.collection('users_profile')
-                    .where({ _openid: '{openid}' })
+                    .where({ userID: userInfo.userID })
                     .get();
                 if (profileRes.data && profileRes.data.length > 0) {
                     const profile = profileRes.data[0];
@@ -104,7 +105,7 @@ Page({
                 try {
                     const profileRes = await wx.cloud.callFunction({
                         name: 'getUserProfile',
-                        data: {}
+                        data: { userID: userInfo.userID }
                     });
                     if (profileRes.result && profileRes.result.code === 0) {
                         const profile = profileRes.result.data;

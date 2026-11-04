@@ -1,0 +1,27 @@
+{
+  "_comment": "环境变量配置样例。复制到【云开发控制台 → 云函数 → 配置 → 环境变量】逐个填写，不要把本文件当成密钥文件提交到仓库。两个云函数各自独立配置，AK/SK 必须两边都填。",
+  "sendSmsCode": {
+    "ALIBABA_CLOUD_ACCESS_KEY_ID": "<RAM 子账号 AccessKeyId>",
+    "ALIBABA_CLOUD_ACCESS_KEY_SECRET": "<RAM 子账号 AccessKeySecret>",
+    "SMS_PROVIDER": "pnvs",
+    "SMS_DEV_MODE": "<联调期填 true；提交审核前删除本项或设为 false>",
+    "ALIYUN_PNVS_SIGN_NAME": "<控制台 赠送签名配置 页的签名名称>",
+    "ALIYUN_PNVS_TEMPLATE_CODE": "<控制台 赠送模板配置 页的模板 CODE>",
+    "ALIYUN_PNVS_ENDPOINT": "dypnsapi.aliyuncs.com",
+    "ALIYUN_PNVS_TEMPLATE_PARAM": "{\"code\":\"##code##\",\"min\":\"5\"}",
+    "ALIYUN_PNVS_SCHEME_NAME": "<可选，不填则用默认方案；填写后 phoneLogin 会自动沿用>",
+    "_sms_mode_only": {
+      "ALIYUN_SMS_SIGN_NAME": "<方案 B 报备通过后填写，企事业单位全称>",
+      "ALIYUN_SMS_TEMPLATE_CODE": "<方案 B 模板 CODE>",
+      "ALIYUN_SMS_TEMPLATE_PARAM": "code",
+      "ALIYUN_SMS_ENDPOINT": "dysmsapi.aliyuncs.com"
+    }
+  },
+  "phoneLogin": {
+    "ALIBABA_CLOUD_ACCESS_KEY_ID": "<与 sendSmsCode 相同>",
+    "ALIBABA_CLOUD_ACCESS_KEY_SECRET": "<与 sendSmsCode 相同>",
+    "ALIYUN_PNVS_ENDPOINT": "dypnsapi.aliyuncs.com",
+    "ALIYUN_PNVS_SCHEME_NAME": "<可选，兜底值；实际优先使用 sms_codes 里发送时落库的值>",
+    "_note": "PNVS 的 CheckSmsVerifyCode 在本函数内执行，因此这里也必须配 AK/SK 并已安装 @alicloud/dypnsapi20170525。方案 B / 联调模式下本函数不调用阿里云，可不配。"
+  }
+}

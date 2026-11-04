@@ -3,3 +3,17 @@
 /.idea/
 /node_modules/
 /project.private.config.json
+
+# 密钥文件：绝不入库（本机 git() 包装会自动 add -A 并提交，务必保持忽略）
+.env
+.env.*
+*.env
+*.secrets.env
+/secrets/
+/.secrets/
+cloudbaserc.local.json
+# CloudBase CLI 的 cloudbaserc.json 常含明文 envVariables，默认不入库；
+# 若确需提交一份不含密钥的样例，请用 cloudbaserc.example.json
+cloudbaserc.json
+!cloudbaserc.example.json
+

@@ -76,13 +76,6 @@
   filter: drop-shadow(0 0 30rpx rgba(0, 255, 255, 0.8)) drop-shadow(0 0 60rpx rgba(255, 0, 255, 0.5));
 }
 
-.subtitle {
-  font-size: 36rpx;
-  color: #00ffcc;
-  letter-spacing: 10rpx;
-  text-shadow: 0 0 20rpx rgba(0, 255, 204, 0.6), 0 0 40rpx rgba(0, 255, 204, 0.3);
-}
-
 .form {
   background: rgba(10, 10, 30, 0.85);
   border-radius: 20rpx;
@@ -217,4 +210,82 @@
 .agreement-text .link {
   color: #ff6bff;
   text-shadow: 0 0 15rpx rgba(255, 107, 255, 0.7);
+}
+
+/* 手机号验证码表单 */
+.field-label {
+  font-size: 28rpx;
+  color: #00ffcc;
+  letter-spacing: 4rpx;
+  margin: 8rpx 0 16rpx;
+  text-shadow: 0 0 15rpx rgba(0, 255, 204, 0.5);
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 20, 0.9);
+  border: 2rpx solid rgba(0, 255, 255, 0.25);
+  border-radius: 14rpx;
+  padding: 0 24rpx;
+  min-height: 90rpx;
+  margin-bottom: 28rpx;
+  box-shadow: inset 0 0 15rpx rgba(0, 255, 255, 0.08);
+}
+
+.field-input {
+  flex: 1;
+  height: 90rpx;
+  font-size: 36rpx;
+  color: #f0f0ff;
+  letter-spacing: 2rpx;
+}
+
+.code-row {
+  padding-right: 12rpx;
+}
+
+.code-input {
+  letter-spacing: 8rpx;
+}
+
+.btn-code {
+  flex-shrink: 0;
+  min-width: 210rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  padding: 0 16rpx;
+  margin: 0;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #00ffff;
+  background: rgba(0, 255, 255, 0.08);
+  border: 2rpx solid rgba(0, 255, 255, 0.55);
+  border-radius: 10rpx;
+  letter-spacing: 0;
+}
+
+.btn-code::after {
+  border: none;
+}
+
+.btn-code-disabled {
+  opacity: 0.45;
+  color: #7a80b0;
+  background: transparent;
+  border-color: rgba(122, 128, 176, 0.5);
+}
+
+.sms-tip {
+  font-size: 26rpx;
+  color: #7a80b0;
+  line-height: 1.6;
+  margin: -8rpx 0 8rpx;
+}
+
+.dev-tip {
+  font-size: 26rpx;
+  color: #ffcc00;
+  line-height: 1.6;
+  margin: 8rpx 0;
 }

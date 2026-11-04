@@ -15,7 +15,7 @@
     </view>
     <view class="section">
       <view class="section-title">四、账号管理</view>
-      <view class="section-content">用户应妥善保管自己的账号信息，不得转让、出借或以任何方式许可他人使用。因用户保管不善导致账号被盗或信息泄露，由用户自行承担责任。</view>
+      <view class="section-content">本小程序仅提供「手机号码 + 短信验证码」方式注册与登录，不使用微信账号、QQ 账号或其他自定义账号作为注册凭证。用户应确保所提供手机号码为本人真实持有，并妥善保管账号及验证码，不得转让、出借或以任何方式许可他人使用，亦不得利用脚本、虚拟号码等方式恶意批量注册或刷取验证码。因用户保管不善导致账号被盗或信息泄露，由用户自行承担责任。</view>
     </view>
     <view class="section">
       <view class="section-title">五、免责声明</view>

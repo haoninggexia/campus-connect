@@ -30,6 +30,14 @@ const COLLECTIONS = [
   {
     name: 'app_config',
     description: '应用配置表（开放时间、状态快照等）'
+  },
+  {
+    name: 'sms_codes',
+    description: '短信验证码表（每个手机号一条有效记录）'
+  },
+  {
+    name: 'sms_send_log',
+    description: '短信发送流水表（限频防刷）'
   }
 ]
 

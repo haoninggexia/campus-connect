@@ -2,18 +2,48 @@
   <view class="header">
     <image src="/image/login_logo.jpg" class="logo" mode="aspectFit"></image>
     <text class="title">你的回声谷</text>
-    <text class="subtitle">山东中医药大学</text>
   </view>
 
   <view class="form">
+    <view class="field-label">手机号</view>
+    <view class="input-row">
+      <input
+        class="field-input"
+        type="number"
+        maxlength="11"
+        placeholder="请输入手机号"
+        placeholder-class="placeholder-text"
+        value="{{phone}}"
+        bindinput="onPhoneInput"
+      />
+    </view>
+
+    <view class="field-label">验证码</view>
+    <view class="input-row code-row">
+      <input
+        class="field-input code-input"
+        type="number"
+        maxlength="6"
+        placeholder="请输入 6 位验证码"
+        placeholder-class="placeholder-text"
+        value="{{smsCode}}"
+        bindinput="onCodeInput"
+      />
+      <button
+        class="btn-code {{canSendCode ? '' : 'btn-code-disabled'}}"
+        disabled="{{!canSendCode}}"
+        bindtap="onSendCode"
+      >{{countdown > 0 ? countdown + 's 后重发' : '获取验证码'}}</button>
+    </view>
+
+    <view wx:if="{{codeSent}}" class="sms-tip">验证码已发送至 {{maskedPhone}}，5 分钟内有效</view>
+    <view wx:if="{{devCode}}" class="dev-tip">【联调模式】验证码：{{devCode}}</view>
+
     <button
-      class="btn-login {{agreed ? '' : 'btn-login-disabled'}}"
-      open-type="getUserInfo"
-      bindgetuserinfo="onLogin"
-      disabled="{{!agreed}}"
-    >
-      微信授权登录
-    </button>
+      class="btn-login {{canLogin ? '' : 'btn-login-disabled'}}"
+      disabled="{{!canLogin}}"
+      bindtap="onLogin"
+    >登录 / 注册</button>
 
     <view class="agreement-row" bindtap="toggleAgreement">
       <view class="checkbox {{agreed ? 'checkbox-checked' : ''}}">
