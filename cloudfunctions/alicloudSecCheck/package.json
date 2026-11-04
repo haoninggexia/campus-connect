@@ -1,0 +1,12 @@
+{
+  "name": "alicloudSecCheck",
+  "version": "1.0.0",
+  "description": "对接阿里云内容安全增强版文本审核（第三方风控）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "@alicloud/green20220302": "^3.3.3",
+    "@alicloud/openapi-client": "^0.4.7",
+    "@alicloud/tea-util": "^1.4.0"
+  }
+}

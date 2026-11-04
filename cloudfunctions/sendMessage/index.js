@@ -23,10 +23,10 @@ async function getClosedStatus() {
 // ---- 微信官方内容安全 API ----
 
 /**
- * 文本内容安全检测（同步）：security.msgSecCheck 2.0
+ * 微信官方文本检测（同步）：security.msgSecCheck 2.0
  * @returns {Promise<{pass: boolean, suggest?: string}>}
  */
-async function checkText(openid, content) {
+async function wechatCheckText(openid, content) {
   try {
     const res = await cloud.openapi.security.msgSecCheck({
       version: 2,
@@ -42,6 +42,47 @@ async function checkText(openid, content) {
     // 检测服务异常时保守处理：拒绝发送，避免漏放违规内容
     return { pass: false, error: true }
   }
+}
+
+// ---- 阿里云内容安全增强版（第三方风控）----
+
+/**
+ * 调用 alicloudSecCheck 云函数做阿里云文本审核
+ * 未配置凭据/服务异常时保守放行（不阻断微信侧判定）
+ */
+async function getAliyunCheck(text) {
+  try {
+    const res = await cloud.callFunction({
+      name: 'alicloudSecCheck',
+      data: { text: text, service: 'chat_detection' }
+    })
+    const result = (res && res.result) || {}
+    if (result.skipped) return { pass: true, skipped: true }
+    return { pass: !!result.pass, labels: result.labels, riskLevel: result.riskLevel }
+  } catch (e) {
+    console.error('[secCheck] 阿里云检测调用失败:', e)
+    return { pass: true, skipped: true, error: true }
+  }
+}
+
+/**
+ * 文本双重风控：微信官方 + 阿里云增强版 并行检测
+ * 任一方判定违规即拒绝
+ */
+async function checkText(openid, content) {
+  const [wxRes, aliRes] = await Promise.all([
+    wechatCheckText(openid, content),
+    getAliyunCheck(content)
+  ])
+  console.log('[secCheck] 微信:', JSON.stringify(wxRes), '阿里云:', JSON.stringify(aliRes))
+  if (!wxRes.pass || !aliRes.pass) {
+    let reason = 'wechat_block'
+    if (!aliRes.pass) reason = 'aliyun_block'
+    else if (wxRes.error) reason = 'wechat_error'
+    else if (aliRes.error) reason = 'aliyun_error'
+    return { pass: false, suggest: wxRes.suggest, reason: reason }
+  }
+  return { pass: true, suggest: wxRes.suggest }
 }
 
 /**
@@ -98,13 +139,16 @@ exports.main = async (event, context) => {
     let traceId = null
 
     if (message.type === 'text') {
-      // 文本：同步检测，不通过直接拒绝
+      // 文本：微信 + 阿里云 双重风控，不通过直接拒绝
       const check = await checkText(openid, message.content)
       if (!check.pass) {
-        return {
-          code: 4001,
-          msg: check.error ? '内容安全检测服务异常，请稍后再试' : '内容包含违规信息，无法发送'
+        let msg = '内容包含违规信息，无法发送'
+        if (check.reason === 'aliyun_block') {
+          msg = '内容经第三方安全检测存在风险，无法发送'
+        } else if (check.reason === 'wechat_error' || check.reason === 'aliyun_error') {
+          msg = '内容安全检测服务异常，请稍后再试'
         }
+        return { code: 4001, msg: msg }
       }
     } else if (message.type === 'image' || message.type === 'voice') {
       // 图片/语音：提交异步检测，先入库标记 checking，违规结果由回调清除
