@@ -12,14 +12,10 @@
       <text class="schedule-val">{{scheduleText}}</text>
     </view>
 
-    <view class="school-section">
-      <view class="school-list">
-        <view class="school-item" wx:for="{{schools}}" wx:key="*this"
-          bindtap="onSchoolTap" data-school="{{item}}" hover-class="school-item-hover">
-          <text class="school-name">{{item}}</text>
-          <text class="school-arrow">›</text>
-        </view>
-      </view>
+    <view class="wechat-group">
+      <view class="wechat-group-text">请师哥师姐加入官方微信群，群人数达到一定数量后通知大家开放</view>
+      <image class="wechat-group-qr" src="/image/wechat-group-qr.jpg" mode="widthFix" show-menu-by-longpress bindtap="onPreviewQr" />
+      <view class="wechat-group-tip">长按二维码可保存或识别</view>
     </view>
 
     <button class="refresh-btn" bindtap="onManualRefresh" loading="{{checking}}" hover-class="none">

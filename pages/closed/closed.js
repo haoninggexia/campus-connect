@@ -10,16 +10,7 @@ Page({
     message: '',
     countdown: '',
     scheduleText: '',
-    nextOpenTime: 0,
-    schools: [
-      '山东中医药大学',
-      '山东劳动职业技术学院',
-      '山东圣翰财贸职业学院',
-      '齐鲁工业大学',
-      '山东女子学院',
-      '山东师范大学',
-      '山东工艺美术学院'
-    ]
+    nextOpenTime: 0
   },
 
   onLoad() {
@@ -100,7 +91,7 @@ Page({
   applyClosedStatus(status) {
     this.setData({
       loaded: true,
-      message: status.message || '我们打造了一个纯绿色同校交友平台，这绝不是又一个校园论坛，而是1对1在线聊天室，正在攻克第一座城池--长清大学城！',
+      message: status.message || '我们打造了一个纯绿色同校交友平台，这绝不是又一个校园论坛，而是1对1在线聊天室，正在攻克第一所院校--齐鲁师范学院！',
       scheduleText: status.todayWindowsText || '',
       nextOpenTime: status.nextOpenTime || 0
     })
@@ -153,15 +144,11 @@ Page({
     return n < 10 ? '0' + n : '' + n
   },
 
-  // 点击学校栏 -> 跳转到该校的邮箱收集页
-  onSchoolTap(e) {
-    const school = e.currentTarget.dataset.school
-    if (!school) return
-    wx.navigateTo({
-      url: `/pages/school-email/school-email?school=${encodeURIComponent(school)}`,
-      fail: (err) => {
-        console.error('打开学校邮箱页失败:', err)
-      }
+  // 点击二维码 -> 预览大图（可长按保存/识别）
+  onPreviewQr() {
+    wx.previewImage({
+      current: '/image/wechat-group-qr.jpg',
+      urls: ['/image/wechat-group-qr.jpg']
     })
   },
 

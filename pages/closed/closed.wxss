@@ -158,8 +158,8 @@ page {
   letter-spacing: 2rpx;
 }
 
-/* 学校选择栏 */
-.school-section {
+/* 官方微信群 */
+.wechat-group {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -167,48 +167,28 @@ page {
   margin-bottom: 60rpx;
 }
 
-.school-title {
+.wechat-group-text {
   font-size: 28rpx;
   color: #9fb0d8;
-  letter-spacing: 3rpx;
+  text-align: center;
+  line-height: 1.6;
+  letter-spacing: 1rpx;
   margin-bottom: 28rpx;
 }
 
-.school-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.school-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 96rpx;
-  padding: 0 32rpx;
-  box-sizing: border-box;
+.wechat-group-qr {
+  width: 400rpx;
+  height: 400rpx;
   border-radius: 20rpx;
-  background: linear-gradient(180deg, rgba(0, 255, 255, 0.06) 0%, rgba(0, 120, 255, 0.03) 100%);
-  border: 2rpx solid rgba(0, 255, 255, 0.2);
-  margin-bottom: 20rpx;
+  background-color: #ffffff;
+  border: 2rpx solid rgba(0, 255, 255, 0.4);
 }
 
-.school-item-hover {
-  background: rgba(0, 255, 255, 0.12);
-  border-color: rgba(0, 255, 255, 0.5);
-}
-
-.school-name {
-  font-size: 30rpx;
-  color: #e6ecff;
-  letter-spacing: 2rpx;
-}
-
-.school-arrow {
-  font-size: 40rpx;
-  color: #00ffff;
-  line-height: 1;
+.wechat-group-tip {
+  margin-top: 20rpx;
+  font-size: 22rpx;
+  color: #47507a;
+  letter-spacing: 1rpx;
 }
 
 /* 邮箱收集卡片 */
