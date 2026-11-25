@@ -20,7 +20,7 @@
       <view class="message-item self" wx:if="{{item.isSelf}}">
         <image class="avatar" src="{{myAvatar}}" mode="aspectFill"></image>
         <view class="message-content {{item.type === 'image' ? 'image-content' : ''}}">
-          <text class="message-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
+          <text class="message-text" wx:if="{{item.type === 'text'}}" bindlongpress="onMessageLongPress" data-content="{{item.content}}">{{item.content}}</text>
           <image class="message-image" src="{{item.content}}" mode="widthFix" wx:if="{{item.type === 'image'}}" bindtap="onPreviewImage" data-url="{{item.content}}"></image>
           <text class="message-time">
             <text wx:if="{{item.status === 'sending'}}">发送中...</text>
@@ -35,7 +35,7 @@
         <image class="avatar" src="{{friendAvatar}}" mode="aspectFill" bindtap="onViewFriendInfo"></image>
         <view class="message-content {{item.type === 'image' ? 'image-content' : ''}}">
           <text class="friend-name">{{item.fromName}}</text>
-          <text class="message-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
+          <text class="message-text" wx:if="{{item.type === 'text'}}" bindlongpress="onMessageLongPress" data-content="{{item.content}}">{{item.content}}</text>
           <image class="message-image" src="{{item.content}}" mode="widthFix" wx:if="{{item.type === 'image'}}" bindtap="onPreviewImage" data-url="{{item.content}}"></image>
           <text class="message-time">{{item.timeStr}}</text>
         </view>

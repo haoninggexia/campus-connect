@@ -410,6 +410,37 @@ Page({
     })
   },
 
+  // 长按文本消息：弹出操作菜单
+  onMessageLongPress(e) {
+    const content = e.currentTarget.dataset.content
+    if (!content) return
+
+    wx.showActionSheet({
+      itemList: ['复制'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.copyMessageContent(content)
+        }
+      },
+      fail: () => {
+        // 用户取消，无需处理
+      }
+    })
+  },
+
+  // 复制消息内容到剪贴板
+  copyMessageContent(content) {
+    wx.setClipboardData({
+      data: content,
+      fail: () => {
+        wx.showToast({
+          title: '复制失败',
+          icon: 'none'
+        })
+      }
+    })
+  },
+
   // 发送消息
   async onSend() {
     const content = this.data.inputContent.trim()

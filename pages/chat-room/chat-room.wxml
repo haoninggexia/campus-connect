@@ -60,7 +60,7 @@
             </view>
             <text class="voice-duration">{{msg.duration || 1}}″</text>
           </view>
-          <text wx:else>{{msg.content}}</text>
+          <text wx:else bindlongpress="onMessageLongPress" data-content="{{msg.content}}">{{msg.content}}</text>
         </view>
         <image class="avatar clickable" wx:if="{{msg.from.userID === userInfo.userID}}"
                src="{{cachedTempAvatars[userInfo.userID] || userInfo.customAvatar || userInfo.avatarUrl || 'https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132'}}"
