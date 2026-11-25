@@ -5,7 +5,10 @@
     <view class="back-btn">
       <image src="/image/back.png" mode="aspectFit" style="width: 32rpx; height: 32rpx;"></image>
     </view>
-    <view class="title">{{otherUser.nickName || (isWaiting ? '等待中...' : '聊天室')}}</view>
+    <view class="title-area" bindtap="onEditRoomName">
+      <text class="title">{{roomName || otherUser.nickName || (isWaiting ? '等待中...' : '聊天室')}}</text>
+      <text class="edit-room-name">✎</text>
+    </view>
     <view class="header-right">
       <view class="distance-display" wx:if="{{distance}}">
         📍 {{distance}}
@@ -127,6 +130,32 @@
     </view>
     <view class="recording-time">{{recordingDuration || 1}}″</view>
     <view class="recording-hint">{{willCancel ? '松开 取消发送' : '上滑 取消发送'}}</view>
+  </view>
+</view>
+
+<!-- 修改聊天室名称弹窗 -->
+<view class="profile-modal room-name-modal" wx:if="{{showRoomNameModal}}">
+  <view class="profile-mask" bindtap="onCloseRoomNameModal"></view>
+  <view class="profile-content room-name-content">
+    <view class="room-name-header">修改聊天室名称</view>
+    <view class="room-name-body">
+      <input
+        class="room-name-input"
+        type="text"
+        maxlength="20"
+        value="{{editingRoomName}}"
+        placeholder="请输入聊天室名称"
+        placeholder-class="room-name-placeholder"
+        confirm-type="done"
+        bindinput="onRoomNameInput"
+        bindconfirm="onSaveRoomName"
+      />
+      <view class="name-counter">{{editingRoomName.length}}/20</view>
+    </view>
+    <view class="profile-footer room-name-actions">
+      <button class="close-btn" disabled="{{renamingRoom}}" bindtap="onCloseRoomNameModal">取消</button>
+      <button class="save-btn" disabled="{{renamingRoom}}" bindtap="onSaveRoomName">保存</button>
+    </view>
   </view>
 </view>
 

@@ -27,7 +27,7 @@
     <view class="rooms-list">
       <view class="room-item" wx:for="{{rooms}}" wx:key="_id" bindtap="onEnterRoom" data-roomid="{{item._id}}">
         <view class="room-header">
-          <text class="room-name">聊天室 #{{index + 1}}</text>
+          <text class="room-name">{{item.roomName || ('聊天室 #' + (index + 1))}}</text>
           <text class="room-status" style="color: {{getStatusColor(item.status)}}">
             {{getStatusText(item.status)}}
           </text>

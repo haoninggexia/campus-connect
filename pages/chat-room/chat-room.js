@@ -4,6 +4,10 @@ Page({
     roomId: '',
     university: '',
     isCreator: false,
+    roomName: '',
+    showRoomNameModal: false,
+    editingRoomName: '',
+    renamingRoom: false,
     userInfo: {},
     messages: [],
     otherUser: null,
@@ -373,6 +377,7 @@ Page({
         const updateData = {
           messages,
           otherUser,
+          roomName: data.roomName || '',
           messagesLoaded: true
         }
         if (hasNewTempAvatar) {
@@ -1155,6 +1160,74 @@ Page({
           },
           profilePhotos: []
         })
+    }
+  },
+
+  // 打开修改房间名弹窗
+  onEditRoomName() {
+    if (this.data.renamingRoom) return
+    this.setData({
+      showRoomNameModal: true,
+      editingRoomName: this.data.roomName
+    })
+  },
+
+  // 输入房间名
+  onRoomNameInput(e) {
+    this.setData({ editingRoomName: e.detail.value })
+  },
+
+  // 关闭修改房间名弹窗
+  onCloseRoomNameModal() {
+    if (this.data.renamingRoom) return
+    this.setData({
+      showRoomNameModal: false,
+      editingRoomName: ''
+    })
+  },
+
+  // 保存房间名
+  async onSaveRoomName() {
+    if (this.data.renamingRoom) return
+    const name = (this.data.editingRoomName || '').trim()
+    if (!name) {
+      wx.showToast({ title: '请输入聊天室名称', icon: 'none' })
+      return
+    }
+    if (name.length > 20) {
+      wx.showToast({ title: '名称不能超过20个字符', icon: 'none' })
+      return
+    }
+
+    this.setData({ renamingRoom: true })
+    wx.showLoading({ title: '保存中...', mask: true })
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'updateRoomName',
+        data: {
+          roomId: this.data.roomId,
+          roomName: name,
+          userID: this.data.userInfo.userID
+        }
+      })
+      wx.hideLoading()
+      const result = res && res.result
+      if (result && result.code === 0) {
+        this.setData({
+          roomName: result.data.roomName,
+          showRoomNameModal: false,
+          editingRoomName: ''
+        })
+        wx.showToast({ title: '名称已修改', icon: 'success' })
+      } else {
+        wx.showToast({ title: (result && result.msg) || '修改失败', icon: 'none' })
+      }
+    } catch (e) {
+      wx.hideLoading()
+      console.error('修改聊天室名称失败:', e)
+      wx.showToast({ title: '修改失败，请稍后再试', icon: 'none' })
+    } finally {
+      this.setData({ renamingRoom: false })
     }
   },
 

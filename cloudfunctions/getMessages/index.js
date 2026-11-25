@@ -160,6 +160,7 @@ exports.main = async (event, context) => {
       data: {
         messages,
         status: room.status,
+        roomName: room.roomName || ((room.user1 && room.user1.nickName ? room.user1.nickName + '的聊天室' : '聊天室')),
         user1: processedUser1,
         user2: processedUser2
       }

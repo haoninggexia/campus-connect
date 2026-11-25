@@ -41,6 +41,30 @@
   text-shadow: 0 0 15rpx rgba(0, 255, 255, 0.4);
 }
 
+.chat-header .title-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.chat-header .title-area .title {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-header .edit-room-name {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: #00ffff;
+  text-shadow: 0 0 12rpx rgba(0, 255, 255, 0.7);
+}
+
 .chat-header .more-btn {
   width: 44rpx;
   height: 44rpx;
@@ -622,6 +646,65 @@
   border: 2rpx solid rgba(255, 0, 255, 0.35);
   background-color: transparent;
   color: #ff6bff;
+}
+
+/* 修改聊天室名称弹窗 */
+.room-name-modal .room-name-content {
+  width: 80%;
+  /* 输入框是原生组件，父容器的 transform 动画会导致文字位置错乱 */
+  animation: none;
+}
+
+.room-name-header {
+  padding: 32rpx 30rpx 16rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #00ffff;
+  letter-spacing: 2rpx;
+  text-shadow: 0 0 15rpx rgba(0, 255, 255, 0.6);
+}
+
+.room-name-body {
+  padding: 24rpx 30rpx 32rpx;
+}
+
+.room-name-input {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  box-sizing: border-box;
+  padding: 0 24rpx;
+  font-size: 30rpx;
+  color: #f0f0ff;
+  background: rgba(0, 255, 255, 0.06);
+  border: 2rpx solid rgba(0, 255, 255, 0.4);
+  border-radius: 10rpx;
+}
+
+.room-name-placeholder {
+  color: rgba(240, 240, 255, 0.4);
+}
+
+.name-counter {
+  margin-top: 12rpx;
+  text-align: right;
+  font-size: 24rpx;
+  color: rgba(240, 240, 255, 0.6);
+}
+
+.room-name-actions {
+  padding-top: 24rpx;
+}
+
+.room-name-actions .save-btn {
+  flex: 1;
+  padding: 20rpx 0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  border: 2rpx solid rgba(0, 255, 255, 0.5);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.25), rgba(123, 47, 255, 0.35));
+  color: #f0f0ff;
 }
 
 /* ============ 图片发送功能 ============ */

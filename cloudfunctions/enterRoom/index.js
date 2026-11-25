@@ -116,6 +116,7 @@ exports.main = async (event, context) => {
       const roomData = {
         university,
         status: 1, // 1人等待中
+        roomName: `${String(userInfo.nickName || '用户').slice(0, 12)}的聊天室`,
         user1: userInfo,
         user2: null,
         messages: [],

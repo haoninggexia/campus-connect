@@ -1,0 +1,9 @@
+{
+  "name": "updateRoomName",
+  "version": "1.0.0",
+  "description": "修改聊天室名称",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
